@@ -8,6 +8,8 @@
 ## Authority And Scope
 - `C:\dev\marisco3\marisco_clean\marisco_repo\docs\requirements.md` is the source of truth for what must be delivered.
 - `C:\dev\marisco3\marisco_clean\marisco_repo\docs\reference_standards.md` is the source of truth for how workflow participants must behave while producing and auditing those deliverables.
+- For requirements-, plan-, and roadmap-phase auditing, the contract rules defined in this document are the authoritative scoped source.
+- `docs/audit_contract.md` must not override this document for phases whose fixed audit scope does not include it.
 - `C:\dev\marisco3\marisco_clean\marisco_repo\CONVENTIONS.md` is the companion source for implementation and UX conventions.
 - `C:\dev\marisco3\marisco_clean\marisco_repo\DEPENDENCIES.md` is the companion source for runtime, development, asset, and external-service dependency inventory.
 - `C:\dev\marisco3\marisco_clean\marisco_repo\docs\plan.md` defines the Architect’s implementation plan.

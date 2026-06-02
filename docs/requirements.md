@@ -37,7 +37,8 @@
 - `REQ-GRAN-STANDARDS`: Repository-wide audit depth rules and abstract-term handling belong in `docs/reference_standards.md`, not in the hook script.
 - `REQ-GRAN-PLAN`: `docs/plan.md` may describe how the requirements will be satisfied, but it must not tighten, relax, or replace requirement thresholds.
 - `REQ-GRAN-ROADMAP`: `docs/roadmap.md` may sequence work and self-checks, but it must not become the sole source of acceptance detail that auditors need in order to judge this workstream.
-- `REQ-GRAN-CONTRACT`: Machine-readable output shape belongs in `docs/audit_contract.md`, not in this document unless a stricter project-specific rule is required.
+- `REQ-GRAN-CONTRACT`: For requirements-, plan-, and roadmap-phase auditing, the governing machine-readable audit status contract must be decidable from `docs/reference_standards.md` and this document alone.
+- `REQ-GRAN-CONTRACT`: `docs/audit_contract.md` may restate or exemplify that contract, but it must not be the only scoped source of authority for those phases.
 - `REQ-GRAN-CHECKS`: Operationalized checks and pass thresholds belong in `docs/check_catalog.md` and `docs/acceptance_matrix.md`.
 
 ## Handler Template Baseline
@@ -77,12 +78,26 @@
 - Exported files must remain importable after generation.
 - The template must not introduce a broken `default_exp`, invalid export cell, or circular import by default.
 
-### REQ-POST-COMMIT-FLOW
+### REQ-POST-COMMIT-AUTHORITY
 - A post-commit verification flow must exist for this workstream.
 - For governance purposes, `post-commit verification flow` means the verification sequence invoked by `.git/hooks/post-commit`.
 - The hook may call helper scripts, but helper scripts are subordinate implementation details rather than alternative sources of workflow authority.
-- The flow must stay lightweight enough for local developer use.
-- The flow must focus on quick breakage detection rather than full pipeline execution.
+
+### REQ-POST-COMMIT-SEQUENCE
+- For this workstream, the minimum documented post-commit verification sequence must contain all of the following stages:
+  - notebook export or equivalent regeneration
+  - `python -m py_compile` on touched generated modules or the relevant generated module set
+  - lightweight import smoke checks for affected modules
+- A sequence that omits any of these stages does not satisfy this requirement.
+
+### REQ-POST-COMMIT-LIGHTWEIGHT-BOUNDARY
+- In this workstream, `lightweight` means the verification sequence is limited to the stages listed in `REQ-POST-COMMIT-SEQUENCE` and excludes heavyweight execution.
+- Heavyweight execution explicitly includes:
+  - full provider dataset downloads
+  - remote API calls
+  - full NetCDF production runs
+  - full regression suites
+- The purpose of this boundary is quick breakage detection rather than full pipeline execution.
 
 ## Non-Functional Requirements
 
@@ -152,9 +167,9 @@
 - If this workstream later introduces executable implementation artifacts under `src/`, `tests/`, or `artifacts/`, implementation-phase validation rules may apply in addition to this baseline.
 
 ### Required Checks
-- Notebook/export-related changes must be validated through a lightweight exportability check.
-- Generated Python files touched by the template workflow must pass import or compile-level validation.
-- The check set must be sufficient to catch:
+- Notebook/export-related changes must be validated through the export/regeneration stage defined in `REQ-POST-COMMIT-SEQUENCE`.
+- Generated Python files touched by the template workflow must pass the compile and import-smoke stages defined in `REQ-POST-COMMIT-SEQUENCE`.
+- The required check set must be sufficient to catch:
   - broken notebook export structure
   - syntax errors in generated modules
   - obvious import-time breakage in touched code paths
@@ -175,7 +190,8 @@
 - The template reflects the Handler Template Baseline defined in this document.
 - The template clearly marks provider-specific versus reusable zones.
 - The template can participate in the `nbdev` export flow without breaking repository imports.
-- A documented post-commit verification sequence exists, is hook-governed, and is lightweight.
+- A documented post-commit verification sequence exists, is hook-governed, and includes every stage required by `REQ-POST-COMMIT-SEQUENCE`.
+- The documented post-commit verification sequence stays within the `REQ-POST-COMMIT-LIGHTWEIGHT-BOUNDARY`.
 - No requirement in this phase forces immediate refactoring of existing handlers.
 
 ## Risks
