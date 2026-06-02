@@ -33,6 +33,7 @@
 
 ### FR-2 Current-State Fidelity
 - The template must reflect the current handler notebook pattern rather than a hypothetical future architecture.
+- The first template must be current-state descriptive, not future-state prescriptive.
 - The template must include the sections typically present in current handlers:
   - overview / purpose
   - configuration and file paths
@@ -112,6 +113,7 @@
   - known pain points
 
 ### Template Guidance Requirements
+- The template must document the current handler shape first, before proposing any future refactoring direction.
 - The template must indicate where provider-specific read logic belongs.
 - The template must indicate where callback definitions belong.
 - The template must indicate where to place `get_attrs`.
