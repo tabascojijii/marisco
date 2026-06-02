@@ -5,6 +5,8 @@
 - Define the requirements for validating the template through the existing `nbdev` workflow rather than direct edits to generated `.py` files.
 - Define the minimum post-commit test run needed to confirm that template creation does not break exportability, imports, or lightweight execution paths.
 - Treat this document as the source of truth for the template-creation workstream before any refactoring or handler commonization is implemented.
+- This document defines the auditable acceptance baseline for the template-creation workstream during the requirements, plan, and roadmap phases.
+- For this workstream, acceptance must be decidable from the fixed documentation audit scope without requiring repository-wide handler discovery.
 
 ## Objectives
 - Make the current implicit handler pattern explicit.
@@ -24,58 +26,79 @@
 - A lightweight post-commit verification flow.
 - Documentation describing how the template should be used before any full commonization effort starts.
 
+## Requirement Identifier Policy
+- All normative requirements in this document must use `REQ-...` identifiers.
+- Informative section labels such as `Functional` or `Non-Functional` may be used for readability, but they do not replace `REQ-...` identifiers.
+
+## Granularity Allocation
+- `REQ-GRAN-REQS`: `docs/requirements.md` must define project-specific acceptance granularity for this workstream.
+- `REQ-GRAN-REQS`: Requirements-level detail must include any condition that would otherwise make acceptance contradictory, undefined, or not auditable within the fixed audit scope.
+- `REQ-GRAN-HOOK`: The reusable `post-commit` hook is an orchestration surface, not the source of project-specific granularity policy.
+- `REQ-GRAN-STANDARDS`: Repository-wide audit depth rules and abstract-term handling belong in `docs/reference_standards.md`, not in the hook script.
+- `REQ-GRAN-PLAN`: `docs/plan.md` may describe how the requirements will be satisfied, but it must not tighten, relax, or replace requirement thresholds.
+- `REQ-GRAN-ROADMAP`: `docs/roadmap.md` may sequence work and self-checks, but it must not become the sole source of acceptance detail that auditors need in order to judge this workstream.
+- `REQ-GRAN-CONTRACT`: Machine-readable output shape belongs in `docs/audit_contract.md`, not in this document unless a stricter project-specific rule is required.
+- `REQ-GRAN-CHECKS`: Operationalized checks and pass thresholds belong in `docs/check_catalog.md` and `docs/acceptance_matrix.md`.
+
+## Handler Template Baseline
+- `current handler notebook pattern` in this workstream means the minimum notebook structure defined in this section, not an inferred repository-wide average.
+- A template satisfies current-state fidelity when it preserves the following ordered sections:
+  - title and purpose
+  - configuration and input source notes
+  - `load_data`
+  - transformation pipeline
+  - metadata construction via `get_attrs` or an equivalently named metadata section
+  - `encode`
+  - verification or smoke-check cells
+  - notes marking provider-specific logic, reusable logic, and known pain points
+- This baseline is intentionally structural. It does not require uniform provider internals or forced commonization.
+
 ## Functional Requirements
 
-### FR-1 Notebook-First Template
+### REQ-NB-TEMPLATE
 - The template must be created as a notebook under `nbs/handlers/`.
 - The template must follow the repository’s `nbdev` conventions, including `default_exp` and exported cells where appropriate.
 - The template must not require direct edits to generated Python files.
 
-### FR-2 Current-State Fidelity
-- The template must reflect the current handler notebook pattern rather than a hypothetical future architecture.
+### REQ-CURRENT-STATE-FIDELITY
+- The template must reflect the Handler Template Baseline defined in this document rather than a hypothetical future architecture.
 - The first template must be current-state descriptive, not future-state prescriptive.
-- The template must include the sections typically present in current handlers:
-  - overview / purpose
-  - configuration and file paths
-  - `load_data`
-  - transformation steps
-  - metadata / `get_attrs`
-  - `encode`
-  - verification or smoke-check cells
-- The template must make clear which parts are expected to vary per provider.
+- The template must make clear which baseline sections are expected to vary by provider.
 
-### FR-3 Difference Visibility
+### REQ-DIFFERENCE-VISIBILITY
 - The template must distinguish between:
   - provider-specific logic
   - reusable callback-based logic
   - likely future commonization candidates
 - The template must help reviewers discuss commonization without forcing refactoring during template creation.
 
-### FR-4 nbdev Compatibility
+### REQ-NBDEV-COMPAT
 - The template must be exportable through the current `nbdev` flow.
 - Exported files must remain importable after generation.
 - The template must not introduce a broken `default_exp`, invalid export cell, or circular import by default.
 
-### FR-5 Post-Commit Verification
+### REQ-POST-COMMIT-FLOW
 - A post-commit verification flow must exist for this workstream.
+- For governance purposes, `post-commit verification flow` means the verification sequence invoked by `.git/hooks/post-commit`.
+- The hook may call helper scripts, but helper scripts are subordinate implementation details rather than alternative sources of workflow authority.
 - The flow must stay lightweight enough for local developer use.
 - The flow must focus on quick breakage detection rather than full pipeline execution.
 
 ## Non-Functional Requirements
 
-### NFR-1 Preserve Flexibility
+### REQ-PRESERVE-FLEXIBILITY
 - The template must not imply that all provider differences should be normalized away immediately.
 - The template must support the project’s current need to absorb imperfect external data.
 
-### NFR-2 Avoid Premature Commonization
+### REQ-AVOID-PREMATURE-COMMONIZATION
 - Template creation must not require refactoring existing handlers into a shared pipeline.
 - The template may identify commonizable zones, but implementation changes must remain a later step.
 
-### NFR-3 Readability
+### REQ-READABILITY
 - The template must be understandable by maintainers who use notebooks as both implementation and documentation.
 - The template must preserve the literate-programming style used in existing handler notebooks.
 
-### NFR-4 Low-Friction Validation
+### REQ-LOW-FRICTION-VALIDATION
 - Post-commit checks must complete quickly enough to remain practical during normal development.
 - Heavy external-network or full-dataset runs should not be required in the post-commit path.
 
@@ -122,6 +145,12 @@
 
 ## Post-Commit Test Run Requirements
 
+### Validation Baseline For This Workstream
+- This workstream is a documentation-and-template phase, not an implementation-phase feature delivery.
+- For this workstream, the local acceptance baseline is the lightweight validation set defined in this section.
+- `pytest tests/` is not required for requirements-, plan-, or roadmap-phase acceptance of this workstream.
+- If this workstream later introduces executable implementation artifacts under `src/`, `tests/`, or `artifacts/`, implementation-phase validation rules may apply in addition to this baseline.
+
 ### Required Checks
 - Notebook/export-related changes must be validated through a lightweight exportability check.
 - Generated Python files touched by the template workflow must pass import or compile-level validation.
@@ -143,10 +172,10 @@
 
 ## Acceptance Criteria
 - An explicit handler template notebook exists under `nbs/handlers/`.
-- The template reflects the current handler notebook structure used in this repository.
+- The template reflects the Handler Template Baseline defined in this document.
 - The template clearly marks provider-specific versus reusable zones.
 - The template can participate in the `nbdev` export flow without breaking repository imports.
-- A documented post-commit verification sequence exists and is lightweight.
+- A documented post-commit verification sequence exists, is hook-governed, and is lightweight.
 - No requirement in this phase forces immediate refactoring of existing handlers.
 
 ## Risks
@@ -164,7 +193,6 @@
 ## Open Decisions
 - Final filename and location of the template notebook.
 - Whether the first template should be pure scaffold or scaffold plus inline authoring guidance.
-- Whether post-commit validation should be implemented via git hooks, a helper script, or both.
 - Which one existing handler should be used first as the calibration reference for template fidelity.
 
 ## Next Step Guidance

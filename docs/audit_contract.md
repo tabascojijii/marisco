@@ -25,3 +25,8 @@
 - `checks[]` entries must use `REQ-...` ids.
 - `AUDIT_PASS_*` decisions cannot include failed checks.
 - `REJECT_*` decisions must include at least one reason code.
+
+## Granularity Contract Boundary
+- This document defines machine-readable audit output requirements only.
+- This document does not define project-specific acceptance thresholds, execution sequencing, or requirement-detail policy.
+- When a finding concerns missing specificity, `audit_status.json` should reference the relevant `REQ-...` check id and evidence path, while the governing policy remains in `docs/requirements.md` or `docs/reference_standards.md`.

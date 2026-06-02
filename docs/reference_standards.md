@@ -84,6 +84,23 @@
 - REJECT decisions must include at least one reason code.
 - If the audit JSON contract is missing or invalid, the result must be treated as an architectural workflow failure rather than ignored.
 
+## Audit Granularity Policy
+- This document defines the repository-local policy for how concrete a requirement or finding must be in order to be auditable.
+- Auditors may require requirements-level specificity only when the missing detail would otherwise block a scoped, evidence-backed pass or fail decision.
+- Terms such as `current pattern`, `lightweight`, `appropriate`, `existing flow`, or `similar structure` are not auditable by themselves unless the fixed audit scope also contains the governing definition or measurable boundary.
+- If a requirement depends on a comparison target, required structure, validation baseline, or implementation boundary, that reference must be named in a scoped document rather than inferred from repository-wide exploration.
+- Plans and roadmaps may add execution detail, but auditors must not treat them as substitutes for missing requirement-level acceptance criteria.
+- Findings should identify the missing contract boundary precisely enough that an upstream document owner can repair it without guessing.
+
+## Granularity Ownership Boundary
+- `post-commit` owns workflow sequencing, fixed-scope delivery, and status-token handling.
+- `docs/requirements.md` owns project-specific acceptance detail and any workstream-specific exceptions to default validation rules.
+- `docs/plan.md` owns design response and document architecture needed to satisfy the requirements.
+- `docs/roadmap.md` owns executable task breakdown and self-check sequencing.
+- `docs/audit_contract.md` owns machine-readable audit output structure.
+- `docs/check_catalog.md` owns check definitions.
+- `docs/acceptance_matrix.md` owns threshold-style acceptance mapping.
+
 ## Decision Rules
 
 ### PASS Decisions
