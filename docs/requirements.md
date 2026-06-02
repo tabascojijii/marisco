@@ -31,14 +31,14 @@
 - Informative section labels such as `Functional` or `Non-Functional` may be used for readability, but they do not replace `REQ-...` identifiers.
 
 ## Granularity Allocation
-- `REQ-GRAN-REQS`: `docs/requirements.md` must define project-specific acceptance granularity for this workstream.
-- `REQ-GRAN-REQS`: Requirements-level detail must include any condition that would otherwise make acceptance contradictory, undefined, or not auditable within the fixed audit scope.
+- `REQ-GRAN-REQS-SCOPE`: `docs/requirements.md` must define project-specific acceptance granularity for this workstream.
+- `REQ-GRAN-REQS-COMPLETE`: Requirements-level detail must include any condition that would otherwise make acceptance contradictory, undefined, or not auditable within the fixed audit scope.
 - `REQ-GRAN-HOOK`: The reusable `post-commit` hook is an orchestration surface, not the source of project-specific granularity policy.
 - `REQ-GRAN-STANDARDS`: Repository-wide audit depth rules and abstract-term handling belong in `docs/reference_standards.md`, not in the hook script.
 - `REQ-GRAN-PLAN`: `docs/plan.md` may describe how the requirements will be satisfied, but it must not tighten, relax, or replace requirement thresholds.
 - `REQ-GRAN-ROADMAP`: `docs/roadmap.md` may sequence work and self-checks, but it must not become the sole source of acceptance detail that auditors need in order to judge this workstream.
-- `REQ-GRAN-CONTRACT`: For requirements-, plan-, and roadmap-phase auditing, the governing machine-readable audit status contract must be decidable from `docs/reference_standards.md` and this document alone.
-- `REQ-GRAN-CONTRACT`: `docs/audit_contract.md` may restate or exemplify that contract, but it must not be the only scoped source of authority for those phases.
+- `REQ-GRAN-CONTRACT-DECIDABLE`: For requirements-, plan-, and roadmap-phase auditing, the governing machine-readable audit status contract must be decidable from `docs/reference_standards.md` and this document alone.
+- `REQ-GRAN-CONTRACT-SUBORD`: `docs/audit_contract.md` may restate or exemplify that contract, but it must not be the only scoped source of authority for those phases.
 - `REQ-GRAN-CHECKS`: Operationalized checks and pass thresholds belong in `docs/check_catalog.md` and `docs/acceptance_matrix.md`.
 
 ## Handler Template Baseline
@@ -186,13 +186,13 @@
 - heavyweight regression suites better suited for manual execution or CI
 
 ## Acceptance Criteria
-- An explicit handler template notebook exists under `nbs/handlers/`.
-- The template reflects the Handler Template Baseline defined in this document.
-- The template clearly marks provider-specific versus reusable zones.
-- The template can participate in the `nbdev` export flow without breaking repository imports.
-- A documented post-commit verification sequence exists, is hook-governed, and includes every stage required by `REQ-POST-COMMIT-SEQUENCE`.
-- The documented post-commit verification sequence stays within the `REQ-POST-COMMIT-LIGHTWEIGHT-BOUNDARY`.
-- No requirement in this phase forces immediate refactoring of existing handlers.
+- `REQ-AC-TEMPLATE-EXISTS`: An explicit handler template notebook exists under `nbs/handlers/`.
+- `REQ-AC-TEMPLATE-BASELINE`: The template reflects the Handler Template Baseline defined in this document.
+- `REQ-AC-TEMPLATE-ZONES`: The template clearly marks provider-specific versus reusable zones.
+- `REQ-AC-TEMPLATE-NBDEV`: The template can participate in the `nbdev` export flow without breaking repository imports.
+- (informative, see `REQ-POST-COMMIT-SEQUENCE`) A documented post-commit verification sequence exists, is hook-governed, and includes every stage required by `REQ-POST-COMMIT-SEQUENCE`.
+- (informative, see `REQ-POST-COMMIT-LIGHTWEIGHT-BOUNDARY`) The documented post-commit verification sequence stays within the `REQ-POST-COMMIT-LIGHTWEIGHT-BOUNDARY`.
+- `REQ-AC-NO-REFACTOR`: No requirement in this phase forces immediate refactoring of existing handlers.
 
 ## Risks
 - The template may accidentally encode too much future architecture and become hard to adopt.

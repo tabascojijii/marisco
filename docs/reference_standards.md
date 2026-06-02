@@ -101,7 +101,7 @@
 - `docs/requirements.md` owns project-specific acceptance detail and any workstream-specific exceptions to default validation rules.
 - `docs/plan.md` owns design response and document architecture needed to satisfy the requirements.
 - `docs/roadmap.md` owns executable task breakdown and self-check sequencing.
-- `docs/audit_contract.md` owns machine-readable audit output structure.
+- `docs/audit_contract.md` may restate or exemplify the machine-readable audit output structure defined in this document, but does not hold normative authority over it for requirements-, plan-, and roadmap-phase auditing.
 - `docs/check_catalog.md` owns check definitions.
 - `docs/acceptance_matrix.md` owns threshold-style acceptance mapping.
 
