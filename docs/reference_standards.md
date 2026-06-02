@@ -8,10 +8,12 @@
 ## Authority And Scope
 - `C:\dev\marisco3\marisco_clean\marisco_repo\docs\requirements.md` is the source of truth for what must be delivered.
 - `C:\dev\marisco3\marisco_clean\marisco_repo\docs\reference_standards.md` is the source of truth for how workflow participants must behave while producing and auditing those deliverables.
+- Together, `docs/requirements.md` and `docs/reference_standards.md` form the normative two-document governance set for this workflow.
 - For requirements-, plan-, and roadmap-phase auditing, the contract rules defined in this document are the authoritative scoped source.
 - `docs/audit_contract.md` must not override this document for phases whose fixed audit scope does not include it.
 - `C:\dev\marisco3\marisco_clean\marisco_repo\CONVENTIONS.md` is the companion source for implementation and UX conventions.
 - `C:\dev\marisco3\marisco_clean\marisco_repo\DEPENDENCIES.md` is the companion source for runtime, development, asset, and external-service dependency inventory.
+- `C:\dev\marisco3\marisco_clean\marisco_repo\docs\core_philosophy.md` is informative background only and must not be treated as an independent source of audit or acceptance authority.
 - `C:\dev\marisco3\marisco_clean\marisco_repo\docs\plan.md` defines the Architect’s implementation plan.
 - `C:\dev\marisco3\marisco_clean\marisco_repo\docs\roadmap.md` defines the PM’s executable roadmap.
 - `C:\dev\marisco3\marisco_clean\marisco_repo\src\`, `C:\dev\marisco3\marisco_clean\marisco_repo\tests\`, and `C:\dev\marisco3\marisco_clean\marisco_repo\artifacts\` contain the Implementer’s deliverables.
@@ -39,7 +41,7 @@
 ## Role Responsibilities
 
 ### Architect
-- Read `C:\dev\marisco3\marisco_clean\marisco_repo\docs\core_philosophy.md`, `C:\dev\marisco3\marisco_clean\marisco_repo\docs\requirements.md`, and this file before revising architecture-facing deliverables.
+- Read `C:\dev\marisco3\marisco_clean\marisco_repo\docs\requirements.md` and this file before revising architecture-facing deliverables.
 - Create or revise `C:\dev\marisco3\marisco_clean\marisco_repo\docs\plan.md`.
 - Repair structural defects in requirements interpretation, acceptance structure, and workflow design.
 - Ensure required supporting governance documents exist when the workflow expects them.

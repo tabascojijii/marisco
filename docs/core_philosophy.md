@@ -8,6 +8,12 @@ This document defines the highest-level principles that guide design, implementa
 `C:\dev\marisco3\marisco_clean\marisco_repo\docs\reference_standards.md` defines the operational rules.
 This document explains the value system behind those rules so that maintainers can make consistent decisions when details are unclear or tradeoffs appear.
 
+## Status
+
+- This document is informative guidance, not a normative workflow contract.
+- Audit pass/fail, escalation, evidence, and acceptance decisions must be derived from `docs/requirements.md` and `docs/reference_standards.md`, not from this document alone.
+- If this document conflicts with a normative rule in `docs/requirements.md` or `docs/reference_standards.md`, the normative rule takes precedence.
+
 ## Project Identity
 
 `marisco` is not just a collection of conversion scripts.
