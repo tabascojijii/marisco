@@ -8,6 +8,8 @@
 ## Authority And Scope
 - `C:\dev\marisco3\marisco_clean\marisco_repo\docs\requirements.md` is the source of truth for what must be delivered.
 - `C:\dev\marisco3\marisco_clean\marisco_repo\docs\reference_standards.md` is the source of truth for how workflow participants must behave while producing and auditing those deliverables.
+- `C:\dev\marisco3\marisco_clean\marisco_repo\CONVENTIONS.md` is the companion source for implementation and UX conventions.
+- `C:\dev\marisco3\marisco_clean\marisco_repo\DEPENDENCIES.md` is the companion source for runtime, development, asset, and external-service dependency inventory.
 - `C:\dev\marisco3\marisco_clean\marisco_repo\docs\plan.md` defines the Architect’s implementation plan.
 - `C:\dev\marisco3\marisco_clean\marisco_repo\docs\roadmap.md` defines the PM’s executable roadmap.
 - `C:\dev\marisco3\marisco_clean\marisco_repo\src\`, `C:\dev\marisco3\marisco_clean\marisco_repo\tests\`, and `C:\dev\marisco3\marisco_clean\marisco_repo\artifacts\` contain the Implementer’s deliverables.
@@ -115,6 +117,13 @@
   - `## Summary`
   - `## Required Human Actions`
 
+## Runtime Prerequisite Rules
+- This repository must not be treated as `pip install`-complete only; successful runtime behavior also depends on local initialization, local assets, and some external services.
+- `maris_init` is the standard initialization step for runtime use and must be treated as a prerequisite when workflows depend on `~/.marisco/`.
+- Runtime flows that require lookup tables, cache directories, temporary directories, or the NetCDF template must assume those assets are provided through the initialized `~/.marisco/` layout unless requirements explicitly define an alternative.
+- Missing runtime prerequisites such as uninitialized local state, absent LUTs, absent NetCDF templates, or unavailable required local input files must be reported explicitly rather than surfacing later as ambiguous downstream failures.
+- External dependencies such as GitHub-hosted raw data, Zotero metadata, and handler-specific remote sources must be treated as operational dependencies; availability failures should be described as dependency failures, not generic processing failures.
+
 ## Evidence And Artifact Rules
 - Evidence should be file-backed whenever possible, not prose-only.
 - The following artifacts are part of the workflow evidence contract:
@@ -135,11 +144,34 @@
 - Template work for handlers must begin as current-state documentation of the existing notebook pattern, not as forced future-state refactoring.
 - Future commonization may be discussed, but template creation must not require immediate migration of existing handlers.
 
+## Handler And Shared Logic Boundary
+- Handlers are responsible for provider-specific ingestion and normalization.
+- Shared logic that is demonstrably reusable should be moved into callbacks, shared helpers, or utility functions rather than copied across handlers.
+- Callback pipelines should remain readable and ordered according to transformation flow.
+- Provider-specific quirks should remain in the provider notebook until reuse is clear and stable.
+- Commonization must reduce duplication without hiding provider-specific meaning behind oversized abstractions.
+
+## CLI And User-Facing Behavior
+- Public CLI entrypoints must validate user input before beginning expensive work whenever validation can be done at the CLI boundary.
+- User-facing failures at the CLI boundary must exit non-zero and explain what was invalid.
+- When valid choices are from a fixed set, those choices should be shown in the error message.
+- Long-running operations should announce start, show progress by stage or item when practical, and announce completion.
+- Successful runs should identify what was produced and where it was written.
+- Cache-aware behavior should be visible to users when it materially affects runtime behavior.
+- Overwrite-prone or destructive behavior should require explicit confirmation when it affects user-managed local state.
+
 ## Coding And Change Discipline
 - Keep changes minimal, reviewable, and traceable to requirement or roadmap intent.
 - Fix root causes where practical, but do not widen scope without documented justification.
 - Do not silently change workflow contracts, reason-code vocabularies, or audit interfaces.
 - Prefer explicit file-based evidence over narrative claims of correctness.
+
+## Failure Communication Rules
+- Do not fail silently for invalid input, missing prerequisites, or missing evidence.
+- Do not emit low-information user-facing failures such as `Failed`, `Error`, or `not found` without naming the target and impact.
+- Warning-style messages are appropriate only for recoverable data-quality issues or partial enrichment failures that do not invalidate the output contract.
+- Exception-style failures are appropriate for unsupported states, missing required prerequisites, invalid internal assumptions, or contract-breaking conditions.
+- Failure messages should state what failed, which file or dependency was involved, whether processing can continue, and what should be checked next when a next step exists.
 
 ## Audit Scope Discipline
 - Respect the fixed audit scope supplied by the workflow.
