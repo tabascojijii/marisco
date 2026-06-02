@@ -2,15 +2,15 @@
 
 ## 概要
 
-`marisco` は、MARIS (Marine Radioactivity Information System) 向けのデータ変換パッケージです。アーキテクチャの中心は「データ提供者ごとの handler が、入力データを共通の MARIS DataFrame 形へ正規化し、共通 encoder / decoder を通して NetCDF4 と CSV に変換する」という構成です。
+`marisco` は、MARIS (Marine Radioactivity Information System) 向けのデータ変換パッケージです。アーキテクチャの中心は「データ提供者ごとの Handler が、入力データを共通の MARIS DataFrame 形へ正規化し、共通 encoder / decoder を通して NetCDF4 と CSV に変換する」という構成です。
 
 このリポジトリは `nbdev` を採用しており、Jupyter Notebook を実装の正本として保持し、`marisco/` 配下の Python モジュールはそこから自動生成されます。そのため、実行時アーキテクチャと開発時アーキテクチャを分けて理解するのが重要です。
 
 ## 設計原則
 
-- handler ごとに入力差分を吸収し、出力は MARIS 標準へ寄せる
+- Handler ごとに入力差分を吸収し、出力は MARIS 標準へ寄せる
 - 共通処理は callback、config、metadata、encoder / decoder に集約する
-- NetCDF テンプレートと lookup table を静的資産として扱う
+- NetCDF テンプレートと Lookup Table (LUT) を静的資産として扱う
 - notebook と生成コードを一致させ、ドキュメントと実装を分離しない
 
 ## レイヤ構成
@@ -36,7 +36,7 @@ CLI から処理が始まります。
 - `marisco.handlers.geotraces`
 - `marisco.handlers.maris_legacy`
 
-各 handler は次を担当します。
+各 Handler は次を担当します。
 
 - 入力データの取得・読込
 - provider 独自列の抽出
@@ -56,7 +56,7 @@ CLI から処理が始まります。
 - `Callback`
   - 変換ステップの最小単位
 
-handler は callback を並べることでパイプラインを定義します。これにより、変換順序が明示され、共通処理も再利用できます。
+Handler は callback を並べることでパイプラインを定義します。これにより、変換順序が明示され、共通処理も再利用できます。
 
 ### 4. Configuration and Vocabulary Layer
 
@@ -81,7 +81,7 @@ handler は callback を並べることでパイプラインを定義します�
 - Zotero からの書誌情報取得
 - 固定キーの追加
 
-各 handler は `GlobAttrsFeeder` に callback 群を渡して、出力 NetCDF に必要なメタデータを構成します。
+各 Handler は `GlobAttrsFeeder` に callback 群を渡して、出力 NetCDF に必要なメタデータを構成します。
 
 ### 6. Serialization Layer
 
@@ -135,7 +135,7 @@ flowchart TD
 
 ## 開発時アーキテクチャ
 
-### notebook 正本
+### Jupyter Notebook 正本
 
 `nbs/` 配下が実装の正本です。
 
@@ -157,7 +157,7 @@ notebook は次を兼ねます。
 
 - 配布用パッケージ
 - CLI 実行コード
-- handler 実装
+- Handler 実装
 - encoder / decoder / config / metadata
 
 したがって、アーキテクチャ上は `nbs/` が source of truth、`marisco/` は generated runtime artifact とみなすのが自然です。
@@ -197,7 +197,7 @@ notebook は次を兼ねます。
 
 ### 標準語彙
 
-MARIS 標準列名は `configs.py` で定義され、handler はそこへ寄せる形で変換します。
+MARIS 標準列名は `configs.py` で定義され、Handler はそこへ寄せる形で変換します。
 
 代表的な列:
 
@@ -216,7 +216,7 @@ MARIS 標準列名は `configs.py` で定義され、handler はそこへ寄せ�
 
 ### ローカル runtime ディレクトリ
 
-`maris_init` はホーム配下に `.marisco/` を作成し、runtime に必要な資産を配置します。
+`maris_init` はホーム配下に `.marisco/` を作成し、実行時 (runtime) に必要な資産を配置します。
 
 - `configs.toml`
 - `lut/`
@@ -238,7 +238,7 @@ MARIS 標準列名は `configs.py` で定義され、handler はそこへ寄せ�
 
 `nbs/files/nc/maris-template.nc` はその生成物であり、`NetCDFEncoder` はこれをコピー元に使います。
 
-### lookup tables
+### LUT
 
 `nbs/files/lut/*.xlsx` と `.marisco/lut/*.xlsx` が enum / vocabulary の実体です。
 
@@ -257,7 +257,7 @@ MARIS 標準列名は `configs.py` で定義され、handler はそこへ寄せ�
 ### `marisco/cli`
 
 - ユーザー入力を受ける
-- 対象 handler を選ぶ
+- 対象 Handler を選ぶ
 - 初期化や decode を開始する
 
 ### `marisco/handlers`
@@ -295,9 +295,9 @@ MARIS 標準列名は `configs.py` で定義され、handler はそこへ寄せ�
 - GitHub からのファイル取得
 - NetCDF 内容抽出
 
-## handler パターン
+## Handler パターン
 
-handler 実装は完全に同一ではありませんが、概ね次の骨格を共有します。
+Handler 実装は完全に同一ではありませんが、概ね次の骨格を共有します。
 
 1. 入力取得
 2. provider 独自列の抽出
@@ -329,13 +329,13 @@ handler 実装は完全に同一ではありませんが、概ね次の骨格を
 
 metadata 取得に使います。
 
-- item key を handler または dump から取得
+- item key を Handler または dump から取得
 - title, summary, creator 情報などを NetCDF global attributes へ流す
 - CSV 側では `archiveLocation` から `REF_ID` を補完
 
 ### 外部データソース
 
-handler により入力元は異なります。
+Handler により入力元は異なります。
 
 - raw GitHub CSV
 - Excel
@@ -344,7 +344,7 @@ handler により入力元は異なります。
 
 ## 拡張ポイント
 
-新しい provider handler を追加する場合、基本的には次の構成を踏襲します。
+新しい provider Handler を追加する場合、基本的には次の構成を踏襲します。
 
 1. `nbs/handlers/<name>.ipynb` を追加
 2. 入力取得関数を定義
@@ -352,18 +352,18 @@ handler により入力元は異なります。
 4. MARIS 標準列へ正規化
 5. `get_attrs()` を用意
 6. `encode()` を実装
-7. `marisco/cli/to_nc.py` の handler 一覧に追加
+7. `marisco/cli/to_nc.py` の Handler 一覧に追加
 
-共通 callback に閉じ込められる処理は `marisco.callbacks` へ移し、handler 固有処理だけを notebook に残すのがよい構成です。
+共通 callback に閉じ込められる処理は `marisco.callbacks` へ移し、Handler 固有処理だけを Jupyter Notebook に残すのがよい構成です。
 
 ## 制約とリスク
 
 - `.marisco/` 初期化が runtime 前提になっている
 - Zotero API key が必要なフローがある
-- handler により外部 URL 可用性へ依存する
-- notebook 正本と生成コードの差分管理を誤ると、意図しない不整合が起こる
+- Handler により外部 URL 可用性へ依存する
+- Jupyter Notebook 正本と生成コードの差分管理を誤ると、意図しない不整合が起こる
 - README にはノイズが混じっており、厳密な設計参照としては notebook / code の方が信頼できる
-- 一部 handler は provider 固有ロジックを多く抱えており、callback 抽象化の余地が残っている
+- 一部 Handler は provider 固有ロジックを多く抱えており、callback 抽象化の余地が残っている
 
 ## 読解順
 
@@ -383,4 +383,4 @@ handler により入力元は異なります。
 
 ## まとめ
 
-`marisco` のアーキテクチャは、provider 固有の handler と、共通の transformation / metadata / serialization レイヤを組み合わせたパイプライン型です。実行時には `.marisco/` の設定資産と NetCDF テンプレートに依存し、開発時には `nbdev` によって notebook と配布コードが一体運用されます。したがって、このシステムを理解・拡張する鍵は「handler は差分吸収」「共通レイヤは標準化」「notebook が正本」という 3 点にあります。
+`marisco` のアーキテクチャは、provider 固有の Handler と、共通の transformation / metadata / serialization レイヤを組み合わせたパイプライン型です。実行時には `.marisco/` の設定資産と NetCDF テンプレートに依存し、開発時には `nbdev` によって Jupyter Notebook と配布コードが一体運用されます。したがって、このシステムを理解・拡張する鍵は「Handler は差分吸収」「共通レイヤは標準化」「Jupyter Notebook が正本」という 3 点にあります。

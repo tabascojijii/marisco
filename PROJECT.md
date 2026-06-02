@@ -18,11 +18,11 @@
 - `HELCOM`、`OSPAR`、`TEPCO`、`GEOTRACES` の各データセットを NetCDF4 に変換する
 - MARIS Master Database のダンプを一括または参照 ID 単位で NetCDF4 に変換する
 - 生成済み NetCDF4 を MARIS Standard / OpenRefine 系 CSV に変換する
-- lookup table、NetCDF テンプレート、設定ファイルをローカルに初期配置する
+- Lookup Table (LUT)、NetCDF テンプレート、設定ファイルをローカルに初期配置する
 
 ## アーキテクチャ
 
-### 1. notebook 正本
+### 1. Jupyter Notebook 正本
 
 `nbs/` 配下の notebook が実装の正本です。
 
@@ -36,7 +36,7 @@
 `marisco/` 配下の Python ファイルは notebook から自動生成されています。
 
 - `marisco/cli/`: CLI エントリポイント
-- `marisco/handlers/`: ハンドラ実装
+- `marisco/handlers/`: Handler 実装
 - `marisco/encoders.py`: DataFrame 群から NetCDF4 を生成
 - `marisco/netcdf2csv.py`: NetCDF4 から CSV を生成
 - `marisco/configs.py`: 変数名、列名、enum LUT、ローカル設定の定義
@@ -49,7 +49,7 @@
 
 - `nbs/files/cdl/maris.cdl`: MARIS NetCDF テンプレートの元定義
 - `nbs/files/nc/maris-template.nc`: NetCDF テンプレート
-- `nbs/files/lut/*.xlsx`: lookup table 群
+- `nbs/files/lut/*.xlsx`: LUT 群
 - `nbs/files/csv/`, `nbs/files/exploded/`, `nbs/files/pkl/`: サンプル・検証用データ
 
 ## データフロー
@@ -59,14 +59,14 @@
 `maris_init` はユーザー環境のホーム配下に `.marisco/` ディレクトリを作成し、以下を配置します。
 
 - `configs.toml`
-- lookup table 一式
+- LUT 一式
 - `maris-template.nc`
 
 初期化後の実行時設定や LUT 参照は、この `.marisco/` を基準に行われます。
 
 ### エンコード
 
-`maris_to_nc` または `maris_db_to_nc` は、各ハンドラを通して入力データを DataFrame 群へ正規化し、`NetCDFEncoder` に渡して NetCDF4 を生成します。
+`maris_to_nc` または `maris_db_to_nc` は、各 Handler を通して入力データを DataFrame 群へ正規化し、`NetCDFEncoder` に渡して NetCDF4 を生成します。
 
 典型的な流れは次のとおりです。
 
@@ -94,9 +94,9 @@
 
 CLI 定義は `pyproject.toml` の `project.scripts` と `marisco/cli/*.py` にあります。
 
-## ハンドラ一覧
+## Handler 一覧
 
-現時点で確認できるハンドラは以下です。
+現時点で確認できる Handler は以下です。
 
 - `marisco.handlers.helcom`
   - HELCOM データを MARIS 標準へ整形
@@ -109,7 +109,7 @@ CLI 定義は `pyproject.toml` の `project.scripts` と `marisco/cli/*.py` に�
 - `marisco.handlers.maris_legacy`
   - MARIS Master Database ダンプをバッチ変換
 
-各ハンドラは notebook 冒頭に「対象データ」「変換意図」「主要処理」を説明しており、コードとドキュメントを兼ねています。
+各 Handler は Jupyter Notebook 冒頭に「対象データ」「変換意図」「主要処理」を説明しており、コードとドキュメントを兼ねています。
 
 ## 主要ディレクトリ
 
@@ -120,7 +120,7 @@ CLI 定義は `pyproject.toml` の `project.scripts` と `marisco/cli/*.py` に�
 - `marisco/handlers/`
   - データ提供者別の変換処理
 - `nbs/`
-  - notebook 正本
+  - Jupyter Notebook 正本
 - `nbs/files/`
   - テンプレート、LUT、サンプルデータ
 - `install_configure_guide/`
@@ -157,7 +157,7 @@ CLI 定義は `pyproject.toml` の `project.scripts` と `marisco/cli/*.py` に�
 - Zotero
   - データセットの書誌メタデータ取得に利用
 - データソース別の外部 CSV / dump
-  - ハンドラごとに取得元や入力形式が異なる
+  - Handler ごとに取得元や入力形式が異なる
 
 ## 開発・ビルドの前提
 
@@ -170,7 +170,7 @@ CLI 定義は `pyproject.toml` の `project.scripts` と `marisco/cli/*.py` に�
 
 - `ZOTERO_API_KEY` が未設定だと Zotero メタデータ取得を伴う処理に影響します
 - 実行前に `maris_init` による `.marisco/` 初期化が前提です
-- ハンドラの一部は外部 URL やキャッシュ済みファイルに依存します
+- Handler の一部は外部 URL やキャッシュ済みファイルに依存します
 - `README.md` は概説として有用ですが、生成途中の会話断片が混入しているため、厳密な参照元としては `nbs/index.ipynb` と実装コードの方が信頼できます
 - `docs/` 配下はプロダクト仕様より監査・補助文書寄りなので、機能把握の主資料には向きません
 
@@ -190,4 +190,4 @@ CLI 定義は `pyproject.toml` の `project.scripts` と `marisco/cli/*.py` に�
 
 ## 現時点の理解
 
-このリポジトリは単なる変換スクリプト集ではなく、MARIS 標準化パイプラインを notebook 主導で管理するためのパッケージです。中心概念は「ハンドラ」であり、各ハンドラがデータ提供者固有の差異を吸収し、共通の NetCDF / CSV ワークフローに接続しています。
+このリポジトリは単なる変換スクリプト集ではなく、MARIS 標準化パイプラインを Jupyter Notebook 主導で管理するためのパッケージです。中心概念は「Handler」であり、各 Handler がデータ提供者固有の差異を吸収し、共通の NetCDF / CSV ワークフローに接続しています。
