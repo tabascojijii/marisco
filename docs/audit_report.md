@@ -4,24 +4,25 @@
 - `ESCALATION`
 
 ## Findings
-1. `docs/requirements.md` の要求スコープと `docs/plan.md` の計画対象が一致していない。要件は「handler notebook template の作成」「`nbdev` による検証」「軽量 post-commit 検証」を求めているが、計画は「end-to-end audited delivery flow」「roadmap」「implementation, tests, and artifacts aligned to acceptance rules」を目的化しており、テンプレート作成作業に必要な実装対象へ落ちていない。[docs/requirements.md](/abs/path/C:/dev/marisco3/marisco_clean/marisco_repo/docs/requirements.md:4) [docs/requirements.md](/abs/path/C:/dev/marisco3/marisco_clean/marisco_repo/docs/requirements.md:22) [docs/plan.md](/abs/path/C:/dev/marisco3/marisco_clean/marisco_repo/docs/plan.md:4) [docs/plan.md](/abs/path/C:/dev/marisco3/marisco_clean/marisco_repo/docs/plan.md:7)
-2. 監査判定語彙が未整合で、監査I/F契約が成立していない。今回の監査では許可判定が `AUDIT_PASS_REQUIREMENTS` または `ESCALATION` に固定されている一方、`docs/reference_standards.md` は `PASS` / `REJECT_*` / `ESCALATION` と `AUDIT_PASS_PLAN` など別系統の状態語彙を定義している。さらに `docs/plan.md` は「allowed decisions は `docs/requirements.md` が canonical」とするが、`docs/requirements.md` 自体は判定語彙を定義していないため、許容判定集合が未定義である。[docs/plan.md](/abs/path/C:/dev/marisco3/marisco_clean/marisco_repo/docs/plan.md:16) [docs/reference_standards.md](/abs/path/C:/dev/marisco3/marisco_clean/marisco_repo/docs/reference_standards.md:18) [docs/reference_standards.md](/abs/path/C:/dev/marisco3/marisco_clean/marisco_repo/docs/reference_standards.md:89)
-3. 要件ID規約と監査契約が矛盾している。`docs/reference_standards.md` は requirement identifier を `REQ-...` 形式に限定するが、`docs/requirements.md` は `FR-1` / `NFR-1` を採用している。このままでは要件トレーサビリティと機械判定の契約が一致しない。[docs/reference_standards.md](/abs/path/C:/dev/marisco3/marisco_clean/marisco_repo/docs/reference_standards.md:76) [docs/requirements.md](/abs/path/C:/dev/marisco3/marisco_clean/marisco_repo/docs/requirements.md:29) [docs/requirements.md](/abs/path/C:/dev/marisco3/marisco_clean/marisco_repo/docs/requirements.md:66)
-4. 監査の成立条件が固定スコープ内で閉じていない。`docs/reference_standards.md` は required governance documents、`docs/roadmap.md`、`src/`、`tests/`、`artifacts/` を監査契約に組み込むが、今回の監査手順は `docs/requirements.md`、`docs/plan.md`、`docs/reference_standards.md` のみ読取可であり、追加証跡の探索も禁止されている。したがって、現行契約はこの監査スコープ下で可監査性を満たさない。[docs/reference_standards.md](/abs/path/C:/dev/marisco3/marisco_clean/marisco_repo/docs/reference_standards.md:13) [docs/reference_standards.md](/abs/path/C:/dev/marisco3/marisco_clean/marisco_repo/docs/reference_standards.md:103) [docs/reference_standards.md](/abs/path/C:/dev/marisco3/marisco_clean/marisco_repo/docs/reference_standards.md:127)
+1. `docs/requirements.md` は「current handler notebook pattern」「current handler notebook structure」を満たすことを要求しているが、その基準定義が固定監査スコープ内に存在しない。`docs/requirements.md:35-45`, `docs/requirements.md:116-121`, `docs/requirements.md:146` は現行構造への忠実性を要求する一方、許可読取範囲には実際の `nbs/handlers/` も、その構造を規範化した文書も含まれない。`docs/reference_standards.md:99` の「undefined or not auditable は ESCALATION」に該当する。
+2. 監査I/F契約が要件ID語彙と整合していない。`docs/reference_standards.md:76` は requirement identifier を `REQ-...` 形式に限定するが、`docs/requirements.md` の正規IDは `FR-1` から `FR-5`、`NFR-1` から `NFR-4` であり、要求識別子の正規形が一致していない。これにより、要件トレーサビリティと機械監査契約が閉じない。
+3. `post-commit` 検証の実装契約が未確定のまま受入条件に入っている。`docs/requirements.md:13`, `docs/requirements.md:24`, `docs/requirements.md:59-62`, `docs/requirements.md:149` は post-commit verification flow の存在を必須化する一方、`docs/requirements.md:167` はそれを「git hooks, a helper script, or both」の open decision に残している。`docs/reference_standards.md:4` は運用標準を `.git/hooks/post-commit` 駆動に固定しており、両文書間で実装境界が未確定。
+4. 軽量検証の受入基準がスコープ文書間で競合している。`docs/requirements.md:123-142` は export / compile / import-smoke を最小検証としているが、`docs/reference_standards.md:137` は implementation-phase auditing に `pytest tests/` を要求する。さらに `AGENTS.md:113` は top-level `tests/` ディレクトリがない前提を明示している。テンプレート作成作業に対してどの検証基準が最終受入条件になるか、固定スコープだけでは一意に判定できない。
 
 ## Checks
-- `CHK-REQ-PLAN-SCOPE`: fail. `requirements` の deliverables/in-scope と `plan` の objective/deliverables が一致しない。
-- `CHK-AUDIT-DECISION-VOCAB`: fail. 許可判定語彙が `requirements` / `plan` / `reference_standards` / 監査指示の間で統一されていない。
-- `CHK-REQ-ID-CONTRACT`: fail. 要件ID形式が `REQ-...` 契約に一致しない。
-- `CHK-AUDITABILITY-WITHIN-SCOPE`: fail. 固定監査スコープ内だけでは `reference_standards` の要求する証跡を確認できない。
+- `CHK-REQ-AUDITABILITY`: fail. 現行 handler 構造の規範が固定スコープ内にないため、`FR-2` と受入条件の忠実性を監査不能。
+- `CHK-REQ-ID-CONTRACT`: fail. `FR/NFR` 識別子が `REQ-...` 契約と不整合。
+- `CHK-POST-COMMIT-CONTRACT`: fail. `.git/hooks/post-commit` 固定運用と helper script 許容が未整合。
+- `CHK-VALIDATION-BASELINE`: fail. export/compile/import-smoke と `pytest tests/` のどちらが最終ゲートか未確定。
 
 ## 不足証跡
-- `docs/reference_standards.md` が required とする `docs/acceptance_matrix.md`、`docs/check_catalog.md`、`docs/audit_contract.md`、`docs/escalation_policy.md`、`docs/traceability_map.md`、`docs/audit_examples.md` は、固定監査スコープ外のため未確認。
-- `docs/reference_standards.md` が参照する `docs/roadmap.md`、`src/`、`tests/`、`artifacts/` は、固定監査スコープ外のため未確認。
-- 上記は未読のため存在・内容ともに推測していない。
+- `docs/requirements.md` が参照する「current handler notebook pattern / structure」を固定スコープ内で定義した規範文書が存在しない。
+- `docs/reference_standards.md` の `REQ-...` 契約に対し、`FR-*` / `NFR-*` からの正式マッピング規則が固定スコープ内に存在しない。
+- `post-commit verification flow` を `.git/hooks/post-commit` とみなすのか、helper script を含むのかを確定する補足契約が固定スコープ内に存在しない。
+- `pytest tests/` 要件の適用除外または置換条件を、この workstream 向けに明示した補足規則が固定スコープ内に存在しない。
 
 ## Open-Items
-- `docs/requirements.md` を、実際に要求したい対象が「handler notebook template workstream」なのか「post-commit driven governance workflow」なのかで一本化すること。
-- 監査判定語彙を `AUDIT_PASS_REQUIREMENTS` 系に寄せるのか、`PASS/REJECT/ESCALATION` 系に寄せるのか決定し、`requirements` / `plan` / `reference_standards` で統一すること。
-- 要件IDの正式規約を `REQ-...` か `FR/NFR` かで一本化し、監査JSON契約と一致させること。
-- 固定監査スコープだけで判定可能な契約に縮約するか、必要証跡の読取許可範囲を明示的に拡張すること。
+- `current handler notebook pattern` を固定監査スコープ内で参照可能な規範として明文化すること。
+- 要件識別子を `REQ-...` に統一するか、`FR/NFR` を正式許容する監査契約へ修正すること。
+- `post-commit verification flow` の正規実装面を `.git/hooks/post-commit`、helper script、またはその併用のどれかに確定すること。
+- テンプレート作成フェーズの受入検証基準を `export/compile/import-smoke` と `pytest tests/` の関係まで含めて一本化すること。
