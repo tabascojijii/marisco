@@ -70,6 +70,7 @@ Specify the architecture of the first explicit handler template notebook.
 Required outcomes:
 
 - this workstream produces an explicit handler template notebook under `nbs/handlers/`
+- the plan intentionally leaves the final template notebook filename open until the governing `docs/requirements.md` open decision is resolved; downstream governance documents must therefore reference the deliverable generically as a handler template notebook under `nbs/handlers/` rather than pre-deciding a specific filename
 - the template follows repository `nbdev` conventions
 - satisfying this workstream must not depend on direct edits to generated Python files; generated `.py` output remains derived evidence rather than the canonical behavior-change path
 - the template preserves the ordered Handler Template Baseline defined in `docs/requirements.md`
@@ -132,6 +133,7 @@ Required outcomes:
 - every normative `REQ-...` identifier currently defined in `docs/requirements.md` is represented in `docs/acceptance_matrix.md`
 - for every normative `REQ-...` identifier currently defined in `docs/requirements.md`, `docs/acceptance_matrix.md` states acceptance layer, criterion, roadmap-phase documentary evidence path, later implementation evidence path or `not applicable`, roadmap threshold, and later implementation threshold or `not applicable`
 - each acceptance-matrix row carries those required fields in the row text itself and must not rely on section defaults, neighboring rows, or surrounding prose to supply a missing field, evidence path, or threshold
+- any later implementation evidence path for the template deliverable keeps the filename open when the governing requirements still mark that filename as an open decision; supporting documents must reference a handler template notebook under `nbs/handlers/` generically unless and until the governing contract resolves the filename
 - roadmap text that is cited for `REQ-GRAN-CHECKS` must directly state the full acceptance-matrix completeness obligation rather than only speaking about traceability discipline in general
 - `docs/traceability_map.md` traces each normative `REQ-...` identifier from source through plan and roadmap evidence paths
 - every requirement-to-plan and requirement-to-roadmap citation in supporting documents points only to items whose stated required outcomes directly satisfy the cited requirement
