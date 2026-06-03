@@ -1,44 +1,55 @@
 # Audit Report
 
-- Date: 2026-06-03
-- Phase: Plan
-- Scope: `AGENTS.md`, `docs/requirements.md`, `docs/plan.md`, `docs/reference_standards.md`
-- Method: Fixed-scope document audit only. Full in-scope read completed before judgment. No recursive repository scan performed.
+Date: 2026-06-03
+Phase: Roadmap Audit
+Decision: AUDIT_PASS_ROADMAP
+Owner: PM
+Next-Gate: FLOW_ADVANCE
 
-## Summary
+## Scope
 
-`docs/plan.md` remains subordinate to the governing two-document contract and does not redefine plan-phase gate semantics. Evidence:
+- AGENTS.md
+- docs/requirements.md
+- docs/plan.md
+- docs/roadmap.md
+- docs/reference_standards.md
+- docs/acceptance_matrix.md
+- docs/traceability_map.md
 
-- `docs/plan.md:11` through `docs/plan.md:13` define the plan as a design response to `docs/requirements.md` and `docs/reference_standards.md` rather than as an alternate authority source.
-- `docs/plan.md:33` through `docs/plan.md:36`, `docs/plan.md:146`, and `docs/plan.md:234` keep supporting documents and `AGENTS.md` subordinate and preserve Architect-gate decidability inside the fixed plan-audit scope.
-- `docs/reference_standards.md:11` through `docs/reference_standards.md:21`, `docs/reference_standards.md:123` through `docs/reference_standards.md:133`, and `docs/requirements.md:58` through `docs/requirements.md:66` require that same authority boundary.
+## Audit Basis
 
-`docs/plan.md` directly states the required outcomes for the cited template, verification, and guardrail requirements. Evidence:
-
-- `docs/plan.md:72` through `docs/plan.md:80` directly cover `REQ-NB-TEMPLATE`, `REQ-CURRENT-STATE-FIDELITY`, `REQ-NBDEV-COMPAT`, `REQ-AC-TEMPLATE-EXISTS`, `REQ-AC-TEMPLATE-BASELINE`, and `REQ-AC-TEMPLATE-NBDEV`.
-- `docs/plan.md:88` through `docs/plan.md:94` directly cover `REQ-DIFFERENCE-VISIBILITY`, `REQ-PRESERVE-FLEXIBILITY`, `REQ-AVOID-PREMATURE-COMMONIZATION`, `REQ-AC-TEMPLATE-ZONES`, and `REQ-AC-PRESERVE-FLEXIBILITY`.
-- `docs/plan.md:114` through `docs/plan.md:121` directly cover `REQ-POST-COMMIT-AUTHORITY`, `REQ-POST-COMMIT-SEQUENCE`, `REQ-POST-COMMIT-LIGHTWEIGHT-BOUNDARY`, `REQ-LOW-FRICTION-VALIDATION`, `REQ-CHECK-EXPORT`, `REQ-CHECK-COMPILE`, `REQ-CHECK-COVERAGE`, `REQ-AC-POST-COMMIT-SEQUENCE`, `REQ-AC-POST-COMMIT-BOUNDARY`, and `REQ-PYTHON-BASELINE`.
-- `docs/plan.md:154` through `docs/plan.md:161` preserve the no-refactor and no-alternate-algorithm guardrails required by `REQ-GRAN-PLAN`, `REQ-CONTRACT-CLOSURE-PLAN`, `REQ-CONTRACT-CLOSURE-PRESENT-STATE`, `REQ-AVOID-PREMATURE-COMMONIZATION`, and `REQ-AC-NO-REFACTOR`.
-
-The requirement-to-plan mapping is semantically exact within the fixed scope. Evidence:
-
-- `docs/plan.md:190` through `docs/plan.md:197` cite only `PLAN-...` items whose required outcomes are stated directly in the corresponding plan items.
-- `docs/requirements.md:39` through `docs/requirements.md:46` and `docs/reference_standards.md:114` through `docs/reference_standards.md:119` require direct downstream outcome statements rather than topic-adjacent citations.
+- Governing authority is explicitly limited to `docs/requirements.md` and `docs/reference_standards.md`, with supporting governance documents remaining subordinate operationalization surfaces: `docs/requirements.md:46`, `docs/requirements.md:61`, `docs/reference_standards.md:77`, `docs/reference_standards.md:151`.
+- The mandatory roadmap block `## Self-Check (Required)` is present and the roadmap defines bounded documentary evidence paths inside the documentation scope: `docs/roadmap.md:130`, `docs/roadmap.md:142`, `docs/reference_standards.md:162`.
+- The required docset exists in scope and is attested in the governing requirements document: `docs/requirements.md:232`.
 
 ## Findings
 
-No blocking or non-blocking inconsistencies were identified within the fixed plan-audit scope.
+No blocking inconsistency was found within the fixed roadmap-audit scope.
 
-不足証跡なし。
+## Consistency Checks
+
+1. Governing contract closure
+   `docs/requirements.md` assigns acceptance-matrix completeness and documentary evidence scoping rules, and `docs/reference_standards.md` preserves the same authority boundary without promoting `AGENTS.md` into a deciding evidence source. The roadmap preserves that boundary in `RM-001`.
+
+2. Plan to roadmap alignment
+   `PLAN-005` and `PLAN-006` define supporting-governance alignment and guardrails in `docs/plan.md:123` and `docs/plan.md:148`. The roadmap mirrors those outcomes in `RM-001` and `RM-002` at `docs/roadmap.md:24` and `docs/roadmap.md:41` without introducing a new gate algorithm.
+
+3. Mandatory docset presence and role
+   `docs/acceptance_matrix.md` and `docs/traceability_map.md` both exist, are required by `docs/reference_standards.md:151`, and are explicitly treated as subordinate support surfaces in the scoped documents.
+
+4. Acceptance-matrix and traceability completeness
+   Full-scope review found normative requirement coverage across `docs/acceptance_matrix.md` and `docs/traceability_map.md`, including the matrix completeness row at `docs/acceptance_matrix.md:23` and corresponding traceability row at `docs/traceability_map.md:22`. Acceptance-criteria traces for template existence and post-commit sequence are also present at `docs/acceptance_matrix.md:46`, `docs/acceptance_matrix.md:50`, `docs/traceability_map.md:45`, and `docs/traceability_map.md:49`.
+
+## Insufficient Evidence
+
+None.
+
+## Verdict
+
+The roadmap-phase document set is internally consistent within the fixed audit scope, the required supporting governance documents exist, and no PM-phase repair item remains open. The audit result is `AUDIT_PASS_ROADMAP`.
 
 ## Open-Items
 
 | ID | Severity | Requirement-Ref | Reason-Code | Evidence | Fix-Instruction | Owner |
 |---|---|---|---|---|---|---|
-| NONE | none | none | none | Full fixed-scope review completed with no unresolved items. | none | Architect |
-
-## Decision
-
-- Decision: `AUDIT_PASS_PLAN`
-- Owner: `Architect`
-- Next Gate: `FLOW_ADVANCE`
+| NONE | none | none | none | none | none | none |
