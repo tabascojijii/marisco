@@ -28,6 +28,7 @@
 
 ## Requirement Identifier Policy
 - All normative requirements in this document must use `REQ-...` identifiers.
+- Acceptance-criteria identifiers that use the `REQ-AC-...` form are normative requirements and are subject to the same direct-mapping, traceability, and semantic-exactness rules as any other `REQ-...` identifier in this document.
 - Informative section labels such as `Functional` or `Non-Functional` may be used for readability, but they do not replace `REQ-...` identifiers.
 
 ## Granularity Allocation
@@ -36,7 +37,9 @@
 - `REQ-GRAN-HOOK`: The reusable `post-commit` hook is an orchestration surface, not the source of project-specific granularity policy.
 - `REQ-GRAN-STANDARDS`: Repository-wide audit depth rules and abstract-term handling belong in `docs/reference_standards.md`, not in the hook script.
 - `REQ-GRAN-PLAN`: `docs/plan.md` may describe how the requirements will be satisfied, but it must not tighten, relax, or replace requirement thresholds. Any requirement-to-plan mapping used by downstream governance documents must cite only plan items whose stated required outcomes substantively satisfy the referenced requirement. When a downstream document cites a `PLAN-...` item for a requirement, the cited plan item itself must explicitly state the mapped outcome; convenience mappings based on nearby topic overlap, design principles, neighboring plan items, or general plan narrative are not acceptable.
+- `REQ-GRAN-PLAN-AC-DIRECT`: When a downstream document cites a `PLAN-...` item for a `REQ-AC-...` identifier, the cited plan item must directly state the acceptance outcome itself. Citing only a related deliverable category, target location, prerequisite design constraint, or nearby narrative is not sufficient.
 - `REQ-GRAN-ROADMAP`: `docs/roadmap.md` may sequence work and self-checks, but it must not become the sole source of acceptance detail that auditors need in order to judge this workstream. When a downstream document cites an `RM-...` item for a requirement, the cited roadmap item itself must explicitly state the mapped outcome; borrowing meaning from neighboring roadmap items, milestones, or generic execution prose is not acceptable.
+- `REQ-GRAN-ROADMAP-AC-DIRECT`: When a downstream document cites an `RM-...` item for a `REQ-AC-...` identifier, the cited roadmap item must directly state the acceptance outcome itself. Citing only related implementation intent, target placement, or preparatory design language is not sufficient.
 - `REQ-GRAN-CONTRACT-DECIDABLE`: For requirements-, plan-, and roadmap-phase auditing, the governing machine-readable audit status contract must be decidable from `docs/reference_standards.md` and this document alone.
 - `REQ-GRAN-CONTRACT-SUBORD`: `docs/audit_contract.md` may restate or exemplify that contract, but it must not be the only scoped source of authority for those phases.
 - `REQ-GRAN-SUPPORTING-DOCS-ROLE`: `docs/acceptance_matrix.md` and `docs/traceability_map.md` are required supporting governance documents for operationalization and cross-phase consistency, but they do not supersede the two-document governing contract defined by this document and `docs/reference_standards.md`.

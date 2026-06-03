@@ -69,7 +69,7 @@ Specify the architecture of the first explicit handler template notebook.
 
 Required outcomes:
 
-- the target deliverable is a notebook under `nbs/handlers/`
+- this workstream produces an explicit handler template notebook under `nbs/handlers/`
 - the template follows repository `nbdev` conventions
 - the template preserves the ordered Handler Template Baseline defined in `docs/requirements.md`
 - the template is explicitly current-state descriptive rather than future-state prescriptive
@@ -86,6 +86,7 @@ Required outcomes:
 - reusable callback-oriented sections are clearly marked
 - likely commonization candidates are labeled as discussion inputs rather than migration mandates
 - guidance explains which sections are expected to vary by provider
+- sections that vary by provider are explicitly framed as provider-specific rather than as mandatory refactoring targets
 - the template guidance explicitly preserves the current need to absorb imperfect external data
 - the template guidance does not imply immediate normalization of provider differences
 
@@ -97,6 +98,7 @@ Required outcomes:
 
 - usage guidance explains how to start a new handler notebook from the template
 - usage guidance explains how to preserve literate notebook readability
+- the template scaffold is specified to keep prose explanation adjacent to code across its baseline sections, without relying on unexplained generated-code patterns
 - usage guidance reinforces notebook-first authoring and forbids generated-file-only behavior changes
 - usage guidance preserves flexibility for imperfect provider inputs
 
@@ -127,6 +129,7 @@ Required outcomes:
 - for every normative `REQ-...` identifier currently defined in `docs/requirements.md`, `docs/acceptance_matrix.md` states acceptance layer, criterion, roadmap-phase documentary evidence path, later implementation evidence path or `not applicable`, roadmap threshold, and later implementation threshold or `not applicable`
 - `docs/traceability_map.md` traces each normative `REQ-...` identifier from source through plan and roadmap evidence paths
 - every requirement-to-plan and requirement-to-roadmap citation in supporting documents points only to items whose stated required outcomes directly satisfy the cited requirement
+- every requirement-to-plan and requirement-to-roadmap citation in supporting documents for a `REQ-AC-...` identifier points only to items that directly state the cited acceptance outcome itself rather than only a related deliverable class, target location, prerequisite design constraint, or surrounding narrative
 - roadmap citations remain subordinate to the governing contract and do not become the sole source of acceptance detail that auditors need in order to judge this workstream
 - neither supporting document introduces a new authority source, gate prerequisite, or substitute decision vocabulary
 - roadmap-phase documentary evidence paths remain inside the declared documentation scope
@@ -179,7 +182,7 @@ Required outcomes:
 | PLAN-002 | `REQ-DIFFERENCE-VISIBILITY`, `REQ-PRESERVE-FLEXIBILITY`, `REQ-AVOID-PREMATURE-COMMONIZATION`, `REQ-AC-TEMPLATE-ZONES`, `REQ-AC-PRESERVE-FLEXIBILITY` |
 | PLAN-003 | `REQ-READABILITY`, `REQ-AC-READABILITY` |
 | PLAN-004 | `REQ-GRAN-HOOK`, `REQ-POST-COMMIT-AUTHORITY`, `REQ-POST-COMMIT-SEQUENCE`, `REQ-POST-COMMIT-LIGHTWEIGHT-BOUNDARY`, `REQ-LOW-FRICTION-VALIDATION`, `REQ-PYTHON-BASELINE`, `REQ-CHECK-EXPORT`, `REQ-CHECK-COMPILE`, `REQ-CHECK-COVERAGE`, `REQ-AC-POST-COMMIT-SEQUENCE`, `REQ-AC-POST-COMMIT-BOUNDARY` |
-| PLAN-005 | `REQ-GRAN-REQS-SCOPE`, `REQ-GRAN-REQS-COMPLETE`, `REQ-GRAN-STANDARDS`, `REQ-GRAN-ROADMAP`, `REQ-GRAN-CONTRACT-DECIDABLE`, `REQ-GRAN-CONTRACT-SUBORD`, `REQ-GRAN-SUPPORTING-DOCS-ROLE`, `REQ-GRAN-CHECKS`, `REQ-CONTRACT-CLOSURE-AUTHORITY`, `REQ-CONTRACT-CLOSURE-SUPPORT`, `REQ-CONTRACT-CLOSURE-EVIDENCE`, `REQ-CONTRACT-CLOSURE-DOWNSTREAM`, `REQ-CONTRACT-CLOSURE-SUPPORT-SEPARATION` |
+| PLAN-005 | `REQ-GRAN-REQS-SCOPE`, `REQ-GRAN-REQS-COMPLETE`, `REQ-GRAN-STANDARDS`, `REQ-GRAN-PLAN-AC-DIRECT`, `REQ-GRAN-ROADMAP`, `REQ-GRAN-ROADMAP-AC-DIRECT`, `REQ-GRAN-CONTRACT-DECIDABLE`, `REQ-GRAN-CONTRACT-SUBORD`, `REQ-GRAN-SUPPORTING-DOCS-ROLE`, `REQ-GRAN-CHECKS`, `REQ-CONTRACT-CLOSURE-AUTHORITY`, `REQ-CONTRACT-CLOSURE-SUPPORT`, `REQ-CONTRACT-CLOSURE-EVIDENCE`, `REQ-CONTRACT-CLOSURE-DOWNSTREAM`, `REQ-CONTRACT-CLOSURE-SUPPORT-SEPARATION` |
 | PLAN-006 | `REQ-GRAN-PLAN`, `REQ-CONTRACT-CLOSURE-PLAN`, `REQ-CONTRACT-CLOSURE-PRESENT-STATE`, `REQ-AVOID-PREMATURE-COMMONIZATION`, `REQ-AC-NO-REFACTOR` |
 
 ## Phase Breakdown

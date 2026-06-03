@@ -3,6 +3,7 @@
 Authority: `docs/requirements.md` is the normative source for all `REQ-...` identifiers listed here. This document traces those requirements through `docs/plan.md` and `docs/roadmap.md` while remaining subordinate to the governing two-document contract formed by `docs/requirements.md` and `docs/reference_standards.md`.
 Roadmap-phase evidence paths stay inside the fixed documentation scope for documentary auditing. Repository-local guidance such as `AGENTS.md` may inform execution discipline, but it is intentionally excluded from deciding evidence paths for contract closure.
 Every cited `PLAN-...` and `RM-...` item must itself state the mapped outcome directly. This map must not rely on cross-item inference, neighboring prose, or milestone summaries to repair an otherwise incomplete trace.
+This directness rule applies equally to `REQ-AC-...` identifiers; acceptance-criteria traces must point to downstream items that state the acceptance outcome itself directly.
 
 | Requirement ID | Source | Plan Item | Roadmap Item | Roadmap-Phase Evidence Path | Later Implementation Evidence Path |
 |---|---|---|---|---|---|
@@ -11,7 +12,9 @@ Every cited `PLAN-...` and `RM-...` item must itself state the mapped outcome di
 | REQ-GRAN-HOOK | `docs/requirements.md` § Granularity Allocation | PLAN-004 | RM-006 | `docs/requirements.md`, `docs/reference_standards.md`, `docs/plan.md`, `docs/roadmap.md` | `.git/hooks/post-commit` |
 | REQ-GRAN-STANDARDS | `docs/requirements.md` § Granularity Allocation | PLAN-005 | RM-001 | `docs/reference_standards.md`, `docs/plan.md`, `docs/roadmap.md` | not applicable |
 | REQ-GRAN-PLAN | `docs/requirements.md` § Granularity Allocation | PLAN-006 | RM-001 | `docs/requirements.md`, `docs/plan.md`, `docs/roadmap.md` | not applicable |
+| REQ-GRAN-PLAN-AC-DIRECT | `docs/requirements.md` § Granularity Allocation | PLAN-005 | RM-002 | `docs/requirements.md`, `docs/plan.md`, `docs/roadmap.md`, `docs/traceability_map.md` | not applicable |
 | REQ-GRAN-ROADMAP | `docs/requirements.md` § Granularity Allocation | PLAN-005 | RM-001, RM-002 | `docs/requirements.md`, `docs/roadmap.md`, `docs/traceability_map.md` | not applicable |
+| REQ-GRAN-ROADMAP-AC-DIRECT | `docs/requirements.md` § Granularity Allocation | PLAN-005 | RM-002 | `docs/requirements.md`, `docs/plan.md`, `docs/roadmap.md`, `docs/traceability_map.md` | not applicable |
 | REQ-GRAN-CONTRACT-DECIDABLE | `docs/requirements.md` § Granularity Allocation | PLAN-005 | RM-001 | `docs/requirements.md`, `docs/reference_standards.md`, `docs/roadmap.md` | `audit_status.json`, `audit_status.txt` |
 | REQ-GRAN-CONTRACT-SUBORD | `docs/requirements.md` § Granularity Allocation | PLAN-005 | RM-001 | `docs/requirements.md`, `docs/reference_standards.md`, `docs/roadmap.md` | not applicable |
 | REQ-GRAN-SUPPORTING-DOCS-ROLE | `docs/requirements.md` § Granularity Allocation | PLAN-005 | RM-001, RM-002 | `docs/requirements.md`, `docs/reference_standards.md`, `docs/acceptance_matrix.md`, `docs/traceability_map.md`, `docs/roadmap.md` | not applicable |

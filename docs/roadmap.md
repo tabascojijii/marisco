@@ -65,6 +65,7 @@ Required outcomes:
 - for every normative `REQ-...` identifier, `docs/acceptance_matrix.md` states acceptance layer, criterion, roadmap-phase documentary evidence path, later implementation evidence path or `not applicable`, roadmap threshold, and later implementation threshold or `not applicable`
 - `docs/traceability_map.md` maps every normative `REQ-...` identifier to source, plan, roadmap, and evidence paths
 - every requirement-to-plan and requirement-to-roadmap citation in supporting documents remains semantically exact to the stated outcomes of the cited item
+- every requirement-to-plan and requirement-to-roadmap citation in supporting documents for a `REQ-AC-...` identifier remains direct to the cited acceptance outcome itself rather than only to a related deliverable class, target location, prerequisite design constraint, or surrounding narrative
 - roadmap references to supporting documents remain operational, not authority-transferring
 - no supporting document introduces a new prerequisite absent from the governing contract
 
@@ -112,6 +113,7 @@ Required outcomes:
 
 - the roadmap preserves notebook-first authoring
 - the roadmap preserves prose-adjacent-to-code readability expectations
+- the template scaffold is described as keeping prose explanation adjacent to code across its baseline sections, without relying on unexplained generated-code patterns
 - the roadmap explains that existing handlers are not forced to migrate in this phase
 - usage guidance remains current-state and pragmatic rather than speculative
 
