@@ -2,7 +2,8 @@
 
 **Phase:** Architect  
 **Date:** 2026-06-03  
-**Authority Sources:** `AGENTS.md`, `docs/requirements.md`, `docs/reference_standards.md`  
+**Governing Authority Sources:** `docs/requirements.md`, `docs/reference_standards.md`  
+**Repository-Local Instructions Consulted:** `AGENTS.md`  
 **Informative Audit Input:** `docs/audit_report.md`
 
 ## Purpose
@@ -18,12 +19,10 @@ This plan defines the Architect response for the handler-template workstream. It
 
 ## Architectural Response To The Audit
 
-The current audit identifies four failure modes that this plan must eliminate:
+The current audit identifies two plan-structure failures that this revision must eliminate:
 
 1. plan-phase acceptance drifted into required supporting documents as if they were governing authority
-2. the plan emphasized governance repair but under-specified the real workstream deliverables
-3. the plan elevated `docs/audit_report.md` into an authority source
-4. the plan replaced the source-of-truth rule `every normative REQ-...` with a brittle fixed-count threshold
+2. the plan expanded the governing authority boundary beyond the two-document governance set
 
 The design response is:
 
@@ -31,6 +30,7 @@ The design response is:
 - treat `docs/acceptance_matrix.md` and `docs/traceability_map.md` as required supporting documents that must align to that contract without replacing it
 - structure the plan around the substantive handler-template deliverables, with governance repair only as enabling work
 - express coverage in terms of all currently normative requirement identifiers defined in `docs/requirements.md`, never a copied count
+- keep Architect-gate decidability inside the governing contract plus this plan, while still requiring supporting-document alignment as execution work in the same revision
 
 ## Design Principles
 
@@ -110,6 +110,7 @@ Required outcomes:
 - no matrix or traceability row implies that required supporting documents outrank the governing contract
 - roadmap-phase documentary evidence stays inside the declared documentation scope
 - later implementation evidence remains tracked separately for downstream phases
+- no support document introduces a gate prerequisite that the governing contract itself does not define
 
 ### PLAN-006 — Preserve Implementation Guardrails
 
@@ -151,11 +152,11 @@ Required outcomes:
 
 | Plan Item | Primary Requirements Served |
 |---|---|
-| PLAN-001 | `REQ-GRAN-REQS-SCOPE`, `REQ-GRAN-REQS-COMPLETE`, `REQ-GRAN-CONTRACT-DECIDABLE`, `REQ-GRAN-CONTRACT-SUBORD`, `REQ-GRAN-SUPPORTING-DOCS-ROLE` |
+| PLAN-001 | `REQ-GRAN-REQS-SCOPE`, `REQ-GRAN-REQS-COMPLETE`, `REQ-GRAN-CONTRACT-DECIDABLE`, `REQ-GRAN-CONTRACT-SUBORD`, `REQ-GRAN-SUPPORTING-DOCS-ROLE`, `REQ-CONTRACT-CLOSURE-AUTHORITY`, `REQ-CONTRACT-CLOSURE-PLAN` |
 | PLAN-002 | `REQ-NB-TEMPLATE`, `REQ-CURRENT-STATE-FIDELITY`, `REQ-NBDEV-COMPAT`, `REQ-AC-TEMPLATE-EXISTS`, `REQ-AC-TEMPLATE-BASELINE`, `REQ-AC-TEMPLATE-NBDEV` |
 | PLAN-003 | `REQ-DIFFERENCE-VISIBILITY`, `REQ-PRESERVE-FLEXIBILITY`, `REQ-AVOID-PREMATURE-COMMONIZATION`, `REQ-READABILITY`, `REQ-AC-TEMPLATE-ZONES`, `REQ-AC-PRESERVE-FLEXIBILITY`, `REQ-AC-READABILITY` |
 | PLAN-004 | `REQ-GRAN-HOOK`, `REQ-POST-COMMIT-AUTHORITY`, `REQ-POST-COMMIT-SEQUENCE`, `REQ-POST-COMMIT-LIGHTWEIGHT-BOUNDARY`, `REQ-LOW-FRICTION-VALIDATION`, `REQ-CHECK-EXPORT`, `REQ-CHECK-COMPILE`, `REQ-CHECK-COVERAGE`, `REQ-AC-POST-COMMIT-SEQUENCE`, `REQ-AC-POST-COMMIT-BOUNDARY` |
-| PLAN-005 | `REQ-GRAN-CHECKS`, `REQ-GRAN-ROADMAP` |
+| PLAN-005 | `REQ-GRAN-CHECKS`, `REQ-GRAN-ROADMAP`, `REQ-CONTRACT-CLOSURE-SUPPORT`, `REQ-CONTRACT-CLOSURE-EVIDENCE`, `REQ-CONTRACT-CLOSURE-PLAN` |
 | PLAN-006 | `REQ-GRAN-PLAN`, `REQ-PYTHON-BASELINE`, `REQ-AC-NO-REFACTOR` |
 
 ## Phase Breakdown
@@ -194,7 +195,7 @@ The Architect gate is satisfied only if all of the following are true:
 - the plan no longer treats `docs/audit_report.md` as an authority source
 - the plan describes how the actual workstream deliverables will be produced
 - the plan does not use copied fixed-count coverage thresholds
-- the required supporting governance documents are aligned in the same change set without being elevated above the governing contract
+- the plan does not require supporting-governance-document state as an extra authority source or gate-deciding prerequisite
 
 ## Non-Goals
 
@@ -210,7 +211,7 @@ This plan does not:
 
 This revision addresses the audit findings by:
 
-- removing out-of-scope gate dependence from the plan's governing authority
-- restoring deliverable-centered planning
-- demoting `docs/audit_report.md` to informative input
-- replacing fixed-count language with source-of-truth coverage language tied to all normative `REQ-...` identifiers currently defined in `docs/requirements.md`
+- removing out-of-scope gate dependence from the plan's governing authority and Architect gate
+- restoring the authority boundary to the two-document governance set
+- keeping `docs/audit_report.md` as informative input only
+- preserving source-of-truth coverage language tied to all normative `REQ-...` identifiers currently defined in `docs/requirements.md`

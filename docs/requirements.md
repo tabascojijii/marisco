@@ -49,6 +49,12 @@
   For this workstream, those supporting documents must stay subordinate to the governing contract above: they may operationalize, trace, and cross-reference requirements, but they must not become the sole place where auditors must look in order to determine whether the governing contract itself is well-formed.
   `docs/check_catalog.md` is optional and informative.
 
+## Governing Contract Closure Rules
+- `REQ-CONTRACT-CLOSURE-AUTHORITY`: For requirements-, plan-, and roadmap-phase auditing, any rule needed to decide contract validity, authority boundaries, or allowed audit-status semantics must be stated in `docs/requirements.md` and `docs/reference_standards.md` without requiring supporting-governance documents, roadmap text, or repository-local instruction files as additional authority sources.
+- `REQ-CONTRACT-CLOSURE-SUPPORT`: `docs/acceptance_matrix.md` and `docs/traceability_map.md` must mirror and operationalize the governing two-document contract, but they must not add new gate prerequisites, authority sources, or contract-decision rules that are absent from `docs/requirements.md` and `docs/reference_standards.md`.
+- `REQ-CONTRACT-CLOSURE-EVIDENCE`: When a roadmap-phase documentary evidence path is required for a normative `REQ-...` identifier, that path must stay inside the declared fixed documentation scope for the phase being audited. Repository-local instruction files may guide authors, but they must not be required as the deciding evidence source for whether the governing contract is closed.
+- `REQ-CONTRACT-CLOSURE-PLAN`: `docs/plan.md` may require alignment work on supporting governance documents as an implementation task, but Architect gate success must remain decidable from the scoped governing contract and the plan itself rather than from out-of-scope supporting-document state.
+
 ## Handler Template Baseline
 - `current handler notebook pattern` in this workstream means the minimum notebook structure defined in this section, not an inferred repository-wide average.
 - A template satisfies current-state fidelity when it preserves the following ordered sections:
