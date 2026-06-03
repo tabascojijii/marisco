@@ -1,11 +1,11 @@
 {
-  "timestamp_utc": "2026-06-03T08:46:47Z",
+  "timestamp_utc": "2026-06-03T08:54:52Z",
   "phase": "PM_AUDIT",
-  "final_decision": "REJECT_TO_PM",
-  "final_owner": "PM",
-  "final_next_gate": "PM_REWORK",
+  "final_decision": "REJECT_TO_ARCHITECT",
+  "final_owner": "Architect",
+  "final_next_gate": "ARCHITECT_REWORK",
   "final_reason_code": "PM_EXECUTION_ID_MISMATCH",
   "auditor_decision": "REJECT_TO_ARCHITECT",
-  "escalated_by_hook": true,
+  "escalated_by_hook": false,
   "source_audit_status_file": "audit_status.json"
 }

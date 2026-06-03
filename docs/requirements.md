@@ -39,7 +39,13 @@
 - `REQ-GRAN-ROADMAP`: `docs/roadmap.md` may sequence work and self-checks, but it must not become the sole source of acceptance detail that auditors need in order to judge this workstream.
 - `REQ-GRAN-CONTRACT-DECIDABLE`: For requirements-, plan-, and roadmap-phase auditing, the governing machine-readable audit status contract must be decidable from `docs/reference_standards.md` and this document alone.
 - `REQ-GRAN-CONTRACT-SUBORD`: `docs/audit_contract.md` may restate or exemplify that contract, but it must not be the only scoped source of authority for those phases.
-- `REQ-GRAN-CHECKS`: Operationalized checks and pass thresholds belong in `docs/acceptance_matrix.md`. `docs/check_catalog.md` is optional and informative.
+- `REQ-GRAN-CHECKS`: Operationalized checks and pass thresholds belong in `docs/acceptance_matrix.md`. For every normative `REQ-...` identifier in this document, the matrix must define:
+  - acceptance layer
+  - criterion
+  - roadmap-phase documentary evidence path that is readable within the fixed documentation scope
+  - later implementation evidence path, or `not applicable` when none exists
+  - threshold for the roadmap phase and threshold for the later implementation phase, or `not applicable` when no later implementation threshold exists
+  `docs/check_catalog.md` is optional and informative.
 
 ## Handler Template Baseline
 - `current handler notebook pattern` in this workstream means the minimum notebook structure defined in this section, not an inferred repository-wide average.
@@ -167,6 +173,7 @@ The guidance below elaborates how the requirements above are applied in practice
 ### Validation Baseline For This Workstream
 - This workstream is a documentation-and-template phase, not an implementation-phase feature delivery.
 - For this workstream, the local acceptance baseline is the lightweight validation set defined in this section.
+- For requirements-, plan-, and roadmap-phase auditing, documentary sufficiency is judged from the fixed documentation scope only. Auditors must not require the existence of later implementation artifacts in order to pass those phases.
 - `pytest tests/` is not required for requirements-, plan-, or roadmap-phase acceptance of this workstream.
 - If this workstream later introduces executable implementation artifacts under `src/`, `tests/`, or `artifacts/`, implementation-phase validation rules may apply in addition to this baseline.
 

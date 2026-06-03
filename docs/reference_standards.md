@@ -112,7 +112,7 @@
 - `docs/plan.md` owns design response and document architecture needed to satisfy the requirements.
 - `docs/roadmap.md` owns executable task breakdown and self-check sequencing.
 - `docs/audit_contract.md` may restate or exemplify the machine-readable audit output structure defined in this document, but does not hold normative authority over it for requirements-, plan-, and roadmap-phase auditing.
-- `docs/acceptance_matrix.md` owns acceptance layer (A/B), criterion, evidence path, and threshold mapping for all normative requirements.
+- `docs/acceptance_matrix.md` owns acceptance layer (A/B), criterion, roadmap-phase documentary evidence path, later implementation evidence path, roadmap threshold, and later implementation threshold mapping for all normative requirements.
 - `docs/traceability_map.md` owns requirement-to-evidence traceability across phases.
 - `docs/check_catalog.md` is optional and informative; it does not hold normative authority.
 
@@ -159,16 +159,18 @@
 
 ## Evidence And Artifact Rules
 - Evidence should be file-backed whenever possible, not prose-only.
+- For requirements-, plan-, and roadmap-phase auditing, required evidence must be satisfiable from the fixed documentation scope. Absent later implementation artifacts are not, by themselves, documentary-phase failures unless an in-scope document incorrectly claims those artifacts already exist.
 - The following artifacts are part of the workflow evidence contract:
   - `C:\dev\marisco3\marisco_clean\marisco_repo\artifacts\acceptance_gate_report.json`
   - `C:\dev\marisco3\marisco_clean\marisco_repo\artifacts\md_json_completeness_report.json`
   - `C:\dev\marisco3\marisco_clean\marisco_repo\artifacts\json_schema_validation_report.json`
 - When those artifacts exist as a set, their `execution_id` values must agree.
-- Missing required artifacts or mismatched `execution_id` values are contract failures, not soft warnings.
+- During implementation-phase auditing, missing required artifacts or mismatched `execution_id` values are contract failures, not soft warnings.
 
 ## Validation And Test Baseline
 - Implementation-phase auditing must include `pytest tests/` unless the requirements document explicitly defines a different local validation baseline.
 - Lightweight validation may be used in earlier documentation-oriented phases, but implementation acceptance requires executable evidence.
+- Earlier documentation-oriented phases must be pass/fail decidable from documentary evidence alone; they may require phase-appropriate implementation planning, but not the runtime presence of future deliverables.
 - Post-commit verification should prefer fast checks first, with heavier verification delegated to manual execution or CI where appropriate.
 
 ## Notebook-First And nbdev Rules
