@@ -28,6 +28,7 @@ The design response is:
 
 - keep the governing contract in `docs/requirements.md` and `docs/reference_standards.md`
 - treat `docs/acceptance_matrix.md` and `docs/traceability_map.md` as required supporting documents that must align to that contract without replacing it
+- remove plan-local gate criteria and refer all documentary-phase decision semantics back to the governing two-document contract
 - structure the plan around the substantive handler-template deliverables, with governance repair only as enabling work
 - express coverage in terms of all currently normative requirement identifiers defined in `docs/requirements.md`, never a copied count
 - keep Architect-gate decidability inside the governing contract plus this plan, while still requiring supporting-document alignment as execution work in the same revision
@@ -65,6 +66,7 @@ Required outcomes:
 - the two-document governance set is explicit and self-sufficient for requirements-, plan-, and roadmap-phase contract interpretation
 - `docs/acceptance_matrix.md` and `docs/traceability_map.md` are explicitly defined as required supporting governance documents
 - supporting governance documents are stated to be subordinate operationalization surfaces, not replacement authority sources
+- downstream planning and support documents are forbidden from defining independent documentary-phase gate criteria or substitute decision vocabularies
 - plan-phase and roadmap-phase documentary acceptance remains decidable without importing out-of-scope authority
 
 ### PLAN-002 — Define The Handler Template Architecture
@@ -152,11 +154,11 @@ Required outcomes:
 
 | Plan Item | Primary Requirements Served |
 |---|---|
-| PLAN-001 | `REQ-GRAN-REQS-SCOPE`, `REQ-GRAN-REQS-COMPLETE`, `REQ-GRAN-CONTRACT-DECIDABLE`, `REQ-GRAN-CONTRACT-SUBORD`, `REQ-GRAN-SUPPORTING-DOCS-ROLE`, `REQ-CONTRACT-CLOSURE-AUTHORITY`, `REQ-CONTRACT-CLOSURE-PLAN` |
+| PLAN-001 | `REQ-GRAN-REQS-SCOPE`, `REQ-GRAN-REQS-COMPLETE`, `REQ-GRAN-STANDARDS`, `REQ-GRAN-CONTRACT-DECIDABLE`, `REQ-GRAN-CONTRACT-SUBORD`, `REQ-GRAN-SUPPORTING-DOCS-ROLE`, `REQ-CONTRACT-CLOSURE-AUTHORITY`, `REQ-CONTRACT-CLOSURE-PLAN`, `REQ-CONTRACT-CLOSURE-DOWNSTREAM` |
 | PLAN-002 | `REQ-NB-TEMPLATE`, `REQ-CURRENT-STATE-FIDELITY`, `REQ-NBDEV-COMPAT`, `REQ-AC-TEMPLATE-EXISTS`, `REQ-AC-TEMPLATE-BASELINE`, `REQ-AC-TEMPLATE-NBDEV` |
 | PLAN-003 | `REQ-DIFFERENCE-VISIBILITY`, `REQ-PRESERVE-FLEXIBILITY`, `REQ-AVOID-PREMATURE-COMMONIZATION`, `REQ-READABILITY`, `REQ-AC-TEMPLATE-ZONES`, `REQ-AC-PRESERVE-FLEXIBILITY`, `REQ-AC-READABILITY` |
 | PLAN-004 | `REQ-GRAN-HOOK`, `REQ-POST-COMMIT-AUTHORITY`, `REQ-POST-COMMIT-SEQUENCE`, `REQ-POST-COMMIT-LIGHTWEIGHT-BOUNDARY`, `REQ-LOW-FRICTION-VALIDATION`, `REQ-CHECK-EXPORT`, `REQ-CHECK-COMPILE`, `REQ-CHECK-COVERAGE`, `REQ-AC-POST-COMMIT-SEQUENCE`, `REQ-AC-POST-COMMIT-BOUNDARY` |
-| PLAN-005 | `REQ-GRAN-CHECKS`, `REQ-GRAN-ROADMAP`, `REQ-CONTRACT-CLOSURE-SUPPORT`, `REQ-CONTRACT-CLOSURE-EVIDENCE`, `REQ-CONTRACT-CLOSURE-PLAN` |
+| PLAN-005 | `REQ-GRAN-CHECKS`, `REQ-GRAN-ROADMAP`, `REQ-CONTRACT-CLOSURE-SUPPORT`, `REQ-CONTRACT-CLOSURE-EVIDENCE`, `REQ-CONTRACT-CLOSURE-DOWNSTREAM` |
 | PLAN-006 | `REQ-GRAN-PLAN`, `REQ-PYTHON-BASELINE`, `REQ-AC-NO-REFACTOR` |
 
 ## Phase Breakdown
@@ -187,15 +189,9 @@ Required outcomes:
 | C2 | confirm no plan item treats generated Python as canonical | PLAN-006 |
 | C3 | confirm verification and support code remain within Python `>=3.7` | PLAN-006 |
 
-## Architect Gate Criteria
+## Architect Gate Alignment
 
-The Architect gate is satisfied only if all of the following are true:
-
-- `docs/plan.md` is subordinate to `docs/requirements.md` and `docs/reference_standards.md`
-- the plan no longer treats `docs/audit_report.md` as an authority source
-- the plan describes how the actual workstream deliverables will be produced
-- the plan does not use copied fixed-count coverage thresholds
-- the plan does not require supporting-governance-document state as an extra authority source or gate-deciding prerequisite
+This plan does not define an independent Architect-gate algorithm. For documentary phases, gate semantics, rejection vocabulary, and audit-status interpretation are governed by `docs/requirements.md` and `docs/reference_standards.md`. The role of this section is limited to stating that the present revision is designed to remain subordinate to that governing contract while describing the implementation-facing work needed to satisfy it.
 
 ## Non-Goals
 

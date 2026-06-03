@@ -7,7 +7,7 @@ Authority: `docs/requirements.md` is the normative source for all `REQ-...` iden
 | REQ-GRAN-REQS-SCOPE | `docs/requirements.md` § Granularity Allocation | PLAN-001 | RM-001 | `docs/requirements.md`, `docs/reference_standards.md`, `docs/plan.md` | not applicable |
 | REQ-GRAN-REQS-COMPLETE | `docs/requirements.md` § Granularity Allocation | PLAN-001 | RM-001 | `docs/requirements.md`, `docs/reference_standards.md` | not applicable |
 | REQ-GRAN-HOOK | `docs/requirements.md` § Granularity Allocation | PLAN-004 | RM-006 | `docs/requirements.md`, `docs/reference_standards.md`, `docs/plan.md`, `docs/roadmap.md` | `.git/hooks/post-commit` |
-| REQ-GRAN-STANDARDS | `docs/requirements.md` § Granularity Allocation | PLAN-001 | RM-001 | `docs/reference_standards.md`, `docs/plan.md` | not applicable |
+| REQ-GRAN-STANDARDS | `docs/requirements.md` § Granularity Allocation | PLAN-001 | RM-001 | `docs/reference_standards.md` | not applicable |
 | REQ-GRAN-PLAN | `docs/requirements.md` § Granularity Allocation | PLAN-006 | RM-001 | `docs/requirements.md`, `docs/plan.md` | not applicable |
 | REQ-GRAN-ROADMAP | `docs/requirements.md` § Granularity Allocation | PLAN-005 | RM-002 | `docs/requirements.md`, `docs/roadmap.md`, `docs/traceability_map.md` | not applicable |
 | REQ-GRAN-CONTRACT-DECIDABLE | `docs/requirements.md` § Granularity Allocation | PLAN-001 | RM-001 | `docs/requirements.md`, `docs/reference_standards.md` | `audit_status.json`, `audit_status.txt` |
@@ -18,6 +18,7 @@ Authority: `docs/requirements.md` is the normative source for all `REQ-...` iden
 | REQ-CONTRACT-CLOSURE-SUPPORT | `docs/requirements.md` § Governing Contract Closure Rules | PLAN-005 | RM-002 | `docs/requirements.md`, `docs/reference_standards.md`, `docs/acceptance_matrix.md`, `docs/traceability_map.md` | not applicable |
 | REQ-CONTRACT-CLOSURE-EVIDENCE | `docs/requirements.md` § Governing Contract Closure Rules | PLAN-005 | RM-002 | `docs/requirements.md`, `docs/reference_standards.md`, `docs/acceptance_matrix.md`, `docs/traceability_map.md` | not applicable |
 | REQ-CONTRACT-CLOSURE-PLAN | `docs/requirements.md` § Governing Contract Closure Rules | PLAN-001, PLAN-005 | RM-001, RM-002 | `docs/requirements.md`, `docs/reference_standards.md`, `docs/plan.md` | not applicable |
+| REQ-CONTRACT-CLOSURE-DOWNSTREAM | `docs/requirements.md` § Governing Contract Closure Rules | PLAN-001, PLAN-005 | RM-001, RM-002 | `docs/requirements.md`, `docs/reference_standards.md`, `docs/plan.md`, `docs/acceptance_matrix.md`, `docs/traceability_map.md` | not applicable |
 | REQ-NB-TEMPLATE | `docs/requirements.md` § Functional Requirements | PLAN-002 | RM-003 | `docs/requirements.md`, `docs/plan.md`, `docs/roadmap.md` | `nbs/handlers/handler_template.ipynb`, generated module under `marisco/handlers/` |
 | REQ-CURRENT-STATE-FIDELITY | `docs/requirements.md` § Functional Requirements | PLAN-002 | RM-003 | `docs/requirements.md`, `docs/plan.md`, `docs/roadmap.md` | `nbs/handlers/handler_template.ipynb` |
 | REQ-DIFFERENCE-VISIBILITY | `docs/requirements.md` § Functional Requirements | PLAN-003 | RM-004 | `docs/requirements.md`, `docs/plan.md`, `docs/roadmap.md` | `nbs/handlers/handler_template.ipynb` |

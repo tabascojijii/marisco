@@ -14,6 +14,7 @@
 - `docs/audit_contract.md` must not override this document for phases whose fixed audit scope does not include it.
 - `docs/acceptance_matrix.md` and `docs/traceability_map.md` are required supporting governance documents. They operationalize and trace the two-document governance set, but they do not become alternate authority sources for deciding whether that governing contract is well-formed.
 - Supporting governance documents may be required deliverables and may be audited for consistency, but their presence or alignment must not be used to redefine the governing authority boundary beyond the two-document governance set.
+- `docs/plan.md`, `docs/roadmap.md`, `docs/acceptance_matrix.md`, and `docs/traceability_map.md` may summarize readiness, sequencing, or coverage, but such summaries are explanatory only and must not be framed as independent gate criteria or replacement decision logic for documentary phases.
 - `C:\dev\marisco3\marisco_clean\marisco_repo\CONVENTIONS.md` is the companion source for implementation and UX conventions.
 - `C:\dev\marisco3\marisco_clean\marisco_repo\DEPENDENCIES.md` is the companion source for runtime, development, asset, and external-service dependency inventory.
 - `C:\dev\marisco3\marisco_clean\marisco_repo\docs\core_philosophy.md` is informative background only and must not be treated as an independent source of audit or acceptance authority.
@@ -119,6 +120,7 @@
 - `docs/traceability_map.md` owns requirement-to-evidence traceability across phases.
 - `docs/check_catalog.md` is optional and informative; it does not hold normative authority.
 - Required supporting governance documents must remain subordinate to the two-document governance set. If they are incomplete or inconsistent, that is an architectural defect in supporting operationalization, not a transfer of governing authority away from `docs/requirements.md` and this document.
+- Downstream planning or support documents must not add phase-local PASS/REJECT algorithms, extra gate prerequisites, or replacement decision vocabularies for requirements-, plan-, or roadmap-phase auditing.
 
 ## Decision Rules
 
