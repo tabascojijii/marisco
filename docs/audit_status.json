@@ -1,0 +1,101 @@
+{
+  "decision": "AUDIT_PASS_REQUIREMENTS",
+  "reason_codes": [
+    "REQ_IDENTIFIER_POLICY_SATISFIED",
+    "REQ_TEMPLATE_SECTIONS_INFORMATIVE_RESOLVED",
+    "REQ_GUIDANCE_REQUIREMENTS_INFORMATIVE_RESOLVED",
+    "REQ_CONTRACT_DECIDABLE_SATISFIED",
+    "REQ_LIGHTWEIGHT_DEFINED",
+    "REQ_CURRENT_PATTERN_DEFINED",
+    "REQ_GOVERNANCE_DOCS_ATTESTED",
+    "REQ_POST_COMMIT_SEQUENCE_COMPLETE"
+  ],
+  "owner": "Auditor",
+  "next_gate": "FLOW_ADVANCE",
+  "checks": [
+    {
+      "id": "CHK-001",
+      "pass": true,
+      "evidence_path": "docs/requirements.md#template-guidance-requirements",
+      "metric_value": "0 new normative obligations without REQ-ID (informative declaration present)",
+      "threshold": "All normative requirements must carry REQ-... identifiers"
+    },
+    {
+      "id": "CHK-002",
+      "pass": true,
+      "evidence_path": "docs/requirements.md#required-template-sections",
+      "metric_value": "0 new normative obligations without REQ-ID (informative declaration present)",
+      "threshold": "All normative requirements must carry REQ-... identifiers"
+    },
+    {
+      "id": "CHK-003",
+      "pass": true,
+      "evidence_path": "docs/requirements.md#template-guidance-requirements",
+      "metric_value": "All elaboration bullets attributed to existing REQ-IDs; 0 untraced normative obligations",
+      "threshold": "All normative obligations must be traceable to acceptance criteria"
+    },
+    {
+      "id": "CHK-004",
+      "pass": true,
+      "evidence_path": "docs/reference_standards.md#audit-contract",
+      "metric_value": "5 of 5 top-level contract keys defined; 5 of 5 checks sub-fields defined",
+      "threshold": "All contract fields must be defined within fixed scope"
+    },
+    {
+      "id": "CHK-005",
+      "pass": true,
+      "evidence_path": "docs/requirements.md#req-post-commit-lightweight-boundary",
+      "metric_value": "Explicit definition present with enumerated heavyweight exclusions",
+      "threshold": "Abstract term must be defined in scoped document"
+    },
+    {
+      "id": "CHK-006",
+      "pass": true,
+      "evidence_path": "docs/requirements.md#handler-template-baseline",
+      "metric_value": "Ordered structural section list defined",
+      "threshold": "Comparison target must be named in scoped document"
+    },
+    {
+      "id": "CHK-007",
+      "pass": true,
+      "evidence_path": "docs/requirements.md#governance-document-attestation",
+      "metric_value": "Both docs/acceptance_matrix.md and docs/traceability_map.md attested 2026-06-03",
+      "threshold": "Both required documents must exist"
+    },
+    {
+      "id": "CHK-008",
+      "pass": true,
+      "evidence_path": "docs/requirements.md#req-post-commit-sequence",
+      "metric_value": "3 of 3 required stages present (export, py_compile, import smoke check)",
+      "threshold": "All 3 stages required"
+    },
+    {
+      "id": "CHK-009",
+      "pass": true,
+      "evidence_path": "docs/requirements.md#functional-requirements",
+      "metric_value": "7 REQ-IDs confirmed",
+      "threshold": "All normative requirements must carry REQ-... identifiers"
+    },
+    {
+      "id": "CHK-010",
+      "pass": true,
+      "evidence_path": "docs/requirements.md#non-functional-requirements",
+      "metric_value": "4 REQ-IDs confirmed",
+      "threshold": "All normative requirements must carry REQ-... identifiers"
+    },
+    {
+      "id": "CHK-011",
+      "pass": true,
+      "evidence_path": "docs/requirements.md#acceptance-criteria",
+      "metric_value": "9 REQ-AC-* criteria confirmed",
+      "threshold": "Acceptance criteria required for auditable scope"
+    },
+    {
+      "id": "CHK-012",
+      "pass": true,
+      "evidence_path": "AGENTS.md",
+      "metric_value": "No requirements-phase governance content; no conflicts found",
+      "threshold": "No conflicts permitted"
+    }
+  ]
+}
