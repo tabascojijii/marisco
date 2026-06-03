@@ -1,22 +1,174 @@
-# Requirements Audit Report
+# Audit Report — Requirements Phase
 
-**Audit Date**: 2026-06-03
-**Auditor**: Auditor Agent (Claude Sonnet 4.6)
-**Phase**: requirements-only
-**Scope (fixed)**:
-- `AGENTS.md`
-- `docs/requirements.md`
-- `docs/reference_standards.md`
+**Date:** 2026-06-03
+**Phase:** requirements
+**Auditor Role:** Auditor
+**Audit Scope (fixed):** AGENTS.md, docs/requirements.md, docs/reference_standards.md
 
 ---
 
-## Summary
+## Executive Summary
 
-- **Decision**: `ESCALATION`
-- **Scope used for judgment**: `AGENTS.md`, `docs/requirements.md`, `docs/reference_standards.md`
-- **Rationale**: Three prior ESCALATION triggers (OI-003, OI-004, OI-005) are confirmed RESOLVED. Two new findings prevent `AUDIT_PASS_REQUIREMENTS`:
-  1. `docs/requirements.md` § Constraints item 3 contains normative language ("must respect") without a `REQ-...` identifier, violating the document's own Requirement Identifier Policy. Per the decision rules, PASS requires no failed checks.
-  2. `REQ-PRESERVE-FLEXIBILITY` and `REQ-READABILITY` lack explicit `REQ-AC-*` entries in `docs/requirements.md`. Acceptance conditions for these normative NFRs are not decidable from the fixed audit scope alone.
+Complete scan of all three scoped documents has been performed. All sections and all lines were read before any judgment was formed. One blocking violation was found that meets the ESCALATION threshold as defined in docs/reference_standards.md § Escalation Decisions and the audit constraint ("要件の矛盾・未定義語彙・監査I/F契約不備・受け入れ条件不成立は ESCALATION とせよ").
+
+**Decision: ESCALATION**
+
+---
+
+## Scan Record
+
+### AGENTS.md
+
+- Full read completed.
+- AGENTS.md is a coding-agent instruction document scoped to the marisco implementation surface.
+- No requirements-phase governance content is defined in AGENTS.md.
+- No conflicts found between AGENTS.md and docs/requirements.md or docs/reference_standards.md.
+- AGENTS.md does not make normative claims that contradict or duplicate the requirements-phase governance set.
+
+### docs/reference_standards.md
+
+- Full read completed.
+- Defines the Audit Contract (§ Audit Contract): required top-level keys (`decision`, `reason_codes`, `owner`, `next_gate`, `checks`), required `checks` sub-fields, decision vocabulary, and `audit_status.txt` format.
+- § Required Documents mandates existence of `docs/acceptance_matrix.md` and `docs/traceability_map.md`.
+- § Audit Granularity Policy: terms such as `lightweight`, `current pattern`, `appropriate` are not auditable unless the fixed scope contains the governing definition or measurable boundary.
+- § Escalation Decisions: ESCALATION is required when requirements are contradictory, undefined, or not auditable.
+- § Decision Rules § PASS Decisions: PASS only when requirements are met, required evidence exists, and no failed checks remain in scope.
+- § Granularity Ownership Boundary: `docs/requirements.md` owns project-specific acceptance detail.
+- No internal inconsistencies found in docs/reference_standards.md.
+
+### docs/requirements.md — Section-by-Section Scan
+
+| Section | Scan Status | Notes |
+|---|---|---|
+| Scope | Complete | Informative. No REQ-... required. |
+| Objectives | Complete | Informative. No REQ-... required. |
+| Background | Complete | Informative. No REQ-... required. |
+| Deliverables | Complete | Informative. No REQ-... required. |
+| Requirement Identifier Policy | Complete | Normative policy: "All normative requirements in this document must use REQ-... identifiers." |
+| Granularity Allocation | Complete | REQ-GRAN-REQS-SCOPE through REQ-GRAN-CHECKS. All normative items carry REQ-... identifiers. |
+| Handler Template Baseline | Complete | Defines "current handler notebook pattern" structurally. Referenced by REQ-CURRENT-STATE-FIDELITY and REQ-AC-TEMPLATE-BASELINE. Informative baseline definition with no unidentified normative "must". |
+| Functional Requirements | Complete | REQ-NB-TEMPLATE, REQ-CURRENT-STATE-FIDELITY, REQ-DIFFERENCE-VISIBILITY, REQ-NBDEV-COMPAT, REQ-POST-COMMIT-AUTHORITY, REQ-POST-COMMIT-SEQUENCE, REQ-POST-COMMIT-LIGHTWEIGHT-BOUNDARY. All identified. |
+| Non-Functional Requirements | Complete | REQ-PRESERVE-FLEXIBILITY, REQ-AVOID-PREMATURE-COMMONIZATION, REQ-READABILITY, REQ-LOW-FRICTION-VALIDATION. All identified. |
+| Constraints | Complete | REQ-PYTHON-BASELINE identified. Informative bullet also present (acceptable). |
+| In-Scope / Out-of-Scope | Complete | Informative. No REQ-... required. |
+| **Template Requirements Detail — Required Template Sections** | **Complete** | **VIOLATION FOUND — see FINDING-1** |
+| **Template Requirements Detail — Template Guidance Requirements** | **Complete** | **VIOLATION FOUND — see FINDING-1** |
+| Post-Commit Test Run Requirements | Complete | REQ-CHECK-EXPORT, REQ-CHECK-COMPILE, REQ-CHECK-COVERAGE identified. Validation Baseline informative. |
+| Acceptance Criteria | Complete | REQ-AC-TEMPLATE-EXISTS through REQ-AC-READABILITY. All identified. |
+| Governance Document Attestation | Complete | Attests docs/acceptance_matrix.md and docs/traceability_map.md exist as of 2026-06-03 (human-verified). |
+| Risks / Mitigations / Open Decisions / Next Step Guidance | Complete | Informative. No REQ-... required. |
+
+---
+
+## Findings
+
+### FINDING-1 — BLOCKING — Requirement Identifier Policy Violation in "Template Requirements Detail"
+
+**Severity:** BLOCKING (ESCALATION condition)
+**Applicable policy:** docs/requirements.md § Requirement Identifier Policy — "All normative requirements in this document must use REQ-... identifiers."
+**Applicable escalation rule:** docs/reference_standards.md § Escalation Decisions — "ESCALATION is required when requirements are contradictory, undefined, or not auditable."
+
+#### Sub-finding 1A: "Required Template Sections" bullets are normative without REQ-... identifiers
+
+The section "Template Requirements Detail → Required Template Sections" contains a normative bulleted list (the section heading uses the word "Required") enumerating specific mandatory notebook sections:
+
+- `default_exp` declaration
+- Title and short purpose statement
+- Configuration and input source section
+- Data loading section
+- Transformation pipeline section
+- Metadata construction section
+- Encode section
+- Verification / smoke-check section
+- Notes identifying: provider-specific content / likely reusable logic / known pain points
+
+These bullets impose normative "required" obligations but carry no REQ-... identifiers. This violates the Requirement Identifier Policy.
+
+Additionally, the "Handler Template Baseline" section also enumerates template sections with slightly different phrasing (e.g., it includes `load_data` and `encode` by function name; "Required Template Sections" uses section-header names; `default_exp` declaration appears in "Required Template Sections" but not in "Handler Template Baseline"). Since "Required Template Sections" has no REQ-... identifier, the resolution authority between the two lists is ambiguous. An auditor cannot determine within the fixed scope whether these lists are identical in intent, which is authoritative, or whether the `default_exp` difference is deliberate.
+
+#### Sub-finding 1B: "Template Guidance Requirements" bullets are normative without REQ-... identifiers
+
+The section "Template Requirements Detail → Template Guidance Requirements" contains six normative statements using "must" (5 occurrences) and "should" (1 occurrence):
+
+1. "The template **must** document the current handler shape first, before proposing any future refactoring direction."
+2. "The template **must** indicate where provider-specific read logic belongs."
+3. "The template **must** indicate where callback definitions belong."
+4. "The template **must** indicate where to place `get_attrs`."
+5. "The template **must** indicate how `encode()` should be assembled."
+6. "The template **should** encourage use of reusable APIs when they already exist, without requiring speculative abstractions."
+
+None of these carries a REQ-... identifier. None has an explicit corresponding REQ-AC-* acceptance criterion. These requirements are therefore:
+- Not traceable via docs/traceability_map.md (no REQ-... ID to trace)
+- Not verifiable against any REQ-AC-* acceptance criterion within the fixed scope
+- Not auditable per the Audit Granularity Policy standard
+
+This constitutes an acceptance-condition gap that makes the requirements-phase not fully decidable within the fixed scope.
+
+#### Impact Assessment
+
+| Aspect | Status |
+|---|---|
+| Requirement Identifier Policy compliance | FAIL |
+| Traceability anchor availability for Template Guidance Requirements | FAIL (no REQ-... IDs) |
+| Acceptance criteria coverage of Template Guidance Requirements | FAIL (no REQ-AC-* counterparts within scope) |
+| Auditability within fixed scope | FAIL |
+
+---
+
+### FINDING-2 — OBSERVATION (non-blocking) — "default_exp" Appears in "Required Template Sections" but Not in "Handler Template Baseline"
+
+The "Handler Template Baseline" and "Required Template Sections" both enumerate required notebook sections. The `default_exp` declaration appears in "Required Template Sections" but is absent from "Handler Template Baseline." Because "Required Template Sections" carries no REQ-... identifier and the two lists have no explicit cross-reference, it is unclear within the fixed scope whether this difference is intentional or an authoring gap.
+
+**Status:** Recorded as open item. Cannot be resolved without out-of-scope investigation.
+
+---
+
+### FINDING-3 — OBSERVATION (non-blocking) — "Recommended Minimum Post-Commit Check Set" Duplicates REQ-POST-COMMIT-SEQUENCE
+
+The "Post-Commit Test Run Requirements" section contains both REQ-POST-COMMIT-SEQUENCE (normative, identified) and a "Recommended Minimum Post-Commit Check Set" (informative, unidentified) listing the same stages. Content currently agrees. If these lists diverge in future revisions, the normative authority will be unclear. This is a documentation hygiene observation, not a blocking finding.
+
+---
+
+### FINDING-4 — PASS — Governance Document Attestation Satisfies Required Documents Requirement
+
+docs/reference_standards.md § Required Documents mandates existence of `docs/acceptance_matrix.md` and `docs/traceability_map.md`. The Governance Document Attestation in docs/requirements.md attests (human-verified, 2026-06-03) that both documents exist. This attestation is within the fixed audit scope and constitutes sufficient evidence for existence at the requirements phase. Content adequacy of those documents is outside the fixed scope and is not assessed here.
+
+---
+
+### FINDING-5 — PASS — Audit Contract Decidability (REQ-GRAN-CONTRACT-DECIDABLE)
+
+REQ-GRAN-CONTRACT-DECIDABLE requires: "the governing machine-readable audit status contract must be decidable from `docs/reference_standards.md` and this document alone." docs/reference_standards.md § Audit Contract fully defines the contract (keys, sub-fields, formats). docs/requirements.md § Acceptance Criteria defines what must pass. Together, the contract is decidable within the fixed scope.
+
+---
+
+### FINDING-6 — PASS — "lightweight" Is Defined Within Scope
+
+REQ-POST-COMMIT-LIGHTWEIGHT-BOUNDARY explicitly defines "lightweight" for this workstream, satisfying the Audit Granularity Policy requirement that abstract terms be defined in a scoped document.
+
+---
+
+### FINDING-7 — PASS — "current handler notebook pattern" Is Defined Within Scope
+
+The "Handler Template Baseline" section defines what "current handler notebook pattern" means for this workstream, satisfying the Audit Granularity Policy requirement that comparison targets be named in a scoped document.
+
+---
+
+## Check Results
+
+| ID | Description | REQ Reference | Pass | Evidence Path | Metric Value | Threshold |
+|---|---|---|---|---|---|---|
+| CHK-001 | Normative bullets in "Template Guidance Requirements" carry REQ-... identifiers | Requirement Identifier Policy | FAIL | docs/requirements.md § Template Requirements Detail → Template Guidance Requirements | 0 of 6 normative bullets have REQ-... IDs | 100% of normative requirements must have REQ-... identifiers |
+| CHK-002 | Normative bullets in "Required Template Sections" carry REQ-... identifiers | Requirement Identifier Policy | FAIL | docs/requirements.md § Template Requirements Detail → Required Template Sections | 0 of 9 required-section bullets have REQ-... IDs | 100% of normative requirements must have REQ-... identifiers |
+| CHK-003 | Template Guidance Requirements have corresponding REQ-AC-* acceptance criteria | REQ-GRAN-CONTRACT-DECIDABLE | FAIL | docs/requirements.md § Acceptance Criteria | 0 of 6 Template Guidance Requirement obligations referenced by REQ-AC-* criteria | All normative obligations must be traceable to acceptance criteria |
+| CHK-004 | Audit contract keys fully defined within fixed scope | REQ-GRAN-CONTRACT-DECIDABLE | PASS | docs/reference_standards.md § Audit Contract | All required keys (decision, reason_codes, owner, next_gate, checks) defined | All contract fields defined |
+| CHK-005 | "lightweight" defined within fixed scope | REQ-POST-COMMIT-LIGHTWEIGHT-BOUNDARY | PASS | docs/requirements.md § REQ-POST-COMMIT-LIGHTWEIGHT-BOUNDARY | Explicit definition present with enumerated heavyweight exclusions | Term must be defined in scoped document |
+| CHK-006 | "current handler notebook pattern" defined within fixed scope | REQ-CURRENT-STATE-FIDELITY | PASS | docs/requirements.md § Handler Template Baseline | Ordered section list defined | Comparison target must be named in scoped document |
+| CHK-007 | Required governance documents attested to exist | docs/reference_standards.md § Required Documents | PASS | docs/requirements.md § Governance Document Attestation | Both docs/acceptance_matrix.md and docs/traceability_map.md attested (2026-06-03) | Both required documents must exist |
+| CHK-008 | Post-commit sequence stages complete | REQ-POST-COMMIT-SEQUENCE | PASS | docs/requirements.md § REQ-POST-COMMIT-SEQUENCE | 3 of 3 required stages present (export, py_compile, import smoke check) | All 3 stages required |
+| CHK-009 | Functional requirements carry REQ-... identifiers | Requirement Identifier Policy | PASS | docs/requirements.md § Functional Requirements | 7 identified functional requirements | All normative requirements must carry REQ-... IDs |
+| CHK-010 | Non-functional requirements carry REQ-... identifiers | Requirement Identifier Policy | PASS | docs/requirements.md § Non-Functional Requirements | 4 identified non-functional requirements | All normative requirements must carry REQ-... IDs |
+| CHK-011 | Acceptance criteria present and identified | REQ-AC-* section | PASS | docs/requirements.md § Acceptance Criteria | 9 REQ-AC-* criteria present | Acceptance criteria required for auditable scope |
+| CHK-012 | AGENTS.md contains no conflicts with requirements-phase governance | Audit scope completeness | PASS | AGENTS.md (full read) | No requirements-phase governance content; no conflicts found | No conflicts permitted |
 
 ---
 
@@ -24,134 +176,23 @@
 
 **ESCALATION**
 
-Automated progression is suspended pending human or principal review.
+Reason: CHK-001, CHK-002, and CHK-003 are FAILED checks. Normative requirements ("must"/"should") exist within docs/requirements.md § Template Requirements Detail that carry no REQ-... identifiers and have no corresponding REQ-AC-* acceptance criteria within the fixed scope. This violates the Requirement Identifier Policy and renders those obligations non-auditable, satisfying the ESCALATION threshold under docs/reference_standards.md § Escalation Decisions.
 
----
-
-## Prior Findings — Status Update
-
-| Prior OI | Description | Status |
-|----------|-------------|--------|
-| OI-003 | Required governance documents unverifiable within fixed audit scope | **RESOLVED** — `docs/requirements.md` § Governance Document Attestation (lines 198–201) attests `docs/acceptance_matrix.md` and `docs/traceability_map.md` exist as of 2026-06-03 (human-verified), placing this evidence within the fixed scope. Remaining 4 documents (`audit_contract.md`, `escalation_policy.md`, `check_catalog.md`, `audit_examples.md`) are classified OPTIONAL in `docs/reference_standards.md` § Required Documents; their absence is not a contract failure. |
-| OI-004 | `AUDIT_PASS_REQUIREMENTS` absent from `docs/reference_standards.md` § Workflow State Model | **RESOLVED** — `AUDIT_PASS_REQUIREMENTS` now appears in the nominal forward path (line 26) and is defined with predecessor/successor semantics (lines 33–35). |
-| OI-005 | `audit_status.txt` output format undefined in scoped documents | **RESOLVED** — `docs/reference_standards.md` § Audit Contract (lines 92–99) now defines required fields, fixed ordering, and `NEXT_GATE` enumeration constraint for `audit_status.txt`. |
-
----
-
-## Current Findings
-
-### Finding 1 — `REQ_CONSTRAINTS_MISSING_IDENTIFIER` [BLOCKING]
-
-**Severity**: ESCALATION trigger — Requirement Identifier Policy self-violation  
-**Location**: `docs/requirements.md` § Constraints, item 3
-
-The § Constraints section contains the following statement:
-
-> "The project currently targets Python `>=3.7`, so any verification step or future supporting code **must respect** that baseline unless explicitly changed elsewhere."
-
-The word "must" marks this as a normative requirement. `docs/requirements.md` § Requirement Identifier Policy states:
-
-> "All normative requirements in this document must use `REQ-...` identifiers."
-
-This constraint carries no `REQ-...` identifier. The document violates its own stated normative policy. Per the PASS decision rule ("PASS decisions must not include failed checks"), a check against the Requirement Identifier Policy fails here, blocking `AUDIT_PASS_REQUIREMENTS`.
-
-Additionally, the second constraint item ("Existing handlers **should** continue to function without mandatory migration") also uses aspirational normative language without an identifier, though "should" is weaker than "must." The primary blocking issue is item 3.
-
-**Required repair**: Assign a `REQ-...` identifier to the Python `>=3.7` constraint (e.g., `REQ-PYTHON-BASELINE`) and, if item 2 is considered normative, assign an identifier to it as well. Alternatively, reclassify these items as informative context if they are fully covered by existing `REQ-...` requirements (e.g., `REQ-AVOID-PREMATURE-COMMONIZATION` for item 2).
-
----
-
-### Finding 2 — `REQ_PRESERVE_FLEXIBILITY_NO_AC` / `REQ_READABILITY_NO_AC` [BLOCKING]
-
-**Severity**: ESCALATION trigger — 受け入れ条件不成立 (acceptance conditions not auditable within fixed scope)  
-**Location**: `docs/requirements.md` § Non-Functional Requirements; § Acceptance Criteria
-
-The following normative NFRs have no corresponding `REQ-AC-*` entry in `docs/requirements.md` § Acceptance Criteria:
-
-| Requirement | Content summary | AC entry |
-|-------------|-----------------|----------|
-| `REQ-PRESERVE-FLEXIBILITY` | Template must not imply immediate normalization of provider differences | None |
-| `REQ-READABILITY` | Template must be understandable by notebook-based maintainers | None |
-
-`REQ-GRAN-CHECKS` delegates operationalized thresholds to `docs/acceptance_matrix.md`. However, the fixed audit scope excludes that document, and the audit scope instruction prohibits filling requirements gaps from out-of-scope documents. `REQ-GRAN-REQS-COMPLETE` requires: "Requirements-level detail must include any condition that would otherwise make acceptance contradictory, undefined, or not auditable within the fixed audit scope."
-
-The absence of `REQ-AC-*` entries for these two requirements, combined with the prohibition on consulting `docs/acceptance_matrix.md`, means their acceptance conditions are not fully auditable from the fixed scope.
-
-**Note on `REQ-LOW-FRICTION-VALIDATION`**: This NFR is partially covered by `REQ-AC-POST-COMMIT-BOUNDARY` (which ties to `REQ-POST-COMMIT-LIGHTWEIGHT-BOUNDARY`). It is not a blocking gap independently, but the "complete quickly enough to remain practical" clause has no measurable threshold within the scoped documents. Recorded as a secondary concern under this finding.
-
-**Required repair**: Add `REQ-AC-*` entries in `docs/requirements.md` § Acceptance Criteria for `REQ-PRESERVE-FLEXIBILITY` and `REQ-READABILITY` with criteria auditable within the fixed scope. These may be qualitative criteria (e.g., "template contains no section that mandates forced normalization of all provider differences" for PRESERVE-FLEXIBILITY; "template sections follow existing handler notebook style with inline guidance" for READABILITY). Alternatively, confirm that `docs/acceptance_matrix.md` entries for these requirements are sufficient and adjust the attestation in requirements.md to cover their AC content as well.
-
----
-
-### Finding 3 — Minor Inconsistency (Non-Blocking)
-
-**Severity**: Non-blocking — editorial inconsistency  
-**Location**: `docs/requirements.md` § Open Decisions, item 1
-
-The Open Decisions section lists: "Final filename and **location** of the template notebook." However, the location is already normatively specified: `REQ-NB-TEMPLATE` states "The template must be created as a notebook under `nbs/handlers/`," and `REQ-AC-TEMPLATE-EXISTS` states "exists under `nbs/handlers/`." Only the filename within that directory is open.
-
-This inconsistency is not an ESCALATION trigger (the normative specification is unambiguous), but the Open Decisions text should be corrected to "Final filename of the template notebook" to avoid confusion.
-
----
-
-## Passing Checks
-
-The following aspects of `docs/requirements.md` are well-formed and satisfactory in the current version:
-
-- **Workflow state vocabulary**: `AUDIT_PASS_REQUIREMENTS` is present in `docs/reference_standards.md` § Workflow State Model forward path and defined with predecessor/successor semantics. (Prior OI-004 RESOLVED.)
-- **`audit_status.txt` format**: `docs/reference_standards.md` § Audit Contract defines required fields (`DECISION`, `DATE`, `PHASE`, `REASON_CODES`, `NEXT_GATE`), fixed ordering, and `NEXT_GATE` enumeration constraint. (Prior OI-005 RESOLVED.)
-- **Required governance documents**: `docs/acceptance_matrix.md` and `docs/traceability_map.md` are attested to exist in `docs/requirements.md` § Governance Document Attestation (in-scope evidence). Remaining 4 docs are OPTIONAL per `docs/reference_standards.md`. (Prior OI-003 RESOLVED.)
-- **Identifier coverage (functional requirements)**: `REQ-NB-TEMPLATE`, `REQ-CURRENT-STATE-FIDELITY`, `REQ-DIFFERENCE-VISIBILITY`, `REQ-NBDEV-COMPAT`, `REQ-POST-COMMIT-AUTHORITY`, `REQ-POST-COMMIT-SEQUENCE`, `REQ-POST-COMMIT-LIGHTWEIGHT-BOUNDARY` — all carry `REQ-...` identifiers. ✓
-- **Identifier coverage (NFRs with AC)**: `REQ-AVOID-PREMATURE-COMMONIZATION` → `REQ-AC-NO-REFACTOR`; `REQ-LOW-FRICTION-VALIDATION` → partially `REQ-AC-POST-COMMIT-BOUNDARY`. ✓
-- **Identifier coverage (Granularity Allocation)**: 9 `REQ-GRAN-*` identifiers present, 0 duplicates. ✓
-- **Identifier coverage (Required Checks)**: `REQ-CHECK-EXPORT`, `REQ-CHECK-COMPILE`, `REQ-CHECK-COVERAGE` carry `REQ-...` identifiers. (Prior OI-002 RESOLVED.) ✓
-- **Acceptance criteria coverage (functional)**: All functional requirements (`REQ-NB-TEMPLATE` through `REQ-POST-COMMIT-LIGHTWEIGHT-BOUNDARY`) have corresponding `REQ-AC-*` entries. ✓
-- **Abstract-term resolution**: "current handler notebook pattern" bounded by § Handler Template Baseline with 8 ordered sections. "lightweight" bounded by `REQ-POST-COMMIT-LIGHTWEIGHT-BOUNDARY` with 4 explicit heavyweight exclusions. Both satisfy `docs/reference_standards.md` § Audit Granularity Policy. ✓
-- **Contract decidability**: Machine-readable audit contract structure (5 top-level keys, 5 per-check keys, reason-code prefix vocabulary, `NEXT_GATE` enumeration) fully specified in `docs/reference_standards.md` § Audit Contract. Satisfies `REQ-GRAN-CONTRACT-DECIDABLE`. ✓
-- **Post-commit authority placement**: `REQ-POST-COMMIT-AUTHORITY` designates `.git/hooks/post-commit` as the governance entry point. The authoritative verification sequence resides in `docs/requirements.md` (`REQ-POST-COMMIT-SEQUENCE`), not exclusively in the runtime hook. ✓
-- **AGENTS.md alignment**: Python `>=3.7` constraint, notebook-first model, lightweight validation preference, and absence of dedicated `tests/` directory are consistent across all three scoped documents. ✓
-- **Scope boundary clarity**: Out-of-scope items (`src/`, `tests/`, `artifacts/`, `docs/plan.md`, `docs/roadmap.md`) explicitly identified in §§ In-Scope / Out-of-Scope and Validation Baseline. ✓
-
----
-
-## Checks
-
-| id | pass | evidence_path | metric_value | threshold |
-|----|------|---------------|--------------|-----------|
-| CHECK-001 | true | `docs/requirements.md` § Granularity Allocation | 9 distinct `REQ-GRAN-...` identifiers, 0 duplicates | 0 duplicate identifiers |
-| CHECK-002 | true | `docs/requirements.md` § Acceptance Criteria | `REQ-AC-POST-COMMIT-SEQUENCE` and `REQ-AC-POST-COMMIT-BOUNDARY` present with normative identifiers | each post-commit deliverable must have ≥1 normative `REQ-AC-...` criterion |
-| CHECK-003 | false | `docs/requirements.md` § Constraints item 3 | "must respect" normative language present; no `REQ-...` identifier | all normative requirements must carry `REQ-...` identifiers per Requirement Identifier Policy |
-| CHECK-004 | true | `docs/reference_standards.md` § Audit Contract + `docs/requirements.md` § REQ-GRAN-CONTRACT-DECIDABLE | contract schema (5+5 keys, reason-code prefix vocabulary, NEXT_GATE enum) fully specified in scoped documents | decidable from fixed scope per `REQ-GRAN-CONTRACT-DECIDABLE` |
-| CHECK-005 | true | `docs/requirements.md` § Handler Template Baseline | 8 ordered structural sections enumerated; "current handler notebook pattern" bounded within document | baseline and abstract-term definitions must reside in scoped document |
-| CHECK-006 | true | `docs/requirements.md` §§ REQ-POST-COMMIT-SEQUENCE, REQ-POST-COMMIT-LIGHTWEIGHT-BOUNDARY | 3-stage sequence and 4 heavyweight exclusions defined in scoped governance documents | verification sequence authority must reside in scoped governance documents |
-| CHECK-007 | true | `docs/reference_standards.md` § Workflow State Model lines 26, 33–35 | `AUDIT_PASS_REQUIREMENTS` present in forward path with defined predecessor `[USER]` and successor `[ARCHITECT]` | all audit output tokens must appear as defined states in the Workflow State Model |
-| CHECK-008 | true | `docs/reference_standards.md` § Audit Contract lines 92–99 | `audit_status.txt` required fields, ordering, and `NEXT_GATE` enumeration defined | audit output format must be specified in scoped governance documents |
-| CHECK-009 | true | `docs/requirements.md` § Governance Document Attestation | `docs/acceptance_matrix.md` and `docs/traceability_map.md` attested (human-verified 2026-06-03) within scoped document; optional docs not required | both normatively required governance docs must be confirmed to exist |
-| CHECK-010 | false | `docs/requirements.md` § Acceptance Criteria (gap) | no `REQ-AC-*` entry for `REQ-PRESERVE-FLEXIBILITY`; no `REQ-AC-*` entry for `REQ-READABILITY` | all normative requirements must have acceptance conditions auditable from fixed scope per `REQ-GRAN-REQS-COMPLETE` |
-
----
-
-## 不足証跡 (Insufficient Evidence)
-
-### 不足証跡-001 — Attested Documents: Content Unverifiable
-
-`docs/requirements.md` § Governance Document Attestation attests that `docs/acceptance_matrix.md` and `docs/traceability_map.md` exist. Their **existence** is accepted as in-scope evidence via the attestation. However, their **content** cannot be verified within the fixed audit scope. The Auditor cannot confirm that:
-
-- `docs/acceptance_matrix.md` maps every normative requirement to its acceptance layer (A/B), criterion, evidence path, and threshold as required by `docs/reference_standards.md` § Required Documents.
-- `docs/traceability_map.md` traces every normative requirement from source document through plan and roadmap to evidence.
-
-This is recorded as a 不足証跡 rather than a blocking finding, because (a) existence is attested within scope, and (b) the content verification gap is a structural limitation of the fixed-scope audit design rather than a documents defect.
+This defect originates at the requirements document level and cannot be repaired by the Architect, PM, or Implementer without changing upstream requirements content. Human review is required before automated progression resumes.
 
 ---
 
 ## Open-Items
 
-| ID | Description | Owner | Blocking |
-|----|-------------|-------|---------|
-| OI-003 | *(RESOLVED 2026-06-03)* Confirm existence of required governance documents via Governance Document Attestation in `docs/requirements.md` | — | — |
-| OI-004 | *(RESOLVED 2026-06-03)* Add `AUDIT_PASS_REQUIREMENTS` to `docs/reference_standards.md` § Workflow State Model | — | — |
-| OI-005 | *(RESOLVED 2026-06-03)* Define `audit_status.txt` format in `docs/reference_standards.md` § Audit Contract | — | — |
-| OI-006 | Assign `REQ-...` identifier to § Constraints item 3 ("must respect Python >=3.7"); assess whether item 2 also requires an identifier | Requirements owner | Yes |
-| OI-007 | Add `REQ-AC-*` entries for `REQ-PRESERVE-FLEXIBILITY` and `REQ-READABILITY` in `docs/requirements.md` § Acceptance Criteria with criteria auditable from fixed scope | Requirements owner | Yes |
-| OI-008 | Correct § Open Decisions item 1 from "Final filename and location" to "Final filename" (location already specified in `REQ-NB-TEMPLATE`) | Requirements owner | No |
-| OI-009 | After OI-006 and OI-007 are resolved, re-run requirements-phase audit for `AUDIT_PASS_REQUIREMENTS` determination | Auditor | — |
+| ID | Description | Type | Resolution Path |
+|---|---|---|---|
+| OI-1 | "Required Template Sections" bullets are normative but lack REQ-... identifiers and have no corresponding REQ-AC-* acceptance criteria. | Blocking | Requirements owner must assign REQ-... identifiers and add corresponding REQ-AC-* acceptance criteria, or reclassify these bullets as informative elaboration of an existing identified requirement with explicit cross-reference. |
+| OI-2 | "Template Guidance Requirements" bullets use normative "must/should" language but lack REQ-... identifiers and REQ-AC-* counterparts. | Blocking | Same resolution as OI-1. |
+| OI-3 | `default_exp` declaration appears in "Required Template Sections" but not in "Handler Template Baseline." Intentional or authoring gap is unclear within fixed scope. | Observation | Requirements owner should clarify whether this is an intentional additional normative requirement (requires REQ-... ID) or a baseline elaboration (requires cross-reference). |
+| OI-4 | "Recommended Minimum Post-Commit Check Set" duplicates REQ-POST-COMMIT-SEQUENCE content under an informative label. Divergence risk in future edits. | Observation | Consider removing the duplicate informative list or annotating it with an explicit cross-reference to REQ-POST-COMMIT-SEQUENCE. |
+
+---
+
+## 不足証跡 (Missing Evidence — Within Fixed Scope Only)
+
+なし。固定スコープ内の全ファイル（AGENTS.md, docs/requirements.md, docs/reference_standards.md）は完全に読み取り完了。固定スコープ外の文書（docs/acceptance_matrix.md, docs/traceability_map.md 等）の内容は参照対象外であり、その不在・内容不足はこの監査の判定根拠として使用していない。
