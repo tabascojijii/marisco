@@ -1,6 +1,7 @@
 # Traceability Map
 
 Authority: `docs/requirements.md` is the normative source for all `REQ-...` identifiers listed here. This document traces those requirements through `docs/plan.md` and `docs/roadmap.md` while remaining subordinate to the governing two-document contract formed by `docs/requirements.md` and `docs/reference_standards.md`.
+The roadmap-phase evidence paths listed below are the deciding documentary paths for traceability. Consulted repository-local guidance is intentionally not used here as contract-closing authority.
 
 | Requirement ID | Source | Plan Item | Roadmap Item | Roadmap-Phase Evidence Path | Later Implementation Evidence Path |
 |---|---|---|---|---|---|

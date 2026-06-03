@@ -16,18 +16,19 @@ This plan defines the Architect response for the handler-template workstream. It
 - usage documentation that explains how the template should be used before any commonization effort
 
 `docs/audit_report.md` is treated as a diagnostic input to this revision, not as a governing authority source.
+`AGENTS.md` is treated as consulted repository-local guidance, not as a document that can add pass/fail authority to this plan.
 
 ## Architectural Response To The Audit
 
-The current audit identifies two plan-structure failures that this revision must eliminate:
+The current audit identifies a critical manifestation of a broader plan-structure defect that this revision must eliminate:
 
-1. plan-phase acceptance drifted into required supporting documents as if they were governing authority
-2. the plan expanded the governing authority boundary beyond the two-document governance set
+1. plan-phase acceptance drifted beyond the governing two-document contract by letting downstream or repository-local guidance shape required outcomes as if it were governing authority
 
 The design response is:
 
 - keep the governing contract in `docs/requirements.md` and `docs/reference_standards.md`
 - treat `docs/acceptance_matrix.md` and `docs/traceability_map.md` as required supporting documents that must align to that contract without replacing it
+- treat repository-local instruction files as informative execution guidance only, even when they are consulted during authoring
 - remove plan-local gate criteria and refer all documentary-phase decision semantics back to the governing two-document contract
 - structure the plan around the substantive handler-template deliverables, with governance repair only as enabling work
 - express coverage in terms of all currently normative requirement identifiers defined in `docs/requirements.md`, never a copied count
@@ -66,6 +67,7 @@ Required outcomes:
 - the two-document governance set is explicit and self-sufficient for requirements-, plan-, and roadmap-phase contract interpretation
 - `docs/acceptance_matrix.md` and `docs/traceability_map.md` are explicitly defined as required supporting governance documents
 - supporting governance documents are stated to be subordinate operationalization surfaces, not replacement authority sources
+- repository-local instruction files remain consulted guidance rather than required gate inputs
 - downstream planning and support documents are forbidden from defining independent documentary-phase gate criteria or substitute decision vocabularies
 - plan-phase and roadmap-phase documentary acceptance remains decidable without importing out-of-scope authority
 
@@ -100,7 +102,7 @@ Required outcomes:
 - `.git/hooks/post-commit` remains the governing orchestration surface
 - the documented minimum sequence is export/regeneration, `python -m py_compile`, and lightweight import smoke checks
 - heavyweight categories excluded by `REQ-POST-COMMIT-LIGHTWEIGHT-BOUNDARY` remain excluded
-- the validation design stays compatible with the repository's practical validation order in `AGENTS.md`
+- the validation design does not add any extra authority source or gate prerequisite beyond the governing contract
 
 ### PLAN-005 — Align Required Supporting Governance Documents
 

@@ -15,6 +15,7 @@
 - `docs/acceptance_matrix.md` and `docs/traceability_map.md` are required supporting governance documents. They operationalize and trace the two-document governance set, but they do not become alternate authority sources for deciding whether that governing contract is well-formed.
 - Supporting governance documents may be required deliverables and may be audited for consistency, but their presence or alignment must not be used to redefine the governing authority boundary beyond the two-document governance set.
 - `docs/plan.md`, `docs/roadmap.md`, `docs/acceptance_matrix.md`, and `docs/traceability_map.md` may summarize readiness, sequencing, or coverage, but such summaries are explanatory only and must not be framed as independent gate criteria or replacement decision logic for documentary phases.
+- Repository-local instruction files and companion documents such as `AGENTS.md`, `PROJECT.md`, `ARCHITECTURE.md`, `DEPENDENCIES.md`, and `CONVENTIONS.md` may be consulted for local authoring, runtime, and UX discipline, but consulting them does not make them co-equal authority sources for documentary-phase contract validity, gate semantics, or audit-status interpretation.
 - `C:\dev\marisco3\marisco_clean\marisco_repo\CONVENTIONS.md` is the companion source for implementation and UX conventions.
 - `C:\dev\marisco3\marisco_clean\marisco_repo\DEPENDENCIES.md` is the companion source for runtime, development, asset, and external-service dependency inventory.
 - `C:\dev\marisco3\marisco_clean\marisco_repo\docs\core_philosophy.md` is informative background only and must not be treated as an independent source of audit or acceptance authority.
@@ -167,6 +168,7 @@
 - Evidence should be file-backed whenever possible, not prose-only.
 - For requirements-, plan-, and roadmap-phase auditing, required evidence must be satisfiable from the fixed documentation scope. Absent later implementation artifacts are not, by themselves, documentary-phase failures unless an in-scope document incorrectly claims those artifacts already exist.
 - For those documentary phases, repository-local instruction files such as `AGENTS.md` may guide authoring behavior but must not be required as authority-bearing evidence for whether the governing contract is closed.
+- When downstream documents mention repository-local instruction files, those mentions must be framed as consulted guidance or implementation discipline only. They must not be written as blocking documentary-phase gate conditions, deciding evidence paths, or replacement authority.
 - When a phase-specific fixed documentation scope includes supporting governance documents such as `docs/acceptance_matrix.md` or `docs/traceability_map.md`, those documents may be audited for consistency and completeness, but they must still be interpreted as subordinate operationalization of the governing two-document contract rather than as replacement authority.
 - The following artifacts are part of the workflow evidence contract:
   - `C:\dev\marisco3\marisco_clean\marisco_repo\artifacts\acceptance_gate_report.json`
@@ -218,6 +220,7 @@
 
 ## Audit Scope Discipline
 - Respect the fixed audit scope supplied by the workflow.
+- Inclusion in a fixed audit scope does not, by itself, elevate a file into governing authority.
 - Do not rely on repository-wide recursive discovery when a scoped audit has been defined.
 - Do not infer missing evidence from nearby files; record the gap explicitly instead.
 
