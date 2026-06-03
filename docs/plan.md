@@ -8,192 +8,200 @@
 
 ## Purpose
 
-This plan defines the Architect response for the handler-template workstream. It first closes the governing contract between `docs/requirements.md` and `docs/reference_standards.md`, then translates that contract into an implementation-ready design for the actual workstream deliverables:
+This plan defines the Architect response for the handler-template workstream under the currently active two-document governing contract: `docs/requirements.md` and `docs/reference_standards.md`.
+
+The plan is limited to designing how the workstream will satisfy that contract. It does not create an alternate gate model, it does not depend on prospective upstream rewrites for its own validity, and it does not promote supporting-governance documents or repository-local instruction files into co-equal authority.
+
+The workstream deliverables remain:
 
 - an explicit handler template notebook under `nbs/handlers/`
-- a checklist or equivalent guidance that separates provider-specific sections from reusable sections
+- guidance that distinguishes provider-specific structure from reusable structure
 - a hook-governed lightweight post-commit verification flow
-- usage documentation that explains how the template should be used before any commonization effort
-
-`docs/audit_report.md` is treated as a diagnostic input to this revision, not as a governing authority source.
-`AGENTS.md` is treated as consulted repository-local guidance, not as a document that can add pass/fail authority to this plan.
+- supporting-governance documents that operationalize, but do not replace, the governing contract
 
 ## Architectural Response To The Audit
 
-The current audit identifies a critical manifestation of a broader plan-structure defect that this revision must eliminate:
+`docs/audit_report.md` identified two structural defects that this revision removes:
 
-1. plan-phase acceptance drifted beyond the governing two-document contract by letting downstream or repository-local guidance shape required outcomes as if it were governing authority
+1. plan validity was made to depend on supporting-document alignment that may be outside the active plan-audit scope
+2. plan validity was framed as depending on rewriting its own governing authority sources
 
-The design response is:
+This revision responds by:
 
-- keep the governing contract in `docs/requirements.md` and `docs/reference_standards.md`
-- treat `docs/acceptance_matrix.md` and `docs/traceability_map.md` as required supporting documents that must align to that contract without replacing it
-- treat repository-local instruction files as informative execution guidance only, even when they are consulted during authoring
-- remove plan-local gate criteria and refer all documentary-phase decision semantics back to the governing two-document contract
-- structure the plan around the substantive handler-template deliverables, with governance repair only as enabling work
-- express coverage in terms of all currently normative requirement identifiers defined in `docs/requirements.md`, never a copied count
-- keep Architect-gate decidability inside the governing contract plus this plan, while still requiring supporting-document alignment as execution work in the same revision
+- treating `docs/requirements.md` and `docs/reference_standards.md` as already-authoritative current-state inputs
+- keeping Architect-gate decidability inside `docs/requirements.md`, `docs/reference_standards.md`, and `docs/plan.md`
+- treating `docs/acceptance_matrix.md` and `docs/traceability_map.md` as required subordinate operationalization documents
+- keeping `AGENTS.md` as consulted local guidance only
+- expressing support-document alignment as consistency work rather than as a plan-validity prerequisite
 
 ## Design Principles
 
 ### DP-1 — Governing Authority Stays Upstream
 
-Acceptance meaning and audit-contract meaning remain owned by `docs/requirements.md` and `docs/reference_standards.md`. This plan may explain how those requirements will be satisfied, but it must not tighten, relax, or replace them.
+Requirements meaning, authority boundaries, and documentary-phase gate semantics remain owned by `docs/requirements.md` and `docs/reference_standards.md`.
 
-### DP-2 — Supporting Governance Documents Stay Subordinate
+### DP-2 — Plan Validity Is Present-Tense
 
-`docs/acceptance_matrix.md` and `docs/traceability_map.md` are required and must be kept internally consistent with this plan, but they operationalize and trace the governing contract rather than define it.
+Architect-phase acceptance must be decidable from the current in-scope governing contract plus this plan. The plan may reference same-revision consistency work elsewhere, but it must not depend on hypothetical future rewrites outside scope.
 
-### DP-3 — Deliverables Come Before Commonization
+### DP-3 — Supporting Documents Stay Subordinate
 
-The first deliverable is a current-state explicit template. It must document the existing handler shape clearly enough to support later commonization discussions, without forcing immediate refactoring.
+`docs/acceptance_matrix.md` and `docs/traceability_map.md` are required supporting-governance documents. They operationalize and trace the contract; they do not define contract validity or alternate gate logic.
 
-### DP-4 — Notebook-First Execution
+### DP-4 — Template First, Refactor Later
 
-The implementation path must remain notebook-first. The canonical behavioral changes live in notebook sources, with generated Python treated as derived output.
+The first deliverable is an explicit current-state handler template. It must describe the existing notebook pattern clearly enough to support later commonization review without forcing immediate refactoring.
 
-### DP-5 — Lightweight Verification Boundary
+### DP-5 — Notebook-First Execution
 
-Post-commit verification for this workstream exists to catch export, syntax, and import-time breakage quickly. It does not expand into dataset downloads, remote API usage, full NetCDF runs, or broad regression execution.
+The canonical implementation surface remains `nbs/`. Generated Python remains derived output.
+
+### DP-6 — Lightweight Verification Boundary
+
+Post-commit verification in this workstream is limited to export or regeneration, compile, and import-smoke validation. Heavyweight runtime and network-dependent execution stays out of scope for this verification path.
 
 ## Plan Items
 
-### PLAN-001 — Close The Governing Contract
+### PLAN-001 — Define The Notebook Template Target
 
-Revise `docs/requirements.md` and `docs/reference_standards.md` so they explicitly close the authority boundary that the audit found ambiguous.
-
-Required outcomes:
-
-- the two-document governance set is explicit and self-sufficient for requirements-, plan-, and roadmap-phase contract interpretation
-- `docs/acceptance_matrix.md` and `docs/traceability_map.md` are explicitly defined as required supporting governance documents
-- supporting governance documents are stated to be subordinate operationalization surfaces, not replacement authority sources
-- repository-local instruction files remain consulted guidance rather than required gate inputs
-- downstream planning and support documents are forbidden from defining independent documentary-phase gate criteria or substitute decision vocabularies
-- plan-phase and roadmap-phase documentary acceptance remains decidable without importing out-of-scope authority
-
-### PLAN-002 — Define The Handler Template Architecture
-
-Specify the architecture of the explicit handler template notebook so PM and Implementer work from a concrete current-state target.
+Specify the architecture of the first explicit handler template notebook.
 
 Required outcomes:
 
-- the template target is an `nbs/handlers/` notebook, not a generated `.py` file
-- the template preserves the ordered Handler Template Baseline from `docs/requirements.md`
-- the template is explicitly current-state descriptive
-- the template identifies where provider-specific logic is expected to vary
+- the target deliverable is a notebook under `nbs/handlers/`
+- the template follows repository `nbdev` conventions
+- the template preserves the ordered Handler Template Baseline defined in `docs/requirements.md`
+- the template is explicitly current-state descriptive rather than future-state prescriptive
 
-### PLAN-003 — Define Zone Guidance And Usage Documentation
+### PLAN-002 — Define Variation And Reuse Zones
 
-Architect the guidance surfaces that accompany the template so reviewers can distinguish stable reusable structure from provider-specific variance.
+Specify how the template and its paired guidance distinguish stable structure from provider variance.
 
 Required outcomes:
 
-- the template or its paired usage guidance identifies provider-specific zones
-- the template or its paired usage guidance identifies reusable callback-oriented zones
-- likely future commonization candidates are marked as discussion inputs, not refactoring mandates
-- maintainers are told how to use the template before any broad handler migration begins
+- provider-specific sections are clearly marked
+- reusable callback-oriented sections are clearly marked
+- likely commonization candidates are labeled as discussion inputs rather than migration mandates
+- guidance explains which sections are expected to vary by provider
+
+### PLAN-003 — Define Usage Guidance For Authors
+
+Specify how maintainers are expected to use the template before any broad migration effort starts.
+
+Required outcomes:
+
+- usage guidance explains how to start a new handler notebook from the template
+- usage guidance explains how to preserve literate notebook readability
+- usage guidance reinforces notebook-first authoring and forbids generated-file-only behavior changes
+- usage guidance preserves flexibility for imperfect provider inputs
 
 ### PLAN-004 — Define Hook-Governed Lightweight Verification
 
-Architect the post-commit verification flow required by this workstream.
+Specify the minimum post-commit verification design for this workstream.
 
 Required outcomes:
 
 - `.git/hooks/post-commit` remains the governing orchestration surface
-- the documented minimum sequence is export/regeneration, `python -m py_compile`, and lightweight import smoke checks
-- heavyweight categories excluded by `REQ-POST-COMMIT-LIGHTWEIGHT-BOUNDARY` remain excluded
-- the validation design does not add any extra authority source or gate prerequisite beyond the governing contract
+- the documented sequence contains export or regeneration, `python -m py_compile`, and lightweight import smoke checks
+- heavyweight operations excluded by `REQ-POST-COMMIT-LIGHTWEIGHT-BOUNDARY` remain excluded
+- the verification design stays compatible with Python `>=3.7`
 
-### PLAN-005 — Align Required Supporting Governance Documents
+### PLAN-005 — Operationalize The Contract In Supporting Documents
 
-Revise `docs/acceptance_matrix.md` and `docs/traceability_map.md` so they faithfully operationalize the repaired contract and this plan.
+Align supporting-governance documents to the governing contract and this plan without changing the authority boundary.
 
 Required outcomes:
 
-- every normative `REQ-...` identifier currently defined in `docs/requirements.md` is represented without fixed-count duplication
-- no matrix or traceability row implies that required supporting documents outrank the governing contract
-- roadmap-phase documentary evidence stays inside the declared documentation scope
-- later implementation evidence remains tracked separately for downstream phases
-- no support document introduces a gate prerequisite that the governing contract itself does not define
+- every normative `REQ-...` identifier currently defined in `docs/requirements.md` is represented in `docs/acceptance_matrix.md`
+- `docs/traceability_map.md` traces each normative `REQ-...` identifier from source through plan and roadmap evidence paths
+- neither supporting document introduces a new authority source, gate prerequisite, or substitute decision vocabulary
+- roadmap-phase documentary evidence paths remain inside the declared documentation scope
 
-### PLAN-006 — Preserve Implementation Guardrails
+This item is a consistency requirement for the change set, not an alternate Architect-gate algorithm. If a future audit narrows scope so that supporting documents are out of scope, plan validity still remains decidable from the governing contract plus this plan.
 
-Carry the workstream's substantive boundaries intact into downstream planning.
+### PLAN-006 — Preserve Workstream Guardrails
+
+Carry the workstream boundaries intact into downstream planning and implementation.
 
 Required outcomes:
 
 - no plan item forces immediate refactoring of existing handlers
-- no plan item authorizes direct generated-code edits as the canonical behavior change
-- Python `>=3.7` compatibility remains the baseline for any new supporting code
-- success criteria continue to point at the actual deliverables: template notebook, zone guidance, hook-governed lightweight verification, and usage documentation
+- no plan item treats generated `.py` files as the canonical authoring surface
+- success remains tied to the actual deliverables instead of to speculative framework redesign
+- no plan item requires git commit operations
 
 ## Deliverable Architecture
 
-### Deliverable Group A — Template Assets
+### Deliverable Group A — Template Asset
 
 - explicit handler template notebook under `nbs/handlers/`
-- baseline sections in required order
-- prose and code layout consistent with literate notebook use
+- baseline sections preserved in required order
+- prose-plus-code structure consistent with notebook-first maintenance
 
-### Deliverable Group B — Guidance Assets
+### Deliverable Group B — Guidance Asset
 
-- provider-specific versus reusable zone markers
-- notes on likely commonization candidates
-- usage guidance for authors adopting the template
+- checklist or equivalent usage guidance for authors
+- markers for provider-specific, reusable, and future-commonization zones
+- notes on known pain points and boundaries
 
-### Deliverable Group C — Verification Assets
+### Deliverable Group C — Verification Asset
 
 - hook-governed post-commit sequence definition
-- export, compile, and import-smoke stages only
-- explicit heavyweight exclusions
+- export/regeneration, compile, and import-smoke stages
+- explicit exclusion of heavyweight runs
 
-### Deliverable Group D — Governance Support Assets
+### Deliverable Group D — Supporting Governance Assets
 
-- acceptance matrix aligned to every normative requirement
-- traceability map aligned from requirements through plan and roadmap to evidence
+- acceptance matrix covering every normative requirement
+- traceability map linking each normative requirement to plan, roadmap, and evidence paths
 
 ## Requirement-to-Plan Mapping
 
 | Plan Item | Primary Requirements Served |
 |---|---|
-| PLAN-001 | `REQ-GRAN-REQS-SCOPE`, `REQ-GRAN-REQS-COMPLETE`, `REQ-GRAN-STANDARDS`, `REQ-GRAN-CONTRACT-DECIDABLE`, `REQ-GRAN-CONTRACT-SUBORD`, `REQ-GRAN-SUPPORTING-DOCS-ROLE`, `REQ-CONTRACT-CLOSURE-AUTHORITY`, `REQ-CONTRACT-CLOSURE-PLAN`, `REQ-CONTRACT-CLOSURE-DOWNSTREAM` |
-| PLAN-002 | `REQ-NB-TEMPLATE`, `REQ-CURRENT-STATE-FIDELITY`, `REQ-NBDEV-COMPAT`, `REQ-AC-TEMPLATE-EXISTS`, `REQ-AC-TEMPLATE-BASELINE`, `REQ-AC-TEMPLATE-NBDEV` |
-| PLAN-003 | `REQ-DIFFERENCE-VISIBILITY`, `REQ-PRESERVE-FLEXIBILITY`, `REQ-AVOID-PREMATURE-COMMONIZATION`, `REQ-READABILITY`, `REQ-AC-TEMPLATE-ZONES`, `REQ-AC-PRESERVE-FLEXIBILITY`, `REQ-AC-READABILITY` |
-| PLAN-004 | `REQ-GRAN-HOOK`, `REQ-POST-COMMIT-AUTHORITY`, `REQ-POST-COMMIT-SEQUENCE`, `REQ-POST-COMMIT-LIGHTWEIGHT-BOUNDARY`, `REQ-LOW-FRICTION-VALIDATION`, `REQ-CHECK-EXPORT`, `REQ-CHECK-COMPILE`, `REQ-CHECK-COVERAGE`, `REQ-AC-POST-COMMIT-SEQUENCE`, `REQ-AC-POST-COMMIT-BOUNDARY` |
-| PLAN-005 | `REQ-GRAN-CHECKS`, `REQ-GRAN-ROADMAP`, `REQ-CONTRACT-CLOSURE-SUPPORT`, `REQ-CONTRACT-CLOSURE-EVIDENCE`, `REQ-CONTRACT-CLOSURE-DOWNSTREAM` |
-| PLAN-006 | `REQ-GRAN-PLAN`, `REQ-PYTHON-BASELINE`, `REQ-AC-NO-REFACTOR` |
+| PLAN-001 | `REQ-NB-TEMPLATE`, `REQ-CURRENT-STATE-FIDELITY`, `REQ-NBDEV-COMPAT`, `REQ-AC-TEMPLATE-EXISTS`, `REQ-AC-TEMPLATE-BASELINE`, `REQ-AC-TEMPLATE-NBDEV` |
+| PLAN-002 | `REQ-DIFFERENCE-VISIBILITY`, `REQ-PRESERVE-FLEXIBILITY`, `REQ-AVOID-PREMATURE-COMMONIZATION`, `REQ-AC-TEMPLATE-ZONES`, `REQ-AC-PRESERVE-FLEXIBILITY` |
+| PLAN-003 | `REQ-READABILITY`, `REQ-GRAN-PLAN`, `REQ-AC-READABILITY`, `REQ-AC-NO-REFACTOR` |
+| PLAN-004 | `REQ-GRAN-HOOK`, `REQ-POST-COMMIT-AUTHORITY`, `REQ-POST-COMMIT-SEQUENCE`, `REQ-POST-COMMIT-LIGHTWEIGHT-BOUNDARY`, `REQ-LOW-FRICTION-VALIDATION`, `REQ-PYTHON-BASELINE`, `REQ-CHECK-EXPORT`, `REQ-CHECK-COMPILE`, `REQ-CHECK-COVERAGE`, `REQ-AC-POST-COMMIT-SEQUENCE`, `REQ-AC-POST-COMMIT-BOUNDARY` |
+| PLAN-005 | `REQ-GRAN-CHECKS`, `REQ-GRAN-ROADMAP`, `REQ-GRAN-SUPPORTING-DOCS-ROLE`, `REQ-CONTRACT-CLOSURE-SUPPORT`, `REQ-CONTRACT-CLOSURE-EVIDENCE`, `REQ-CONTRACT-CLOSURE-DOWNSTREAM`, `REQ-CONTRACT-CLOSURE-SUPPORT-SEPARATION` |
+| PLAN-006 | `REQ-CONTRACT-CLOSURE-PLAN`, `REQ-CONTRACT-CLOSURE-PRESENT-STATE`, `REQ-AVOID-PREMATURE-COMMONIZATION`, `REQ-AC-NO-REFACTOR` |
 
 ## Phase Breakdown
 
-### Phase 1 — Contract Repair
+### Phase 1 — Template Design
 
 | Step | Action | Plan Item |
 |---|---|---|
-| A1 | tighten the authority boundary in `docs/requirements.md` | PLAN-001 |
-| A2 | tighten the authority boundary in `docs/reference_standards.md` | PLAN-001 |
-| A3 | realign `docs/acceptance_matrix.md` to the repaired contract | PLAN-005 |
-| A4 | realign `docs/traceability_map.md` to the repaired contract | PLAN-005 |
+| A1 | define the notebook template target and required baseline sections | PLAN-001 |
+| A2 | define provider-specific, reusable, and commonization-candidate zones | PLAN-002 |
+| A3 | define author usage guidance and readability expectations | PLAN-003 |
 
-### Phase 2 — Deliverable Architecture
-
-| Step | Action | Plan Item |
-|---|---|---|
-| B1 | define the notebook-first template target and baseline sections | PLAN-002 |
-| B2 | define provider-specific, reusable, and commonization-candidate zones | PLAN-003 |
-| B3 | define usage guidance expectations for template authors | PLAN-003 |
-| B4 | define the lightweight hook-governed verification sequence | PLAN-004 |
-
-### Phase 3 — Downstream Guardrails
+### Phase 2 — Verification Design
 
 | Step | Action | Plan Item |
 |---|---|---|
-| C1 | confirm no plan item forces immediate handler migration | PLAN-006 |
-| C2 | confirm no plan item treats generated Python as canonical | PLAN-006 |
-| C3 | confirm verification and support code remain within Python `>=3.7` | PLAN-006 |
+| B1 | define the hook-governed lightweight verification sequence | PLAN-004 |
+| B2 | define explicit heavyweight exclusions and compatibility guardrails | PLAN-004 |
+
+### Phase 3 — Supporting Governance Alignment
+
+| Step | Action | Plan Item |
+|---|---|---|
+| C1 | align `docs/acceptance_matrix.md` to the current normative requirement set | PLAN-005 |
+| C2 | align `docs/traceability_map.md` to the current normative requirement set and evidence boundaries | PLAN-005 |
+| C3 | confirm no supporting document redefines the authority boundary | PLAN-005 |
+
+### Phase 4 — Downstream Guardrails
+
+| Step | Action | Plan Item |
+|---|---|---|
+| D1 | confirm no step forces immediate migration of existing handlers | PLAN-006 |
+| D2 | confirm notebook-first authoring remains intact | PLAN-006 |
+| D3 | confirm no step requires git commit operations | PLAN-006 |
 
 ## Architect Gate Alignment
 
-This plan does not define an independent Architect-gate algorithm. For documentary phases, gate semantics, rejection vocabulary, and audit-status interpretation are governed by `docs/requirements.md` and `docs/reference_standards.md`. The role of this section is limited to stating that the present revision is designed to remain subordinate to that governing contract while describing the implementation-facing work needed to satisfy it.
+This plan does not define an independent Architect-gate algorithm. Architect-phase pass or rejection remains governed by `docs/requirements.md` and `docs/reference_standards.md`, with this plan serving only as the design response within that authority boundary.
 
 ## Non-Goals
 
@@ -201,15 +209,15 @@ This plan does not:
 
 - claim that the template notebook already exists
 - claim that `.git/hooks/post-commit` is already implemented
-- require git commit operations
 - force migration of existing handlers into a shared pipeline during this phase
-- change the repository's notebook-first source-of-truth model
+- authorize direct generated-code edits as the canonical behavior change
+- require git commit operations
 
 ## Audit Closure Intent
 
 This revision addresses the audit findings by:
 
-- removing out-of-scope gate dependence from the plan's governing authority and Architect gate
-- restoring the authority boundary to the two-document governance set
-- keeping `docs/audit_report.md` as informative input only
-- preserving source-of-truth coverage language tied to all normative `REQ-...` identifiers currently defined in `docs/requirements.md`
+- removing support-document completion as a prerequisite for deciding plan validity
+- removing prospective upstream rewrites as a prerequisite for deciding plan validity
+- keeping the governing authority in `docs/requirements.md` and `docs/reference_standards.md`
+- keeping supporting-governance documents required but subordinate
