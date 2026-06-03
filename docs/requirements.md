@@ -167,9 +167,9 @@
 - If this workstream later introduces executable implementation artifacts under `src/`, `tests/`, or `artifacts/`, implementation-phase validation rules may apply in addition to this baseline.
 
 ### Required Checks
-- Notebook/export-related changes must be validated through the export/regeneration stage defined in `REQ-POST-COMMIT-SEQUENCE`.
-- Generated Python files touched by the template workflow must pass the compile and import-smoke stages defined in `REQ-POST-COMMIT-SEQUENCE`.
-- The required check set must be sufficient to catch:
+- `REQ-CHECK-EXPORT`: Notebook/export-related changes must be validated through the export/regeneration stage defined in `REQ-POST-COMMIT-SEQUENCE`.
+- `REQ-CHECK-COMPILE`: Generated Python files touched by the template workflow must pass the compile and import-smoke stages defined in `REQ-POST-COMMIT-SEQUENCE`.
+- `REQ-CHECK-COVERAGE`: The required check set must be sufficient to catch:
   - broken notebook export structure
   - syntax errors in generated modules
   - obvious import-time breakage in touched code paths
@@ -190,8 +190,8 @@
 - `REQ-AC-TEMPLATE-BASELINE`: The template reflects the Handler Template Baseline defined in this document.
 - `REQ-AC-TEMPLATE-ZONES`: The template clearly marks provider-specific versus reusable zones.
 - `REQ-AC-TEMPLATE-NBDEV`: The template can participate in the `nbdev` export flow without breaking repository imports.
-- (informative, see `REQ-POST-COMMIT-SEQUENCE`) A documented post-commit verification sequence exists, is hook-governed, and includes every stage required by `REQ-POST-COMMIT-SEQUENCE`.
-- (informative, see `REQ-POST-COMMIT-LIGHTWEIGHT-BOUNDARY`) The documented post-commit verification sequence stays within the `REQ-POST-COMMIT-LIGHTWEIGHT-BOUNDARY`.
+- `REQ-AC-POST-COMMIT-SEQUENCE`: A documented post-commit verification sequence exists, is hook-governed, and includes every stage required by `REQ-POST-COMMIT-SEQUENCE`.
+- `REQ-AC-POST-COMMIT-BOUNDARY`: The documented post-commit verification sequence stays within the `REQ-POST-COMMIT-LIGHTWEIGHT-BOUNDARY`.
 - `REQ-AC-NO-REFACTOR`: No requirement in this phase forces immediate refactoring of existing handlers.
 
 ## Risks
