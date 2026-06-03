@@ -1,76 +1,83 @@
 # Audit Report
 
-## Scope
-- Audit phase: roadmap
-- Audit date: 2026-06-03
-- Fixed audit scope completed in full before judgment:
+## Summary
+- decision: `REJECT_TO_ARCHITECT`
+- owner: `Architect`
+- next_gate: `ARCHITECT_REWORK`
+- audited_scope:
   - `AGENTS.md`
   - `docs/requirements.md`
   - `docs/plan.md`
-  - `docs/roadmap.md`
   - `docs/reference_standards.md`
-  - `docs/acceptance_matrix.md`
-  - `docs/traceability_map.md`
 
-## Summary
-- Decision candidate after full-scope read: `REJECT_TO_ARCHITECT`
-- Required supporting docset presence: confirmed for `docs/acceptance_matrix.md` and `docs/traceability_map.md`
-- Primary defect class: internal traceability inconsistency rooted in `docs/plan.md` and propagated into `docs/traceability_map.md`
+## Audit Method
+- Read the full contents of all fixed-scope files before deciding.
+- Applied the required authority order:
+  1. `docs/requirements.md`
+  2. `docs/plan.md`
+  3. `docs/reference_standards.md`
+- Did not use repository-wide recursive discovery.
+- Did not use out-of-scope files as decision evidence.
 
 ## Findings
 
-### F-001
-- Severity: Major
-- Requirement-Ref: `REQ-GRAN-PLAN`, `REQ-AC-NO-REFACTOR`, `REQ-CONTRACT-CLOSURE-DOWNSTREAM`
-- Reason-Code: `ARCH_PLAN_MAPPING_INVALID`
-- Evidence:
-  - `docs/plan.md:87-96` defines `PLAN-003` as author usage guidance and readability only.
-  - `docs/plan.md:122-131` defines `PLAN-006` as the workstream guardrail item that carries the no-refactor boundary.
-  - `docs/plan.md:164-167` maps `REQ-GRAN-PLAN` and `REQ-AC-NO-REFACTOR` to `PLAN-003`, and separately maps `REQ-AC-NO-REFACTOR` to `PLAN-006`.
-- Impact:
-  - The plan's own requirement-to-plan mapping is not semantically accurate.
-  - This prevents the scoped document set from offering a clean, self-consistent trace from governing requirement to actual plan item.
-- Fix-Instruction:
-  - Revise the `docs/plan.md` requirement-to-plan mapping so each cited requirement points only to plan items whose stated outcomes actually satisfy that requirement.
-  - In particular, remove `REQ-GRAN-PLAN` from `PLAN-003` unless the item is rewritten to cover threshold subordination, and route `REQ-AC-NO-REFACTOR` only through the guardrail item that actually states the no-refactor constraint.
+### 1. Invalid requirement-to-plan mapping for `REQ-NBDEV-COMPAT` and `REQ-AC-TEMPLATE-NBDEV`
+- Severity: `high`
+- Reason code: `ARCH_PLAN_MAPPING_NBDEV_COMPAT_INEXACT`
+- Requirement evidence:
+  - `docs/requirements.md:94-97` requires exportability through the current `nbdev` flow, importability after generation, and no broken `default_exp`, invalid export cell, or circular import by default.
+  - `docs/requirements.md:217` requires the template to participate in the `nbdev` export flow without breaking repository imports.
+- Plan evidence:
+  - `docs/plan.md:166` maps `PLAN-001` to `REQ-NBDEV-COMPAT` and `REQ-AC-TEMPLATE-NBDEV`.
+  - `docs/plan.md:72-75` states only that the template is under `nbs/handlers/`, follows `nbdev` conventions, preserves the baseline, and is current-state descriptive.
+- Standard evidence:
+  - `docs/reference_standards.md:113` requires requirement-to-plan mappings to be semantically exact.
+  - `docs/reference_standards.md:175` requires cited plan items to contain the relevant required outcome directly.
+- Judgment:
+  - `PLAN-001` does not directly state exportability, post-generation importability, or the no-circular-import / no-invalid-export-cell outcome.
+  - The cited mapping therefore requires inferential repair from nearby material and is not semantically exact.
 
-### F-002
-- Severity: Major
-- Requirement-Ref: `REQ-GRAN-SUPPORTING-DOCS-ROLE`, `REQ-GRAN-CHECKS`, `REQ-CONTRACT-CLOSURE-SUPPORT`
-- Reason-Code: `ARCH_TRACEABILITY_PLAN_LINK_INVALID`
-- Evidence:
-  - `docs/traceability_map.md:8-12` maps `REQ-GRAN-REQS-SCOPE`, `REQ-GRAN-REQS-COMPLETE`, and `REQ-GRAN-PLAN` to `PLAN-001` or `PLAN-003`.
-  - `docs/plan.md:67-74` shows `PLAN-001` is limited to the notebook template target.
-  - `docs/plan.md:87-96` shows `PLAN-003` is limited to author guidance and readability.
-  - `docs/plan.md:109-120` shows `PLAN-005` is the item that actually operationalizes supporting-governance and documentary evidence boundaries.
-- Impact:
-  - `docs/traceability_map.md` does not accurately trace several governance requirements through the real plan coverage.
-  - The required supporting governance docset exists, but the traceability layer is not aligned with the governing contract plus actual plan content.
-- Fix-Instruction:
-  - Re-map governance requirements in `docs/traceability_map.md` to the plan items that truly satisfy them, or revise the plan item definitions so the current mappings become true.
-  - Re-run a scoped consistency check across `docs/plan.md`, `docs/roadmap.md`, and `docs/traceability_map.md` after the remap.
+### 2. Invalid requirement-to-plan mapping for `REQ-PRESERVE-FLEXIBILITY`
+- Severity: `high`
+- Reason code: `ARCH_PLAN_MAPPING_PRESERVE_FLEXIBILITY_INEXACT`
+- Requirement evidence:
+  - `docs/requirements.md:122-124` requires that the template not imply immediate normalization of provider differences and that it support the current need to absorb imperfect external data.
+- Plan evidence:
+  - `docs/plan.md:167` maps `PLAN-002` to `REQ-PRESERVE-FLEXIBILITY`.
+  - `docs/plan.md:83-86` says `PLAN-002` marks provider-specific sections, reusable sections, commonization candidates, and varying sections.
+  - `docs/plan.md:94-97` says `PLAN-003` preserves flexibility for imperfect provider inputs, but `PLAN-003` is not the mapped item for `REQ-PRESERVE-FLEXIBILITY`.
+- Standard evidence:
+  - `docs/requirements.md:38` forbids convenience mappings based only on nearby topic overlap.
+  - `docs/reference_standards.md:113` and `docs/reference_standards.md:175` require exact mappings to items that directly state the required outcome.
+- Judgment:
+  - The cited `PLAN-002` outcomes do not directly cover the imperfect-external-data flexibility requirement.
+  - The requirement is only partially addressed by the mapped item, so the table entry is not exact.
 
-## Supporting Checks
-| Check ID | Result | Evidence | Threshold | Notes |
-|---|---|---|---|---|
-| `CHK-DOCSET-EXISTS` | PASS | `docs/acceptance_matrix.md`, `docs/traceability_map.md` | both required docs exist | existence confirmed in scoped read |
-| `CHK-ROADMAP-SELF-CHECK-BLOCK` | PASS | `docs/roadmap.md:203-209` | `## Self-Check (Required)` present | required block exists |
-| `CHK-REQ-ID-COVERAGE` | PASS | `docs/requirements.md`, `docs/acceptance_matrix.md`, `docs/traceability_map.md` | all normative `REQ-...` identifiers represented in both support docs | identifier set matched |
-| `CHK-PLAN-MAPPING-CONSISTENCY` | FAIL | `docs/plan.md:87-96`, `docs/plan.md:122-131`, `docs/plan.md:164-167` | requirement-to-plan mappings must point to semantically matching plan items | failed by F-001 |
-| `CHK-TRACEABILITY-CONSISTENCY` | FAIL | `docs/traceability_map.md:8-12`, `docs/plan.md:67-74`, `docs/plan.md:87-96`, `docs/plan.md:109-120` | traceability links must reflect actual plan coverage | failed by F-002 |
+### 3. Invalid requirement-to-plan mapping for `REQ-CONTRACT-CLOSURE-PRESENT-STATE`
+- Severity: `high`
+- Reason code: `ARCH_PLAN_MAPPING_PRESENT_STATE_INEXACT`
+- Requirement evidence:
+  - `docs/requirements.md:59` requires documentary-phase acceptance to be judged against the current contents of the fixed in-scope governing documents, not against prospective future rewrites proposed later.
+- Plan evidence:
+  - `docs/plan.md:171` maps `PLAN-006` to `REQ-CONTRACT-CLOSURE-PRESENT-STATE`.
+  - `docs/plan.md:131-135` says `PLAN-006` keeps the plan subordinate to thresholds, avoids immediate refactoring, avoids generated-code canonicalization, ties success to actual deliverables, and does not require git commit operations.
+  - `docs/plan.md:46` contains the present-tense rule in `DP-2`, but that sentence is outside the cited plan item.
+- Standard evidence:
+  - `docs/requirements.md:50` requires trace links to be semantically exact without inferential repair.
+  - `docs/reference_standards.md:175` requires every cited plan item to itself contain the relevant required outcome.
+- Judgment:
+  - The cited `PLAN-006` text does not directly state the present-state rule.
+  - The mapping depends on cross-item inference from `DP-2`, so it fails the exact-citation rule.
+
+## Decision Basis
+- `docs/plan.md` correctly declares the two-document authority boundary and keeps `AGENTS.md` as consulted guidance only.
+- The rejection is based on in-scope semantic mapping defects inside the plan itself.
+- Under `docs/reference_standards.md:138`, design and requirements-interpretation defects require `REJECT_TO_ARCHITECT`.
 
 ## Insufficient Evidence
 - none
 
 ## Open-Items
-| ID | Severity | Requirement-Ref | Reason-Code | Evidence | Fix-Instruction | Owner |
-|---|---|---|---|---|---|---|
-| OI-001 | Major | `REQ-GRAN-PLAN`, `REQ-AC-NO-REFACTOR`, `REQ-CONTRACT-CLOSURE-DOWNSTREAM` | `ARCH_PLAN_MAPPING_INVALID` | `docs/plan.md:87-96`, `docs/plan.md:122-131`, `docs/plan.md:164-167` | Correct the requirement-to-plan mapping so every cited requirement is supported by the referenced plan item text. | Architect |
-| OI-002 | Major | `REQ-GRAN-SUPPORTING-DOCS-ROLE`, `REQ-GRAN-CHECKS`, `REQ-CONTRACT-CLOSURE-SUPPORT` | `ARCH_TRACEABILITY_PLAN_LINK_INVALID` | `docs/traceability_map.md:8-12`, `docs/plan.md:67-74`, `docs/plan.md:87-96`, `docs/plan.md:109-120` | Re-map governance requirements to the plan items that actually satisfy them and then recheck roadmap/support-doc alignment. | Architect |
-
-## Verdict
-- Final decision: `REJECT_TO_ARCHITECT`
-- Rationale:
-  - The required docset exists and the roadmap keeps the authority boundary mostly intact.
-  - However, the in-scope plan and traceability documents do not provide a semantically reliable requirement-to-plan trace for multiple governance requirements.
-  - Because the defect originates in the Architect-owned plan structure and propagates downstream, the correct repair point is Architect rather than PM.
+- Revise the `Requirement-to-Plan Mapping` table so that each cited plan item directly states the mapped requirement outcome.
+- Either move the missing outcomes into the cited `PLAN-...` items or change the mappings to cite the plan items that already state those outcomes.
+- Re-run plan audit after the mapping table is semantically exact under `docs/requirements.md:38`, `docs/requirements.md:50`, `docs/reference_standards.md:113`, and `docs/reference_standards.md:175`.
