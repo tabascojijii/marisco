@@ -1,11 +1,11 @@
 {
-  "timestamp_utc": "2026-06-03T08:10:30Z",
-  "phase": "REQUIREMENTS_AUDIT",
-  "final_decision": "ESCALATION",
-  "final_owner": "Architect",
-  "final_next_gate": "ESCALATION_REVIEW",
-  "final_reason_code": "REQ_CONTRACT_INVALID",
-  "auditor_decision": "ESCALATION",
+  "timestamp_utc": "2026-06-03T08:46:47Z",
+  "phase": "PM_AUDIT",
+  "final_decision": "REJECT_TO_PM",
+  "final_owner": "PM",
+  "final_next_gate": "PM_REWORK",
+  "final_reason_code": "PM_EXECUTION_ID_MISMATCH",
+  "auditor_decision": "REJECT_TO_ARCHITECT",
   "escalated_by_hook": true,
   "source_audit_status_file": "audit_status.json"
 }
