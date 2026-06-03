@@ -71,8 +71,10 @@ Required outcomes:
 
 - this workstream produces an explicit handler template notebook under `nbs/handlers/`
 - the template follows repository `nbdev` conventions
+- satisfying this workstream must not depend on direct edits to generated Python files; generated `.py` output remains derived evidence rather than the canonical behavior-change path
 - the template preserves the ordered Handler Template Baseline defined in `docs/requirements.md`
 - the template is explicitly current-state descriptive rather than future-state prescriptive
+- the template guidance explicitly identifies which baseline sections are expected to vary by provider
 - the template is designed to export through the current `nbdev` flow and to remain importable after generation
 - the notebook structure avoids introducing a broken `default_exp`, invalid export cell, or circular import by default
 
@@ -109,6 +111,7 @@ Specify the minimum post-commit verification design for this workstream.
 Required outcomes:
 
 - `.git/hooks/post-commit` remains the governing orchestration surface
+- any helper scripts called by the hook are subordinate implementation details and must not become alternative sources of workflow authority
 - project-specific acceptance granularity remains owned by `docs/requirements.md`, and the hook is not treated as the source of that granularity policy
 - the documented sequence contains export or regeneration, `python -m py_compile`, and lightweight import smoke checks
 - the documented post-commit path remains practical for normal development by staying limited to those lightweight stages and by excluding external-network and full-dataset execution from the post-commit path
@@ -128,6 +131,7 @@ Required outcomes:
 - downstream roadmap items that are cited for governance requirements must restate the mapped governance outcome in their own text rather than relying on generic boundary language or nearby roadmap context
 - every normative `REQ-...` identifier currently defined in `docs/requirements.md` is represented in `docs/acceptance_matrix.md`
 - for every normative `REQ-...` identifier currently defined in `docs/requirements.md`, `docs/acceptance_matrix.md` states acceptance layer, criterion, roadmap-phase documentary evidence path, later implementation evidence path or `not applicable`, roadmap threshold, and later implementation threshold or `not applicable`
+- each acceptance-matrix row carries those required fields in the row text itself and must not rely on section defaults, neighboring rows, or surrounding prose to supply a missing field, evidence path, or threshold
 - roadmap text that is cited for `REQ-GRAN-CHECKS` must directly state the full acceptance-matrix completeness obligation rather than only speaking about traceability discipline in general
 - `docs/traceability_map.md` traces each normative `REQ-...` identifier from source through plan and roadmap evidence paths
 - every requirement-to-plan and requirement-to-roadmap citation in supporting documents points only to items whose stated required outcomes directly satisfy the cited requirement
@@ -135,6 +139,7 @@ Required outcomes:
 - roadmap citations remain subordinate to the governing contract and do not become the sole source of acceptance detail that auditors need in order to judge this workstream
 - neither supporting document introduces a new authority source, gate prerequisite, or substitute decision vocabulary
 - roadmap-phase documentary evidence paths remain inside the declared documentation scope
+- repository-local instruction files such as `AGENTS.md` may be consulted for authoring discipline but must not appear as deciding documentary evidence sources for contract closure in supporting-governance rows or traces
 
 This item is a consistency requirement for the change set, not an alternate Architect-gate algorithm. If a future audit narrows scope so that supporting documents are out of scope, plan validity still remains decidable from the governing contract plus this plan.
 
