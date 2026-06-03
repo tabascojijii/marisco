@@ -44,6 +44,8 @@ Confirm that roadmap execution stays subordinate to `docs/requirements.md` and `
 
 Required outcomes:
 
+- project-specific acceptance granularity remains owned by `docs/requirements.md`, and roadmap execution does not attempt to repair requirements-level completeness gaps locally
+- repository-wide audit-depth rules, abstract-term handling, and documentary-phase audit-contract semantics remain owned by `docs/reference_standards.md`, with `docs/audit_contract.md` remaining subordinate
 - no roadmap text becomes a replacement acceptance authority
 - no roadmap item introduces a new gate rule or alternate pass/fail algorithm
 - roadmap-phase evidence paths stay inside the declared documentation scope
@@ -61,6 +63,7 @@ Required outcomes:
 
 - `docs/acceptance_matrix.md` continues to cover every normative `REQ-...` identifier
 - `docs/traceability_map.md` maps every normative `REQ-...` identifier to source, plan, roadmap, and evidence paths
+- every requirement-to-plan and requirement-to-roadmap citation in supporting documents remains semantically exact to the stated outcomes of the cited item
 - roadmap references to supporting documents remain operational, not authority-transferring
 - no supporting document introduces a new prerequisite absent from the governing contract
 
@@ -123,6 +126,8 @@ Required outcomes:
 
 - `.git/hooks/post-commit` is the governing orchestration surface
 - the documented sequence contains export or regeneration, `python -m py_compile`, and lightweight import smoke checks
+- the documented post-commit path remains practical for normal development by staying limited to those lightweight stages and by excluding external-network and full-dataset execution from the post-commit path
+- the roadmap directly states stage-to-failure coverage: export or regeneration catches broken notebook export structure, `python -m py_compile` catches syntax errors in generated modules, and import smoke checks catch obvious import-time breakage in touched code paths
 - heavyweight execution remains explicitly excluded
 - the verification path remains practical for normal development
 

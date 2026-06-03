@@ -112,6 +112,7 @@
 - If a requirement depends on a comparison target, required structure, validation baseline, or implementation boundary, that reference must be named in a scoped document rather than inferred from repository-wide exploration.
 - Requirement-to-plan, requirement-to-roadmap, and requirement-to-evidence mappings must be semantically exact. A cited downstream item is valid only when its stated outcomes directly satisfy the referenced requirement; topical adjacency or generic governance language is insufficient.
 - When a `PLAN-...` or `RM-...` item is cited for a requirement, that cited item must itself contain the mapped outcome. Auditors must reject mappings that depend on borrowing meaning from design principles, neighboring items, milestone summaries, or general document framing.
+- When a cited requirement contains multiple mandatory outcome fragments, a downstream item may be cited only for the fragments that item directly states. Auditors must reject blanket citations that overclaim broader coverage than the cited item's text actually carries.
 - Plans and roadmaps may add execution detail, but auditors must not treat them as substitutes for missing requirement-level acceptance criteria.
 - Findings should identify the missing contract boundary precisely enough that an upstream document owner can repair it without guessing.
 
@@ -188,6 +189,8 @@
 - Implementation-phase auditing must include `pytest tests/` unless the requirements document explicitly defines a different local validation baseline.
 - Lightweight validation may be used in earlier documentation-oriented phases, but implementation acceptance requires executable evidence.
 - Earlier documentation-oriented phases must be pass/fail decidable from documentary evidence alone; they may require phase-appropriate implementation planning, but not the runtime presence of future deliverables.
+- For earlier documentation-oriented phases, a downstream claim of `lightweight` validation is auditable only when the cited item expressly states both the allowed stage set and the exclusion of external-network or full-dataset execution from the post-commit path.
+- For those same phases, a downstream claim of validation coverage is auditable only when the cited item expressly states which required verification stage is intended to catch each required failure class.
 - Post-commit verification should prefer fast checks first, with heavier verification delegated to manual execution or CI where appropriate.
 
 ## Notebook-First And nbdev Rules

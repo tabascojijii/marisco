@@ -135,6 +135,7 @@
 ### REQ-LOW-FRICTION-VALIDATION
 - Post-commit checks must complete quickly enough to remain practical during normal development.
 - Heavy external-network or full-dataset runs should not be required in the post-commit path.
+- For this workstream's documentary phases, a downstream plan or roadmap item may be cited for this requirement only if that item directly states that the post-commit path remains limited to the lightweight stages defined in `REQ-POST-COMMIT-SEQUENCE` and excludes external-network and full-dataset execution from the post-commit path.
 
 ## Constraints
 - The repository is notebook-first and uses `nbdev`; generated files are derived artifacts.
@@ -197,6 +198,7 @@ The guidance below elaborates how the requirements above are applied in practice
   - broken notebook export structure
   - syntax errors in generated modules
   - obvious import-time breakage in touched code paths
+- For this workstream's documentary phases, a downstream plan or roadmap item may be cited for `REQ-CHECK-COVERAGE` only if that item directly states which required verification stage is intended to catch each of the three failure classes above.
 
 ### Recommended Minimum Post-Commit Check Set
 (informative, see `REQ-POST-COMMIT-SEQUENCE`)
