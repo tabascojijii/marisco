@@ -1,50 +1,87 @@
 # Audit Report
 
+**Phase:** Roadmap  
+**Date:** 2026-06-03  
+**Decision:** `REJECT_TO_PM`
+
 ## Summary
-- Scope reviewed in full before judgment: `AGENTS.md`, `docs/requirements.md`, `docs/plan.md`, `docs/reference_standards.md`
-- Audit target: `docs/plan.md`
-- Decision: `AUDIT_PASS_PLAN`
+
+The required docset exists within scope: `docs/acceptance_matrix.md` and `docs/traceability_map.md` are present, and the roadmap keeps `AGENTS.md` in a consulted-only role.
+
+The rejection is caused by semantic-exactness failures in roadmap-to-requirement tracing. `RM-001` and `RM-002` are cited for governance requirements whose mapped outcomes they do not directly state, and both supporting-governance documents repeat those invalid citations. The governing contract in `docs/requirements.md` and `docs/reference_standards.md` remains usable, so the repair point is PM rather than Architect.
 
 ## Scope
+
 - `AGENTS.md`
 - `docs/requirements.md`
 - `docs/plan.md`
+- `docs/roadmap.md`
 - `docs/reference_standards.md`
+- `docs/acceptance_matrix.md`
+- `docs/traceability_map.md`
+
+## Method
+
+- Read every in-scope file completely before judging.
+- Checked roadmap text against direct-mapping rules in the governing contract.
+- Audited required supporting documents for existence and alignment inside the fixed documentary scope.
 
 ## Findings
-- No nonconformities found in `docs/plan.md` within the fixed audit scope.
 
-## Checks
-- `REQ-NB-TEMPLATE`, `REQ-CURRENT-STATE-FIDELITY`, `REQ-NBDEV-COMPAT`, `REQ-AC-TEMPLATE-EXISTS`, `REQ-AC-TEMPLATE-BASELINE`, `REQ-AC-TEMPLATE-NBDEV`
-  - Pass: yes
-  - Evidence: `docs/plan.md:66-77`, `docs/plan.md:181`, `docs/requirements.md:83-103`, `docs/requirements.md:221-225`
-  - Basis: `PLAN-001` directly states the template notebook target, `nbdev` alignment, ordered baseline preservation, and export/import compatibility.
-- `REQ-DIFFERENCE-VISIBILITY`, `REQ-PRESERVE-FLEXIBILITY`, `REQ-AVOID-PREMATURE-COMMONIZATION`, `REQ-AC-TEMPLATE-ZONES`, `REQ-AC-PRESERVE-FLEXIBILITY`, `REQ-AC-NO-REFACTOR`
-  - Pass: yes
-  - Evidence: `docs/plan.md:79-91`, `docs/plan.md:145-149`, `docs/plan.md:182`, `docs/plan.md:186`, `docs/requirements.md:93-98`, `docs/requirements.md:128-134`, `docs/requirements.md:224`, `docs/requirements.md:228-229`
-  - Basis: `PLAN-002` and `PLAN-006` directly preserve provider-specific zones, flexibility, and the no-immediate-refactor boundary.
-- `REQ-READABILITY`, `REQ-AC-READABILITY`
-  - Pass: yes
-  - Evidence: `docs/plan.md:93-103`, `docs/plan.md:183`, `docs/requirements.md:136-138`, `docs/requirements.md:230`
-  - Basis: `PLAN-003` directly requires literate notebook readability and prose-adjacent code structure.
-- `REQ-GRAN-HOOK`, `REQ-POST-COMMIT-AUTHORITY`, `REQ-POST-COMMIT-SEQUENCE`, `REQ-POST-COMMIT-LIGHTWEIGHT-BOUNDARY`, `REQ-LOW-FRICTION-VALIDATION`, `REQ-PYTHON-BASELINE`, `REQ-CHECK-EXPORT`, `REQ-CHECK-COMPILE`, `REQ-CHECK-COVERAGE`, `REQ-AC-POST-COMMIT-SEQUENCE`, `REQ-AC-POST-COMMIT-BOUNDARY`
-  - Pass: yes
-  - Evidence: `docs/plan.md:105-117`, `docs/plan.md:184`, `docs/requirements.md:105-124`, `docs/requirements.md:140-148`, `docs/requirements.md:199-227`, `docs/reference_standards.md:196-197`
-  - Basis: `PLAN-004` directly states the hook-governed authority surface, the required three-stage lightweight sequence, explicit heavyweight exclusions, Python baseline compatibility, and stage-to-failure coverage mapping.
-- `REQ-GRAN-PLAN`, `REQ-GRAN-PLAN-AC-DIRECT`, `REQ-CONTRACT-CLOSURE-PLAN`, `REQ-CONTRACT-CLOSURE-DOWNSTREAM`, `REQ-CONTRACT-CLOSURE-PRESENT-STATE`
-  - Pass: yes
-  - Evidence: `docs/plan.md:145-146`, `docs/plan.md:177-186`, `docs/plan.md:221-223`, `docs/requirements.md:39-44`, `docs/requirements.md:62-65`, `docs/reference_standards.md:114-120`, `docs/reference_standards.md:133-145`
-  - Basis: the plan keeps requirement thresholds upstream, keeps mapping outcomes direct, and expressly avoids defining an independent documentary-phase gate algorithm.
-- `REQ-GRAN-REQS-SCOPE`, `REQ-GRAN-REQS-COMPLETE`, `REQ-GRAN-STANDARDS`, `REQ-GRAN-ROADMAP`, `REQ-GRAN-ROADMAP-AC-DIRECT`, `REQ-GRAN-CONTRACT-DECIDABLE`, `REQ-GRAN-CONTRACT-SUBORD`, `REQ-GRAN-SUPPORTING-DOCS-ROLE`, `REQ-GRAN-CHECKS`, `REQ-CONTRACT-CLOSURE-AUTHORITY`, `REQ-CONTRACT-CLOSURE-SUPPORT`, `REQ-CONTRACT-CLOSURE-EVIDENCE`, `REQ-CONTRACT-CLOSURE-SUPPORT-SEPARATION`
-  - Pass: yes
-  - Evidence: `docs/plan.md:119-137`, `docs/plan.md:185`, `docs/requirements.md:35-66`, `docs/reference_standards.md:8-21`, `docs/reference_standards.md:123-133`, `docs/reference_standards.md:176-184`
-  - Basis: `PLAN-005` correctly treats supporting governance documents as subordinate operationalization surfaces and keeps Architect-gate decidability inside the governing contract plus the plan.
+### AO-001
 
-## Decision
-- `AUDIT_PASS_PLAN`
+`RM-001` is over-cited for governance requirements that demand direct outcome text in the cited roadmap item. The traceability map uses `RM-001` for `REQ-GRAN-REQS-SCOPE`, `REQ-GRAN-REQS-COMPLETE`, `REQ-GRAN-STANDARDS`, `REQ-GRAN-CONTRACT-DECIDABLE`, `REQ-CONTRACT-CLOSURE-AUTHORITY`, and `REQ-CONTRACT-CLOSURE-SUPPORT-SEPARATION`, but `RM-001` only states general authority-boundary and evidence-scope guardrails. It does not directly state project-specific granularity ownership, requirements-level completeness, ownership of audit-depth and abstract-term handling, or that the machine-readable audit-status contract is decidable from the two-document governing set alone.
+
+Evidence:
+
+- `docs/requirements.md:35-55`
+- `docs/requirements.md:59-65`
+- `docs/reference_standards.md:114-119`
+- `docs/reference_standards.md:181-184`
+- `docs/roadmap.md:28-33`
+- `docs/traceability_map.md:10-19`
+- `docs/traceability_map.md:22-28`
+
+Impact:
+
+- roadmap-phase traceability is not semantically exact
+- the supporting-governance docset overclaims roadmap coverage for multiple blocking governance requirements
+- the roadmap self-check at `docs/roadmap.md:136` is not currently true
+
+### AO-002
+
+`RM-002` is cited for `REQ-GRAN-CHECKS`, but the cited roadmap item does not directly state the required acceptance-matrix completeness outcome. The requirement and plan demand that `docs/acceptance_matrix.md` contain one row for every normative `REQ-...` identifier with all required fields and thresholds. `RM-002` only states traceability directness, evidence-scope limits, acceptance of `REQ-AC-...` as normative, and subordinate status of supporting documents.
+
+Evidence:
+
+- `docs/requirements.md:46-55`
+- `docs/plan.md:128-135`
+- `docs/roadmap.md:39-44`
+- `docs/acceptance_matrix.md:22`
+- `docs/traceability_map.md:21`
+
+Impact:
+
+- the roadmap does not directly carry a mapped outcome that supporting documents claim it carries
+- supporting-governance alignment is incomplete for a blocking matrix requirement
+
+## Required Docset Result
+
+- `docs/acceptance_matrix.md`: present
+- `docs/traceability_map.md`: present
+- Existence alone passes, but alignment does not pass because the cited roadmap items are not semantically exact for all mapped governance requirements.
+
+## Insufficient Evidence
+
+- none
 
 ## Open-Items
-- None
 
-## 不足証跡
-- なし
+| ID | Severity | Requirement-Ref | Reason-Code | Evidence | Fix-Instruction | Owner |
+|---|---|---|---|---|---|---|
+| AO-001 | High | `REQ-GRAN-REQS-SCOPE`, `REQ-GRAN-REQS-COMPLETE`, `REQ-GRAN-STANDARDS`, `REQ-GRAN-CONTRACT-DECIDABLE`, `REQ-CONTRACT-CLOSURE-AUTHORITY`, `REQ-CONTRACT-CLOSURE-SUPPORT-SEPARATION` | `PM_TRACE_DIRECTNESS_GAP` | `docs/roadmap.md:28-33`; `docs/traceability_map.md:10-19`; `docs/traceability_map.md:22-28` | Expand `RM-001` or split it into additional `RM-...` items so each cited requirement is stated directly in roadmap text, then realign `docs/traceability_map.md` and any affected `docs/acceptance_matrix.md` rows. | PM |
+| AO-002 | High | `REQ-GRAN-CHECKS` | `PM_MATRIX_MAPPING_GAP` | `docs/roadmap.md:39-44`; `docs/traceability_map.md:21`; `docs/acceptance_matrix.md:22` | Add roadmap text that directly states the full acceptance-matrix completeness obligation, or remap `REQ-GRAN-CHECKS` to a roadmap item that already states it directly, then update supporting-governance rows to match. | PM |
+
+## Decision Basis
+
+`REJECT_TO_PM` is the correct disposition because the governing requirements, standards, and Architect plan are usable. The defects are in PM-phase roadmap wording and the subordinate supporting-governance mappings that depend on that wording.
