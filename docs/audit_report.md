@@ -1,60 +1,75 @@
-# Audit Report
-
-- Phase: Roadmap Audit
-- Date: 2026-06-03
-- Decision: REJECT_TO_ARCHITECT
-- Scope: `AGENTS.md`, `docs/requirements.md`, `docs/plan.md`, `docs/roadmap.md`, `docs/reference_standards.md`, `docs/acceptance_matrix.md`, `docs/traceability_map.md`
+# Plan Audit Report
 
 ## Summary
+- 監査対象: `AGENTS.md`, `docs/requirements.md`, `docs/plan.md`, `docs/reference_standards.md`
+- 監査対象相: `docs/plan.md`
+- 完全走査: 実施済み
+- 判定: `REJECT_TO_ARCHITECT`
 
-必須 docset の存在は確認したが、整合監査は不合格。`docs/acceptance_matrix.md` が normative requirement 全件を収録しておらず、さらに roadmap-phase 判定を fixed documentation scope のみで完結させる契約も文書群で閉じていないため、修正先は PM ではなく Architect である。
-
-## Scope-Read
-
-- [AGENTS.md](/C:/dev/marisco3/marisco_clean/marisco_repo/AGENTS.md:1)
-- [docs/requirements.md](/C:/dev/marisco3/marisco_clean/marisco_repo/docs/requirements.md:1)
-- [docs/plan.md](/C:/dev/marisco3/marisco_clean/marisco_repo/docs/plan.md:1)
-- [docs/roadmap.md](/C:/dev/marisco3/marisco_clean/marisco_repo/docs/roadmap.md:1)
-- [docs/reference_standards.md](/C:/dev/marisco3/marisco_clean/marisco_repo/docs/reference_standards.md:1)
-- [docs/acceptance_matrix.md](/C:/dev/marisco3/marisco_clean/marisco_repo/docs/acceptance_matrix.md:1)
-- [docs/traceability_map.md](/C:/dev/marisco3/marisco_clean/marisco_repo/docs/traceability_map.md:1)
-
-## Docset Audit
-
-- `docs/acceptance_matrix.md` exists and is in scope: [docs/acceptance_matrix.md](/C:/dev/marisco3/marisco_clean/marisco_repo/docs/acceptance_matrix.md:1)
-- `docs/traceability_map.md` exists and is in scope: [docs/traceability_map.md](/C:/dev/marisco3/marisco_clean/marisco_repo/docs/traceability_map.md:1)
-- Existence alone is not sufficient. `docs/reference_standards.md` requires both documents to carry normative governance content: [docs/reference_standards.md](/C:/dev/marisco3/marisco_clean/marisco_repo/docs/reference_standards.md:135)
+## Scope Discipline
+- 判定は固定スコープ4ファイルのみを根拠とした。
+- リポジトリ再帰探索は未実施。
+- スコープ外ファイルの内容は根拠に使っていない。
 
 ## Findings
 
-1. `docs/acceptance_matrix.md` does not satisfy the required full normative coverage contract.
-`docs/requirements.md` defines all `REQ-...` items as normative identifiers and assigns operationalized checks and pass thresholds to `docs/acceptance_matrix.md`: [docs/requirements.md](/C:/dev/marisco3/marisco_clean/marisco_repo/docs/requirements.md:29), [docs/requirements.md](/C:/dev/marisco3/marisco_clean/marisco_repo/docs/requirements.md:42). `docs/reference_standards.md` further states that `docs/acceptance_matrix.md` owns acceptance layer, criterion, evidence path, and threshold mapping for all normative requirements: [docs/reference_standards.md](/C:/dev/marisco3/marisco_clean/marisco_repo/docs/reference_standards.md:109), [docs/reference_standards.md](/C:/dev/marisco3/marisco_clean/marisco_repo/docs/reference_standards.md:115), [docs/reference_standards.md](/C:/dev/marisco3/marisco_clean/marisco_repo/docs/reference_standards.md:135). However, the matrix contains 19 mapped rows only: [docs/acceptance_matrix.md](/C:/dev/marisco3/marisco_clean/marisco_repo/docs/acceptance_matrix.md:7). The scoped traceability map contains 33 normative requirements: [docs/traceability_map.md](/C:/dev/marisco3/marisco_clean/marisco_repo/docs/traceability_map.md:5). Missing acceptance-matrix coverage includes `REQ-GRAN-*`, `REQ-POST-COMMIT-AUTHORITY`, `REQ-PRESERVE-FLEXIBILITY`, `REQ-AVOID-PREMATURE-COMMONIZATION`, `REQ-READABILITY`, and `REQ-LOW-FRICTION-VALIDATION`: [docs/traceability_map.md](/C:/dev/marisco3/marisco_clean/marisco_repo/docs/traceability_map.md:7), [docs/traceability_map.md](/C:/dev/marisco3/marisco_clean/marisco_repo/docs/traceability_map.md:20), [docs/traceability_map.md](/C:/dev/marisco3/marisco_clean/marisco_repo/docs/traceability_map.md:23), [docs/traceability_map.md](/C:/dev/marisco3/marisco_clean/marisco_repo/docs/traceability_map.md:24), [docs/traceability_map.md](/C:/dev/marisco3/marisco_clean/marisco_repo/docs/traceability_map.md:25), [docs/traceability_map.md](/C:/dev/marisco3/marisco_clean/marisco_repo/docs/traceability_map.md:26).
+### F-001
+- 概要: `docs/plan.md` が Architect ゲートの成立条件として `docs/acceptance_matrix.md` と `docs/traceability_map.md` への適合を要求しており、固定監査スコープ外の証跡を plan 相判定に持ち込んでいる。
+- 根拠:
+  - `docs/requirements.md:9`
+  - `docs/requirements.md:176-178`
+  - `docs/reference_standards.md:12-13`
+  - `docs/reference_standards.md:162-173`
+  - `docs/plan.md:196-202`
+- 判定理由: requirements と reference standards は、requirements・plan・roadmap 相の判定を固定 documentation scope だけで可決可能にすることを要求している。ところが plan は out-of-scope 文書への適合を Architect gate 条件として再導入しており、plan 相の可決条件を上流正本より厳しくしている。
 
-2. The roadmap-phase evidence contract is not self-contained within the fixed documentation scope.
-The requirements document says requirements-, plan-, and roadmap-phase acceptance must be auditable from the fixed documentation scope and that the governing machine-readable contract must be decidable from `docs/reference_standards.md` and `docs/requirements.md` alone: [docs/requirements.md](/C:/dev/marisco3/marisco_clean/marisco_repo/docs/requirements.md:8), [docs/requirements.md](/C:/dev/marisco3/marisco_clean/marisco_repo/docs/requirements.md:9), [docs/requirements.md](/C:/dev/marisco3/marisco_clean/marisco_repo/docs/requirements.md:40). The roadmap repeats that roadmap-phase pass/fail must be decidable from the fixed documentation scope only and must not require implementation artifacts: [docs/roadmap.md](/C:/dev/marisco3/marisco_clean/marisco_repo/docs/roadmap.md:19), [docs/roadmap.md](/C:/dev/marisco3/marisco_clean/marisco_repo/docs/roadmap.md:21), [docs/roadmap.md](/C:/dev/marisco3/marisco_clean/marisco_repo/docs/roadmap.md:22). Despite that, the normative acceptance mapping still points core checks to `nbs/handlers/`, generated `.py`, `.git/hooks/post-commit`, `artifacts/*.json`, and `hook run log`: [docs/acceptance_matrix.md](/C:/dev/marisco3/marisco_clean/marisco_repo/docs/acceptance_matrix.md:9), [docs/acceptance_matrix.md](/C:/dev/marisco3/marisco_clean/marisco_repo/docs/acceptance_matrix.md:12), [docs/acceptance_matrix.md](/C:/dev/marisco3/marisco_clean/marisco_repo/docs/acceptance_matrix.md:25), [docs/traceability_map.md](/C:/dev/marisco3/marisco_clean/marisco_repo/docs/traceability_map.md:16), [docs/traceability_map.md](/C:/dev/marisco3/marisco_clean/marisco_repo/docs/traceability_map.md:20), [docs/traceability_map.md](/C:/dev/marisco3/marisco_clean/marisco_repo/docs/traceability_map.md:29). `docs/plan.md` explicitly acknowledges this mismatch and leaves the documents unchanged: [docs/plan.md](/C:/dev/marisco3/marisco_clean/marisco_repo/docs/plan.md:35), [docs/plan.md](/C:/dev/marisco3/marisco_clean/marisco_repo/docs/plan.md:41). That leaves the roadmap audit contract dependent on out-of-scope future evidence.
+### F-002
+- 概要: `docs/plan.md` の主計画は governance repair に偏っており、requirements が定義する本来の workstream deliverables を実現する実行計画が不足している。
+- 根拠:
+  - `docs/requirements.md:23-27`
+  - `docs/requirements.md:131-135`
+  - `docs/plan.md:57-159`
+  - `docs/plan.md:174-190`
+  - `docs/plan.md:215-221`
+- 判定理由: requirements の deliverables は handler template notebook、provider-specific と reusable の checklist、hook-governed lightweight post-commit flow、利用方法 documentation である。plan は acceptance matrix と traceability map の改修を中心に構成され、上記 deliverables を作るための Architect-to-PM 実行計画が欠ける。
 
-3. The artifact-failure rule remains phase-ambiguous in the scoped governance set.
-`docs/reference_standards.md` states without phase qualification that missing required artifacts are contract failures: [docs/reference_standards.md](/C:/dev/marisco3/marisco_clean/marisco_repo/docs/reference_standards.md:160), [docs/reference_standards.md](/C:/dev/marisco3/marisco_clean/marisco_repo/docs/reference_standards.md:167). `docs/plan.md` and `docs/roadmap.md` instead treat those artifacts as later implementation evidence, not roadmap-phase prerequisites: [docs/plan.md](/C:/dev/marisco3/marisco_clean/marisco_repo/docs/plan.md:27), [docs/plan.md](/C:/dev/marisco3/marisco_clean/marisco_repo/docs/plan.md:33), [docs/roadmap.md](/C:/dev/marisco3/marisco_clean/marisco_repo/docs/roadmap.md:22), [docs/roadmap.md](/C:/dev/marisco3/marisco_clean/marisco_repo/docs/roadmap.md:138). Because `REQ-GRAN-CONTRACT-DECIDABLE` requires the contract to be decidable from the scoped governance set alone, this phase boundary must be repaired upstream rather than inferred from plan prose.
+### F-003
+- 概要: `docs/plan.md` が `docs/audit_report.md` を authority source として扱い、同ファイル起点で defect 群を定義しているが、当該ファイルはこの監査の固定スコープにも、requirements と reference standards が定める plan 相の正本集合にも含まれない。
+- 根拠:
+  - `docs/requirements.md:40-47`
+  - `docs/reference_standards.md:9-13`
+  - `docs/reference_standards.md:114`
+  - `docs/plan.md:5`
+  - `docs/plan.md:9`
+  - `docs/plan.md:20-30`
+  - `docs/plan.md:225-231`
+- 判定理由: plan 相の governing contract は `docs/requirements.md` と `docs/reference_standards.md` で決定される。plan が `docs/audit_report.md` を authority source として昇格させると、固定スコープ外の監査結果に依存した設計根拠が生じ、plan 単体の客観監査性を損なう。
+
+### F-004
+- 概要: `docs/plan.md` が `33/33` という固定件数閾値を独自に宣言しており、requirements の「every normative requirement」基準を件数基準へ置換している。
+- 根拠:
+  - `docs/requirements.md:38`
+  - `docs/requirements.md:42-47`
+  - `docs/plan.md:96-105`
+  - `docs/plan.md:227`
+- 判定理由: requirements は acceptance matrix に対し「全 normative `REQ-...`」の被覆を要求しており、固定件数は source-of-truth ではない。plan の `33/33` は requirements 変更時に即座に陳腐化し得るため、threshold を plan で再定義している。
 
 ## 不足証跡
-
-- 固定スコープ制約により、`nbs/handlers/handler_template.ipynb`、generated `.py`、`.git/hooks/post-commit`、`artifacts/*.json`、`hook run log` は未読。
-- これらは roadmap-phase で読むべき証跡ではなく、文書側が roadmap-phase documentary evidence と later implementation evidence をどう切り分けるかの契約対象である。
-
-## Checks
-
-| ID | Pass | Evidence | Metric | Threshold |
-|---|---|---|---|---|
-| REQ-DOCSET-EXISTS | true | [docs/requirements.md](/C:/dev/marisco3/marisco_clean/marisco_repo/docs/requirements.md:205), [docs/acceptance_matrix.md](/C:/dev/marisco3/marisco_clean/marisco_repo/docs/acceptance_matrix.md:1), [docs/traceability_map.md](/C:/dev/marisco3/marisco_clean/marisco_repo/docs/traceability_map.md:1) | required docset present | both required governance documents exist |
-| REQ-ROADMAP-SELF-CHECK-BLOCK | true | [docs/reference_standards.md](/C:/dev/marisco3/marisco_clean/marisco_repo/docs/reference_standards.md:146), [docs/roadmap.md](/C:/dev/marisco3/marisco_clean/marisco_repo/docs/roadmap.md:159) | `## Self-Check (Required)` present | required markdown block present |
-| REQ-GRAN-CHECKS | false | [docs/requirements.md](/C:/dev/marisco3/marisco_clean/marisco_repo/docs/requirements.md:42), [docs/reference_standards.md](/C:/dev/marisco3/marisco_clean/marisco_repo/docs/reference_standards.md:115), [docs/acceptance_matrix.md](/C:/dev/marisco3/marisco_clean/marisco_repo/docs/acceptance_matrix.md:7), [docs/traceability_map.md](/C:/dev/marisco3/marisco_clean/marisco_repo/docs/traceability_map.md:5) | `19/33` normative requirements mapped in acceptance matrix | `33/33` normative requirements mapped |
-| REQ-GRAN-CONTRACT-DECIDABLE | false | [docs/requirements.md](/C:/dev/marisco3/marisco_clean/marisco_repo/docs/requirements.md:8), [docs/requirements.md](/C:/dev/marisco3/marisco_clean/marisco_repo/docs/requirements.md:40), [docs/roadmap.md](/C:/dev/marisco3/marisco_clean/marisco_repo/docs/roadmap.md:21), [docs/acceptance_matrix.md](/C:/dev/marisco3/marisco_clean/marisco_repo/docs/acceptance_matrix.md:9), [docs/traceability_map.md](/C:/dev/marisco3/marisco_clean/marisco_repo/docs/traceability_map.md:16) | critical checks depend on out-of-scope implementation evidence | roadmap-phase pass or fail decidable from fixed documentation scope only |
-| REQ-GRAN-REQS-COMPLETE | false | [docs/reference_standards.md](/C:/dev/marisco3/marisco_clean/marisco_repo/docs/reference_standards.md:160), [docs/plan.md](/C:/dev/marisco3/marisco_clean/marisco_repo/docs/plan.md:27), [docs/roadmap.md](/C:/dev/marisco3/marisco_clean/marisco_repo/docs/roadmap.md:22) | artifact-failure rule lacks phase-qualified contract boundary | no contradictory phase rule inside scoped governance set |
+- `docs/plan.md` が参照する `docs/audit_report.md` の実内容は固定スコープ外のため未検証。
+- `docs/plan.md` が検証条件に使う `docs/acceptance_matrix.md` と `docs/traceability_map.md` の実内容は固定スコープ外のため未検証。
 
 ## Open-Items
+- OI-001: `docs/plan.md` の Architect gate 条件から固定スコープ外証跡依存を除去し、plan 相の可決条件を `docs/requirements.md` と `docs/reference_standards.md` に従属させること。
+- OI-002: governance repair とは別に、handler template notebook、zone checklist、hook-governed lightweight post-commit flow、usage documentation へ到達する計画項目を `docs/plan.md` に追加すること。
+- OI-003: `docs/plan.md` の authority source から `docs/audit_report.md` を外し、監査結果への依存が必要な箇所は参考情報として降格すること。
+- OI-004: `33/33` の固定件数表現を削除し、coverage 基準を requirements 正本の `every normative REQ-...` 参照へ置換すること。
 
-| ID | Severity | Requirement-Ref | Reason-Code | Evidence | Fix-Instruction | Owner |
-|---|---|---|---|---|---|---|
-| OI-001 | High | `REQ-GRAN-CHECKS` | `ARCH_ACCEPTANCE_MATRIX_INCOMPLETE` | [docs/acceptance_matrix.md](/C:/dev/marisco3/marisco_clean/marisco_repo/docs/acceptance_matrix.md:7), [docs/traceability_map.md](/C:/dev/marisco3/marisco_clean/marisco_repo/docs/traceability_map.md:5) | Expand `docs/acceptance_matrix.md` so every normative requirement in scoped governance documents has Layer, Criterion, Evidence Path, and Threshold. | Architect |
-| OI-002 | High | `REQ-GRAN-CONTRACT-DECIDABLE`; `REQ-GRAN-ROADMAP` | `ARCH_FIXED_SCOPE_UNDECIDABLE` | [docs/requirements.md](/C:/dev/marisco3/marisco_clean/marisco_repo/docs/requirements.md:8), [docs/roadmap.md](/C:/dev/marisco3/marisco_clean/marisco_repo/docs/roadmap.md:21), [docs/acceptance_matrix.md](/C:/dev/marisco3/marisco_clean/marisco_repo/docs/acceptance_matrix.md:9) | Add phase-appropriate documentary evidence paths and thresholds for roadmap audit, or explicitly move those requirements out of the roadmap-phase acceptance gate. | Architect |
-| OI-003 | Medium | `REQ-GRAN-REQS-COMPLETE`; `REQ-GRAN-CONTRACT-DECIDABLE` | `ARCH_ARTIFACT_PHASE_BOUNDARY_AMBIGUOUS` | [docs/reference_standards.md](/C:/dev/marisco3/marisco_clean/marisco_repo/docs/reference_standards.md:160), [docs/plan.md](/C:/dev/marisco3/marisco_clean/marisco_repo/docs/plan.md:27), [docs/roadmap.md](/C:/dev/marisco3/marisco_clean/marisco_repo/docs/roadmap.md:22) | Qualify the artifact-failure rule by phase inside the normative governance set so roadmap-phase auditing does not depend on absent implementation artifacts. | Architect |
+## Decision
+- decision: `REJECT_TO_ARCHITECT`
+- owner: `Architect`
+- next_gate: `ARCHITECT_REWORK`
+- reason_codes:
+  - `ARCH_PLAN_OUT_OF_SCOPE_GATE`
+  - `ARCH_PLAN_DELIVERABLE_GAP`
+  - `ARCH_PLAN_AUTHORITY_DRIFT`
+  - `ARCH_PLAN_THRESHOLD_DRIFT`
