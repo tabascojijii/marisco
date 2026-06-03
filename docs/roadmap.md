@@ -26,9 +26,15 @@ This roadmap is subordinate to the governing two-document contract. It sequences
 Required outcomes:
 
 - execution remains governed by `docs/requirements.md` and `docs/reference_standards.md`
+- project-specific acceptance granularity for this workstream remains defined by `docs/requirements.md`, and roadmap execution does not relocate that granularity into roadmap prose, supporting-governance documents, or hook implementation
+- roadmap execution assumes the governing two-document contract is already complete enough for scoped auditing and does not paper over contradictory, undefined, or missing requirement boundaries with local roadmap inference
+- repository-wide audit-depth rules, abstract-term handling, and documentary-phase semantic-exactness rules remain owned by `docs/reference_standards.md`
+- the machine-readable audit-status contract for requirements-, plan-, and roadmap-phase auditing remains decidable from `docs/requirements.md` and `docs/reference_standards.md` alone
+- no supporting-governance document, roadmap note, or consulted repository-local guidance becomes an extra authority source for deciding documentary-phase contract validity or audit-status semantics
 - `docs/roadmap.md` does not become the sole source of acceptance detail needed for roadmap-phase auditing
 - roadmap-phase documentary evidence paths stay inside `docs/requirements.md`, `docs/reference_standards.md`, `docs/plan.md`, `docs/roadmap.md`, `docs/acceptance_matrix.md`, and `docs/traceability_map.md` as applicable
 - supporting-governance documents remain subordinate operationalization surfaces and do not add new authority, new gate prerequisites, or replacement decision logic
+- supporting-governance alignment may be executed in the same change set, but roadmap-phase gate validity does not depend on proving supporting-document completion first unless those documents are explicitly inside the active fixed audit scope
 - roadmap execution is judged against the current in-scope governing documents and current `docs/plan.md`, not against hypothetical future rewrites
 - `docs/plan.md` remains subordinate to requirement thresholds and this roadmap does not reinterpret those thresholds
 
@@ -40,6 +46,9 @@ Required outcomes:
 - `docs/traceability_map.md` keeps roadmap-phase evidence paths inside the fixed documentation scope
 - `docs/traceability_map.md` does not rely on milestone summaries, neighboring prose, or cross-item inference to make a mapping appear valid
 - `docs/traceability_map.md` treats `REQ-AC-...` identifiers as normative and maps them only to roadmap items that state the acceptance outcome itself directly
+- `docs/acceptance_matrix.md` contains one row for every normative `REQ-...` identifier currently defined in `docs/requirements.md`
+- each `docs/acceptance_matrix.md` row carries its own acceptance layer, criterion, roadmap-phase documentary evidence path, later implementation evidence path or `not applicable`, roadmap threshold, and later implementation threshold or `not applicable`
+- any roadmap item cited for matrix or traceability governance states the mapped completeness or directness outcome explicitly in that roadmap item itself
 - `docs/acceptance_matrix.md` remains a subordinate operationalization surface rather than a replacement authority source
 - neither supporting-governance document introduces a new gate prerequisite, new authority source, or substitute decision vocabulary
 

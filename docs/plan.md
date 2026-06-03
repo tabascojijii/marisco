@@ -125,8 +125,10 @@ Required outcomes:
 - the project-specific acceptance granularity defined in `docs/requirements.md` remains the upstream source for this workstream, and requirements-level detail remains complete enough to avoid contradictory or non-auditable documentary-phase acceptance
 - repository-wide audit-depth rules, abstract-term handling, and machine-readable documentary-phase audit-contract semantics remain owned by `docs/reference_standards.md`, while `docs/audit_contract.md` remains subordinate
 - downstream traces preserve the project-specific granularity and contract-closure semantics already defined in `docs/requirements.md` and `docs/reference_standards.md`
+- downstream roadmap items that are cited for governance requirements must restate the mapped governance outcome in their own text rather than relying on generic boundary language or nearby roadmap context
 - every normative `REQ-...` identifier currently defined in `docs/requirements.md` is represented in `docs/acceptance_matrix.md`
 - for every normative `REQ-...` identifier currently defined in `docs/requirements.md`, `docs/acceptance_matrix.md` states acceptance layer, criterion, roadmap-phase documentary evidence path, later implementation evidence path or `not applicable`, roadmap threshold, and later implementation threshold or `not applicable`
+- roadmap text that is cited for `REQ-GRAN-CHECKS` must directly state the full acceptance-matrix completeness obligation rather than only speaking about traceability discipline in general
 - `docs/traceability_map.md` traces each normative `REQ-...` identifier from source through plan and roadmap evidence paths
 - every requirement-to-plan and requirement-to-roadmap citation in supporting documents points only to items whose stated required outcomes directly satisfy the cited requirement
 - every requirement-to-plan and requirement-to-roadmap citation in supporting documents for a `REQ-AC-...` identifier points only to items that directly state the cited acceptance outcome itself rather than only a related deliverable class, target location, prerequisite design constraint, or surrounding narrative
