@@ -1,10 +1,10 @@
 {
-  "timestamp_utc": "2026-06-03T09:02:15Z",
+  "timestamp_utc": "2026-06-03T09:09:44Z",
   "phase": "PLAN_AUDIT",
   "final_decision": "REJECT_TO_ARCHITECT",
   "final_owner": "Architect",
   "final_next_gate": "ARCHITECT_REWORK",
-  "final_reason_code": "REQ-GRAN-PLAN",
+  "final_reason_code": "REQ-GRAN-CONTRACT-DECIDABLE",
   "auditor_decision": "REJECT_TO_ARCHITECT",
   "escalated_by_hook": false,
   "source_audit_status_file": "audit_status.json"
