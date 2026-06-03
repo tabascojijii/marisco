@@ -2,6 +2,7 @@
 
 Authority: `docs/requirements.md` is the normative source for all `REQ-...` identifiers listed here. This document traces those requirements through `docs/plan.md` and `docs/roadmap.md` while remaining subordinate to the governing two-document contract formed by `docs/requirements.md` and `docs/reference_standards.md`.
 Roadmap-phase evidence paths stay inside the fixed documentation scope for documentary auditing. Repository-local guidance such as `AGENTS.md` may inform execution discipline, but it is intentionally excluded from deciding evidence paths for contract closure.
+Every cited `PLAN-...` and `RM-...` item must itself state the mapped outcome directly. This map must not rely on cross-item inference, neighboring prose, or milestone summaries to repair an otherwise incomplete trace.
 
 | Requirement ID | Source | Plan Item | Roadmap Item | Roadmap-Phase Evidence Path | Later Implementation Evidence Path |
 |---|---|---|---|---|---|

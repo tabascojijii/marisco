@@ -73,6 +73,8 @@ Required outcomes:
 - the template follows repository `nbdev` conventions
 - the template preserves the ordered Handler Template Baseline defined in `docs/requirements.md`
 - the template is explicitly current-state descriptive rather than future-state prescriptive
+- the template is designed to export through the current `nbdev` flow and to remain importable after generation
+- the notebook structure avoids introducing a broken `default_exp`, invalid export cell, or circular import by default
 
 ### PLAN-002 — Define Variation And Reuse Zones
 
@@ -84,6 +86,8 @@ Required outcomes:
 - reusable callback-oriented sections are clearly marked
 - likely commonization candidates are labeled as discussion inputs rather than migration mandates
 - guidance explains which sections are expected to vary by provider
+- the template guidance explicitly preserves the current need to absorb imperfect external data
+- the template guidance does not imply immediate normalization of provider differences
 
 ### PLAN-003 — Define Usage Guidance For Authors
 
@@ -129,6 +133,7 @@ Carry the workstream boundaries intact into downstream planning and implementati
 Required outcomes:
 
 - the plan remains subordinate to requirement thresholds and does not define an alternate documentary-phase pass/fail algorithm
+- Architect-phase validity is judged from the current in-scope governing documents and this plan, not from hypothetical future rewrites proposed elsewhere
 - no plan item forces immediate refactoring of existing handlers
 - no plan item treats generated `.py` files as the canonical authoring surface
 - success remains tied to the actual deliverables instead of to speculative framework redesign

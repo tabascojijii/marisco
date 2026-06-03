@@ -48,6 +48,7 @@ Required outcomes:
 - no roadmap item introduces a new gate rule or alternate pass/fail algorithm
 - roadmap-phase evidence paths stay inside the declared documentation scope
 - repository-local guidance remains consulted execution discipline only
+- roadmap validity is judged from the current in-scope governing documents, plan, and roadmap text rather than from hypothetical future rewrites
 
 Maps to: `PLAN-005`, `PLAN-006`  
 Roadmap-phase evidence: `docs/requirements.md`, `docs/reference_standards.md`, `docs/plan.md`, `docs/roadmap.md`
@@ -76,6 +77,8 @@ Required outcomes:
 - the ordered baseline sections from `docs/requirements.md` are preserved
 - `nbdev` conventions such as `default_exp` and appropriate exported cells are planned into the notebook structure
 - generated `.py` files are not treated as the canonical behavior-change surface
+- the notebook structure is planned to export through the current `nbdev` flow and remain importable after generation
+- the planned structure avoids introducing a broken `default_exp`, invalid export cell, or circular import by default
 
 Maps to: `PLAN-001`  
 Roadmap-phase evidence: `docs/requirements.md`, `docs/plan.md`, `docs/roadmap.md`, `docs/traceability_map.md`  
@@ -91,6 +94,7 @@ Required outcomes:
 - reusable sections are explicitly marked
 - commonization candidates are labeled as discussion inputs only
 - provider variation remains explicitly allowed rather than normalized away by roadmap language
+- template usage remains flexible enough to absorb imperfect external provider data without forcing premature normalization
 
 Maps to: `PLAN-002`, `PLAN-006`  
 Roadmap-phase evidence: `docs/requirements.md`, `docs/plan.md`, `docs/roadmap.md`, `docs/traceability_map.md`  
