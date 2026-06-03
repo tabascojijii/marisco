@@ -1,64 +1,53 @@
-# Audit Report
+# Plan Audit Report
 
-## Scope
-- audited_files:
-  - `AGENTS.md`
-  - `docs/requirements.md`
-  - `docs/plan.md`
-  - `docs/reference_standards.md`
-- audit_mode: complete_scan
-- scope_rule: fixed_scope_only
-
-## Method
-- 全対象ファイルを全文読了後に判定した。
-- 判定参照順は `docs/requirements.md` → `docs/plan.md` → `docs/reference_standards.md` とした。
-- スコープ外文書は読まず、推測で補完しなかった。
+## Summary
+- 対象: `AGENTS.md`, `docs/requirements.md`, `docs/plan.md`, `docs/reference_standards.md`
+- 監査方式: 固定スコープ全件読了後に判定
+- 判定: `REJECT_TO_ARCHITECT`
 
 ## Findings
+1. `docs/plan.md` が Architect gate 判定条件を独自に再定義している。
+Evidence:
+- `docs/plan.md:190-198`
+- `docs/requirements.md:38-40`
+- `docs/requirements.md:52-56`
+- `docs/reference_standards.md:25-44`
+- `docs/reference_standards.md:123-137`
+Why this fails:
+- `REQ-GRAN-PLAN` は plan が要求閾値を tighten, relax, replace してはならないと定義している。
+- `REQ-CONTRACT-CLOSURE-AUTHORITY` は gate semantics と audit-status interpretation を `docs/requirements.md` と `docs/reference_standards.md` の二文書で完結させることを要求している。
+- しかし `docs/plan.md` は `## Architect Gate Criteria` を設け、gate 充足条件を plan 自身で列挙している。これは post-commit 正本の遷移語彙と判定契約を plan が参照するだけに留めず、局所的な判定アルゴリズムを追加している。
+Impact:
+- Plan 監査の許可判定語彙と gate semantics の authority boundary が `docs/plan.md` 側へ漏れ、Architect 再作業が必要。
 
-### 1. `docs/plan.md` が固定スコープ外文書を Architect gate の成立条件に含めている
-- severity: high
-- violated_requirements:
-  - `REQ-GRAN-REQS-COMPLETE`
-  - `REQ-GRAN-PLAN`
-  - `REQ-GRAN-CONTRACT-DECIDABLE`
-  - `REQ-GRAN-SUPPORTING-DOCS-ROLE`
-- evidence:
-  - `docs/plan.md:103-112` で `docs/acceptance_matrix.md` と `docs/traceability_map.md` の整合を plan item に含めている。
-  - `docs/plan.md:197` で `the required supporting governance documents are aligned in the same change set` を gate 条件にしている。
-  - `docs/requirements.md:40-49` は governing contract を `docs/requirements.md` と `docs/reference_standards.md` だけで可判定にすることを要求している。
-  - `docs/reference_standards.md:14` と `docs/reference_standards.md:164-165` は supporting governance documents を subordinate と定義している。
-- impact:
-  - この plan は、今回の固定監査スコープ外にある文書の整合を gate 条件へ持ち込み、plan 監査の pass/fail をスコープ内文書だけで決められなくしている。
+2. `docs/plan.md` が「全ての現行 normative requirement identifier を coverage 表現する」と述べながら、明示マッピングから `REQ-GRAN-STANDARDS` を落としている。
+Evidence:
+- `docs/plan.md:32`
+- `docs/plan.md:109`
+- `docs/plan.md:151-160`
+- `docs/requirements.md:37`
+Why this fails:
+- `docs/plan.md` は coverage を「all currently normative requirement identifiers」で表現すると宣言している。
+- しかし `Requirement-to-Plan Mapping` に `REQ-GRAN-STANDARDS` の明示トレースが存在しない。
+- `REQ-GRAN-REQS-COMPLETE` と整合する documentary trace を plan 自身が示せていない。
+Impact:
+- Plan 内の自己宣言と実際の requirement trace が不整合であり、完全性の面で Architect 修正が必要。
 
-### 2. `docs/plan.md` が二文書統治集合を越えて `AGENTS.md` を authority source と宣言している
-- severity: high
-- violated_requirements:
-  - `REQ-GRAN-PLAN`
-  - `REQ-GRAN-CONTRACT-DECIDABLE`
-- evidence:
-  - `docs/plan.md:5` は `AGENTS.md`, `docs/requirements.md`, `docs/reference_standards.md` を `Authority Sources` として列挙している。
-  - `docs/requirements.md:40-42` は plan-phase auditing の governing machine-readable contract を `docs/reference_standards.md` と `docs/requirements.md` だけで可判定にすることを要求している。
-  - `docs/reference_standards.md:11-14` は `docs/requirements.md` と `docs/reference_standards.md` を normative two-document governance set と定義している。
-- impact:
-  - `AGENTS.md` は repository-local instruction として参照できても、governing authority source として追加宣言すると、plan が上位契約の authority boundary を拡張してしまう。
+## Insufficient Evidence
+- `docs/plan.md:7` と `docs/plan.md:18` は `docs/audit_report.md` を informative input として参照している。
+- `docs/plan.md:22-25` は「current audit identifies two plan-structure failures」と述べている。
+- ただし今回の固定監査スコープに `docs/audit_report.md` は含まれないため、この監査では当該主張を証跡として採用していない。
 
-## Passed Checks
-- `REQ-NB-TEMPLATE`: `docs/plan.md:76-79` は notebook-first の template target を `nbs/handlers/` に固定しており、generated `.py` を正本にしていない。
-- `REQ-POST-COMMIT-SEQUENCE`: `docs/plan.md:98-100` は export/regeneration, `python -m py_compile`, import smoke checks の 3 段階を保持している。
-- `REQ-POST-COMMIT-LIGHTWEIGHT-BOUNDARY`: `docs/plan.md:100` と `docs/plan.md:141-143` は heavyweight exclusion を維持している。
-- `REQ-AC-NO-REFACTOR`: `docs/plan.md:120-123` と `docs/plan.md:203-207` は immediate refactor を強制していない。
-
-## 不足証跡
-- なし
+## Checks
+| id | result | evidence_path | metric_value | threshold |
+|---|---|---|---|---|
+| `REQ-GRAN-PLAN` | FAIL | `docs/plan.md:190-198` | `architect_gate_criteria_redefined_in_plan` | `plan_must_not_replace_or_redefine_gate_thresholds` |
+| `REQ-CONTRACT-CLOSURE-AUTHORITY` | FAIL | `docs/plan.md:190-198` | `gate_semantics_partially_defined_in_plan` | `gate_semantics_decidable_from_requirements_and_reference_only` |
+| `REQ-GRAN-REQS-COMPLETE` | FAIL | `docs/plan.md:32; docs/plan.md:109; docs/plan.md:151-160` | `declared_all_req_coverage_but_req_gran_standards_not_traced` | `documentary_trace_must_be_complete_and_noncontradictory` |
 
 ## Open-Items
-- `docs/plan.md` の `Authority Sources` から `AGENTS.md` を外し、governing authority を `docs/requirements.md` と `docs/reference_standards.md` に限定すること。
-- `docs/plan.md` の Architect gate から、固定スコープ外文書の整合を成立条件として要求する文言を除去すること。
-- supporting governance documents への言及は、実施項目または参照整合の説明に留め、plan-phase gate の可判定条件へ昇格させないこと。
+- `docs/plan.md` から独自 gate criteria を除去し、`docs/reference_standards.md` の遷移語彙と判定契約への参照宣言に縮退させること。
+- `REQ-GRAN-STANDARDS` の plan 上の充足位置を明示するか、「all currently normative requirement identifiers」という自己宣言を修正して整合させること。
 
 ## Decision
-- result: `REJECT_TO_ARCHITECT`
-- rationale:
-  - plan-phase gate が fixed documentation scope だけでは可判定でない
-  - authority boundary が two-document governance set を逸脱している
+- `REJECT_TO_ARCHITECT`
