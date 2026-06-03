@@ -1,9 +1,9 @@
 # Audit Report
 
 Date: 2026-06-03
-Phase: Plan Audit
-Decision: AUDIT_PASS_PLAN
-Owner: Architect
+Phase: Roadmap Audit
+Decision: AUDIT_PASS_ROADMAP
+Owner: PM
 Next-Gate: FLOW_ADVANCE
 
 ## Scope
@@ -11,15 +11,17 @@ Next-Gate: FLOW_ADVANCE
 - AGENTS.md
 - docs/requirements.md
 - docs/plan.md
+- docs/roadmap.md
 - docs/reference_standards.md
+- docs/acceptance_matrix.md
+- docs/traceability_map.md
 
 ## Audit Basis
 
-- 固定スコープ 4 文書を全量読了した後に判定した。
-- 判定基準の参照順は `docs/requirements.md`、`docs/plan.md`、`docs/reference_standards.md` とした。
-- `docs/requirements.md` と `docs/reference_standards.md` を governing contract として扱った。
-- `docs/plan.md` は Architect response として扱い、独自の gate algorithm や代替 decision vocabulary を認めない前提で確認した。
-- `AGENTS.md` は consulted guidance としてのみ扱い、authority source には昇格させていない。
+- 固定スコープ 7 文書を全量読了した後に判定した。
+- 判定基準の正本は `AGENTS.md` を consulted guidance、`docs/requirements.md` と `docs/reference_standards.md` を governing contract、`docs/plan.md` を Architect plan、`docs/roadmap.md` を PM roadmap として扱った。
+- `docs/acceptance_matrix.md` と `docs/traceability_map.md` は required supporting governance documents として、存在確認と整合確認を行った。
+- `src/`、`tests/`、`artifacts/` の品質は主判定対象に含めていない。
 
 ## Findings
 
@@ -27,20 +29,23 @@ Next-Gate: FLOW_ADVANCE
 
 ## Check Results
 
-1. `REQ-GRAN-PLAN` / `REQ-GRAN-PLAN-AC-DIRECT` / `REQ-CONTRACT-CLOSURE-DOWNSTREAM`
-   `docs/plan.md` は requirement threshold の上書きや独自判定アルゴリズムの定義を行わず、`PLAN-001` から `PLAN-006` の required outcomes に acceptance outcome を直接記述している。根拠: `docs/requirements.md`, `docs/plan.md`.
+1. `REQ-GRAN-ROADMAP` / `REQ-GRAN-ROADMAP-AC-DIRECT` / `REQ-CONTRACT-CLOSURE-DOWNSTREAM`
+   `docs/roadmap.md` は `RM-001` から `RM-007` で governing authority の境界、実行順序、supporting governance の従属性、template deliverable、lightweight verification、Python baseline を直接記述しており、独自 gate algorithm や代替 decision vocabulary を導入していない。根拠: `docs/roadmap.md:24`, `docs/roadmap.md:41`, `docs/roadmap.md:55`, `docs/roadmap.md:66`, `docs/roadmap.md:76`, `docs/roadmap.md:86`, `docs/roadmap.md:97`.
 
-2. `REQ-NB-TEMPLATE` / `REQ-CURRENT-STATE-FIDELITY` / `REQ-DIFFERENCE-VISIBILITY` / `REQ-NBDEV-COMPAT`
-   `PLAN-001` と `PLAN-002` は template notebook の配置先、ordered baseline、current-state descriptive 方針、provider-specific と reusable zone の区別、`nbdev` exportability、importability、`default_exp` と export hazard 回避を直接記述している。根拠: `docs/requirements.md`, `docs/plan.md`.
+2. `REQ-AC-*` direct mapping
+   `docs/plan.md` の `PLAN-001` から `PLAN-006` と `docs/roadmap.md` の対応 `RM-...` 項目は、acceptance outcome を deliverable class や周辺 narrative に頼らず各項目本文で直接表現している。根拠: `docs/plan.md:66`, `docs/plan.md:82`, `docs/plan.md:96`, `docs/plan.md:108`, `docs/plan.md:123`, `docs/plan.md:148`; `docs/traceability_map.md:9`, `docs/traceability_map.md:53`.
 
-3. `REQ-POST-COMMIT-AUTHORITY` / `REQ-POST-COMMIT-SEQUENCE` / `REQ-POST-COMMIT-LIGHTWEIGHT-BOUNDARY` / `REQ-LOW-FRICTION-VALIDATION` / `REQ-CHECK-COVERAGE` / `REQ-PYTHON-BASELINE`
-   `PLAN-004` は `.git/hooks/post-commit` governance、3-stage lightweight verification、external-network と full-dataset execution の除外、failure-class と verification-stage の対応、Python `>=3.7` compatibility を直接記述している。根拠: `docs/requirements.md`, `docs/plan.md`.
+3. `REQ-GRAN-CHECKS` / `REQ-GRAN-SUPPORTING-DOCS-ROLE`
+   必須 docset は存在し、`docs/acceptance_matrix.md` と `docs/traceability_map.md` はともに 43 件の normative `REQ-...` ID を収録しており、`docs/requirements.md` の 43 件と欠番なく一致した。Acceptance matrix には required columns があり、traceability map には source, plan, roadmap, evidence path がある。根拠: `docs/requirements.md:29`, `docs/requirements.md:34`, `docs/requirements.md:232`; `docs/acceptance_matrix.md:10`; `docs/traceability_map.md:9`.
 
-4. `REQ-GRAN-REQS-SCOPE` / `REQ-GRAN-STANDARDS` / `REQ-GRAN-CHECKS` / `REQ-CONTRACT-CLOSURE-AUTHORITY` / `REQ-CONTRACT-CLOSURE-SUPPORT` / `REQ-CONTRACT-CLOSURE-EVIDENCE` / `REQ-CONTRACT-CLOSURE-SUPPORT-SEPARATION`
-   `PLAN-005` は supporting-governance documents を subordinate operationalization として位置づけたまま、governing authority を `docs/requirements.md` と `docs/reference_standards.md` に固定し、supporting documents を Architect-gate の prerequisite input にしないことを明示している。根拠: `docs/requirements.md`, `docs/plan.md`, `docs/reference_standards.md`.
+4. `REQ-CONTRACT-CLOSURE-EVIDENCE` / `REQ-CONTRACT-CLOSURE-SUPPORT-SEPARATION`
+   supporting docset と roadmap の evidence path は固定 documentation scope の内側に留められており、`AGENTS.md` は consulted guidance としてのみ扱われ、authority-bearing evidence には昇格していない。根拠: `docs/reference_standards.md:151`, `docs/reference_standards.md:162`, `docs/reference_standards.md:235`; `docs/roadmap.md:24`; `docs/acceptance_matrix.md:12`; `docs/traceability_map.md:11`.
 
-5. `REQ-CONTRACT-CLOSURE-PLAN` / `REQ-CONTRACT-CLOSURE-PRESENT-STATE` / `REQ-AVOID-PREMATURE-COMMONIZATION` / `REQ-AC-NO-REFACTOR`
-   `PLAN-006` は present-state decidability を維持し、supporting-document alignment を same-change-set consistency work として扱い、immediate refactor や generated `.py` の canonicalization を禁止している。根拠: `docs/requirements.md`, `docs/plan.md`.
+5. `REQ-POST-COMMIT-SEQUENCE` / `REQ-POST-COMMIT-LIGHTWEIGHT-BOUNDARY` / `REQ-CHECK-COVERAGE` / `REQ-LOW-FRICTION-VALIDATION`
+   `RM-006` は hook-governed three-stage verification、heavyweight exclusion、failure-stage coverage を requirements と plan に整合する形で直接記述しており、roadmap-phase documentary audit の判定材料として十分に閉じている。根拠: `docs/requirements.md:221`; `docs/plan.md:108`; `docs/roadmap.md:86`.
+
+6. Required markdown blocks
+   `docs/roadmap.md` には required block `## Self-Check (Required)` が存在し、監査出力先 `docs/audit_report.md` には required block `## Open-Items` を設けた。根拠: `docs/reference_standards.md:162`; `docs/roadmap.md:142`.
 
 ## 不足証跡
 
@@ -48,9 +53,9 @@ Next-Gate: FLOW_ADVANCE
 
 ## Verdict
 
-- `docs/plan.md` は fixed documentation scope 内で `docs/requirements.md` と `docs/reference_standards.md` に整合している。
-- plan 監査で要求される判定契約に反する独自遷移語彙や `REJECT_TO_PM` への逸脱は確認されなかった。
-- 判定は `AUDIT_PASS_PLAN`。
+- `docs/roadmap.md` は `docs/requirements.md`、`docs/plan.md`、`docs/reference_standards.md` と整合している。
+- 必須 docset `docs/acceptance_matrix.md` と `docs/traceability_map.md` は存在し、固定スコープ内で確認可能な範囲では網羅性と subordinate role の整合を満たしている。
+- 判定は `AUDIT_PASS_ROADMAP`。
 
 ## Open-Items
 
