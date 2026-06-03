@@ -1,9 +1,9 @@
 # Audit Report
 
 Date: 2026-06-03
-Phase: Roadmap Audit
-Decision: AUDIT_PASS_ROADMAP
-Owner: PM
+Phase: Plan Audit
+Decision: AUDIT_PASS_PLAN
+Owner: Architect
 Next-Gate: FLOW_ADVANCE
 
 ## Scope
@@ -11,42 +11,41 @@ Next-Gate: FLOW_ADVANCE
 - AGENTS.md
 - docs/requirements.md
 - docs/plan.md
-- docs/roadmap.md
 - docs/reference_standards.md
-- docs/acceptance_matrix.md
-- docs/traceability_map.md
 
 ## Audit Basis
 
-- Governing authority is explicitly limited to `docs/requirements.md` and `docs/reference_standards.md`, with supporting governance documents remaining subordinate operationalization surfaces: `docs/requirements.md:46`, `docs/requirements.md:61`, `docs/reference_standards.md:77`, `docs/reference_standards.md:151`.
-- The mandatory roadmap block `## Self-Check (Required)` is present and the roadmap defines bounded documentary evidence paths inside the documentation scope: `docs/roadmap.md:130`, `docs/roadmap.md:142`, `docs/reference_standards.md:162`.
-- The required docset exists in scope and is attested in the governing requirements document: `docs/requirements.md:232`.
+- 判定基準の参照順は `docs/requirements.md`、`docs/plan.md`、`docs/reference_standards.md` とした。
+- 固定スコープ全量を読了したうえで判定した。
+- `AGENTS.md` は consulted guidance としてのみ扱い、authority source には昇格させていない。
 
 ## Findings
 
-No blocking inconsistency was found within the fixed roadmap-audit scope.
+- 指摘事項なし。
 
-## Consistency Checks
+## Check Results
 
-1. Governing contract closure
-   `docs/requirements.md` assigns acceptance-matrix completeness and documentary evidence scoping rules, and `docs/reference_standards.md` preserves the same authority boundary without promoting `AGENTS.md` into a deciding evidence source. The roadmap preserves that boundary in `RM-001`.
+1. `REQ-GRAN-PLAN` / `REQ-GRAN-PLAN-AC-DIRECT`
+   `docs/plan.md` の `PLAN-001` から `PLAN-006` は、要件側が要求する direct outcome 記述を満たすように required outcomes を明示している。根拠: `docs/requirements.md:39-40`, `docs/plan.md:66-161`, `docs/reference_standards.md:114-118`.
 
-2. Plan to roadmap alignment
-   `PLAN-005` and `PLAN-006` define supporting-governance alignment and guardrails in `docs/plan.md:123` and `docs/plan.md:148`. The roadmap mirrors those outcomes in `RM-001` and `RM-002` at `docs/roadmap.md:24` and `docs/roadmap.md:41` without introducing a new gate algorithm.
+2. `REQ-POST-COMMIT-SEQUENCE` / `REQ-POST-COMMIT-LIGHTWEIGHT-BOUNDARY` / `REQ-CHECK-COVERAGE`
+   `PLAN-004` は export or regeneration、`python -m py_compile`、import smoke checks を列挙し、外部ネットワーク実行と full-dataset 実行を除外し、各 failure class への対応段階も明示している。根拠: `docs/requirements.md:110-124`, `docs/requirements.md:199-206`, `docs/plan.md:108-121`, `docs/reference_standards.md:196-197`.
 
-3. Mandatory docset presence and role
-   `docs/acceptance_matrix.md` and `docs/traceability_map.md` both exist, are required by `docs/reference_standards.md:151`, and are explicitly treated as subordinate support surfaces in the scoped documents.
+3. `REQ-CONTRACT-CLOSURE-PLAN` / `REQ-CONTRACT-CLOSURE-DOWNSTREAM` / `REQ-CONTRACT-CLOSURE-PRESENT-STATE`
+   `docs/plan.md` は governing authority を `docs/requirements.md` と `docs/reference_standards.md` に限定し、supporting documents を subordinate として扱い、plan validity を prospective upstream rewrites や out-of-scope supporting-document state に依存させていない。根拠: `docs/requirements.md:62-65`, `docs/plan.md:11-13`, `docs/plan.md:123-146`, `docs/plan.md:152-157`, `docs/reference_standards.md:12-20`, `docs/reference_standards.md:178-184`.
 
-4. Acceptance-matrix and traceability completeness
-   Full-scope review found normative requirement coverage across `docs/acceptance_matrix.md` and `docs/traceability_map.md`, including the matrix completeness row at `docs/acceptance_matrix.md:23` and corresponding traceability row at `docs/traceability_map.md:22`. Acceptance-criteria traces for template existence and post-commit sequence are also present at `docs/acceptance_matrix.md:46`, `docs/acceptance_matrix.md:50`, `docs/traceability_map.md:45`, and `docs/traceability_map.md:49`.
+4. `REQ-AC-NO-REFACTOR` / `REQ-PRESERVE-FLEXIBILITY` / `REQ-READABILITY`
+   `PLAN-002`、`PLAN-003`、`PLAN-006` は immediate refactoring を要求せず、provider-specific variation と literate notebook readability を保持する方針を required outcomes として直接記述している。根拠: `docs/requirements.md:128-143`, `docs/requirements.md:228-230`, `docs/plan.md:82-106`, `docs/plan.md:152-160`, `docs/reference_standards.md:200-204`.
 
-## Insufficient Evidence
+## 不足証跡
 
-None.
+- なし。
 
 ## Verdict
 
-The roadmap-phase document set is internally consistent within the fixed audit scope, the required supporting governance documents exist, and no PM-phase repair item remains open. The audit result is `AUDIT_PASS_ROADMAP`.
+- `docs/plan.md` は fixed scope 内で `docs/requirements.md` と `docs/reference_standards.md` に整合している。
+- plan監査で禁止される `REJECT_TO_PM` 誘導や独自 gate algorithm の再定義は確認されなかった。
+- 判定は `AUDIT_PASS_PLAN`。
 
 ## Open-Items
 
