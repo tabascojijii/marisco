@@ -62,6 +62,7 @@ Revise supporting-governance documents so they operationalize the current normat
 Required outcomes:
 
 - `docs/acceptance_matrix.md` continues to cover every normative `REQ-...` identifier
+- for every normative `REQ-...` identifier, `docs/acceptance_matrix.md` states acceptance layer, criterion, roadmap-phase documentary evidence path, later implementation evidence path or `not applicable`, roadmap threshold, and later implementation threshold or `not applicable`
 - `docs/traceability_map.md` maps every normative `REQ-...` identifier to source, plan, roadmap, and evidence paths
 - every requirement-to-plan and requirement-to-roadmap citation in supporting documents remains semantically exact to the stated outcomes of the cited item
 - roadmap references to supporting documents remain operational, not authority-transferring
@@ -124,6 +125,7 @@ Specify the minimum post-commit verification design for this workstream, keeping
 
 Required outcomes:
 
+- project-specific acceptance granularity remains owned by `docs/requirements.md`, and `.git/hooks/post-commit` is not treated as the source of that granularity policy
 - `.git/hooks/post-commit` is the governing orchestration surface
 - the documented sequence contains export or regeneration, `python -m py_compile`, and lightweight import smoke checks
 - the documented post-commit path remains practical for normal development by staying limited to those lightweight stages and by excluding external-network and full-dataset execution from the post-commit path

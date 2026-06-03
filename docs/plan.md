@@ -107,6 +107,7 @@ Specify the minimum post-commit verification design for this workstream.
 Required outcomes:
 
 - `.git/hooks/post-commit` remains the governing orchestration surface
+- project-specific acceptance granularity remains owned by `docs/requirements.md`, and the hook is not treated as the source of that granularity policy
 - the documented sequence contains export or regeneration, `python -m py_compile`, and lightweight import smoke checks
 - the documented post-commit path remains practical for normal development by staying limited to those lightweight stages and by excluding external-network and full-dataset execution from the post-commit path
 - the verification design directly states stage-to-failure coverage: export or regeneration catches broken notebook export structure, `python -m py_compile` catches syntax errors in generated modules, and import smoke checks catch obvious import-time breakage in touched code paths
@@ -123,6 +124,7 @@ Required outcomes:
 - repository-wide audit-depth rules, abstract-term handling, and machine-readable documentary-phase audit-contract semantics remain owned by `docs/reference_standards.md`, while `docs/audit_contract.md` remains subordinate
 - downstream traces preserve the project-specific granularity and contract-closure semantics already defined in `docs/requirements.md` and `docs/reference_standards.md`
 - every normative `REQ-...` identifier currently defined in `docs/requirements.md` is represented in `docs/acceptance_matrix.md`
+- for every normative `REQ-...` identifier currently defined in `docs/requirements.md`, `docs/acceptance_matrix.md` states acceptance layer, criterion, roadmap-phase documentary evidence path, later implementation evidence path or `not applicable`, roadmap threshold, and later implementation threshold or `not applicable`
 - `docs/traceability_map.md` traces each normative `REQ-...` identifier from source through plan and roadmap evidence paths
 - every requirement-to-plan and requirement-to-roadmap citation in supporting documents points only to items whose stated required outcomes directly satisfy the cited requirement
 - roadmap citations remain subordinate to the governing contract and do not become the sole source of acceptance detail that auditors need in order to judge this workstream
