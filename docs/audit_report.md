@@ -5,96 +5,27 @@
 - audit_target: `docs/plan.md`
 - audit_scope: `AGENTS.md`, `docs/requirements.md`, `docs/plan.md`, `docs/reference_standards.md`
 - scan_status: `complete`
-- decision: `REJECT_TO_ARCHITECT`
+- decision: `AUDIT_PASS_PLAN`
 
 ## Findings
 
-### F1
-
-- id: `REQ-NB-TEMPLATE`
-- severity: `blocking`
-- finding: `docs/plan.md` の requirement-to-plan mapping は `REQ-NB-TEMPLATE` を `PLAN-001` のみへ割り当てているが、`REQ-NB-TEMPLATE` の必須断片である generated `.py` への direct edits を要件充足経路にしないことは `PLAN-001` 自身に直接書かれていない。`PLAN-003` と `PLAN-006` には notebook-first / generated-file-only 禁止の記述があるが、mapping table 上の `PLAN-001` 単独 citation では requirement 全体を直接満たしたことにならない。
-- evidence:
-  - `docs/requirements.md:83`
-  - `docs/requirements.md:86`
-  - `docs/reference_standards.md:114`
-  - `docs/reference_standards.md:118`
-  - `docs/plan.md:72`
-  - `docs/plan.md:77`
-  - `docs/plan.md:102`
-  - `docs/plan.md:152`
-  - `docs/plan.md:185`
-- impact: `REQ-NB-TEMPLATE` に対する downstream citation が cited item 自身の stated outcome だけでは完結しておらず、semantic-exactness 条件を満たさない。
-
-### F2
-
-- id: `REQ-CURRENT-STATE-FIDELITY`
-- severity: `blocking`
-- finding: `docs/plan.md` の requirement-to-plan mapping は `REQ-CURRENT-STATE-FIDELITY` を `PLAN-001` のみへ割り当てているが、同要件の必須断片である baseline sections ごとの provider variation 明示は `PLAN-002` にあり、`PLAN-001` 自身には直接書かれていない。
-- evidence:
-  - `docs/requirements.md:88`
-  - `docs/requirements.md:91`
-  - `docs/reference_standards.md:114`
-  - `docs/reference_standards.md:118`
-  - `docs/plan.md:74`
-  - `docs/plan.md:75`
-  - `docs/plan.md:88`
-  - `docs/plan.md:185`
-- impact: `REQ-CURRENT-STATE-FIDELITY` に対する table citation が required outcome の一部を neighboring plan item に借用しており、direct mapping としては無効。
-
-### F3
-
-- id: `REQ-POST-COMMIT-AUTHORITY`
-- severity: `blocking`
-- finding: `docs/plan.md` の requirement-to-plan mapping は `REQ-POST-COMMIT-AUTHORITY` を `PLAN-004` に割り当てているが、要件が明示する helper scripts の subordinate status は `PLAN-004` の required outcomes に直接書かれていない。hook が governing orchestration surface である点は記載されているものの、helper scripts を alternative workflow authority にしない条件が cited item 自身で完結していない。
-- evidence:
-  - `docs/requirements.md:105`
-  - `docs/requirements.md:108`
-  - `docs/reference_standards.md:114`
-  - `docs/reference_standards.md:118`
-  - `docs/plan.md:111`
-  - `docs/plan.md:117`
-  - `docs/plan.md:188`
-- impact: `REQ-POST-COMMIT-AUTHORITY` に対する plan-level citation が authority boundary requirement を full-text で保持しておらず、supporting or neighboring prose への依存が残る。
-
-### F4
-
-- id: `REQ-GRAN-CHECKS`
-- severity: `blocking`
-- finding: `docs/plan.md` の requirement-to-plan mapping は `REQ-GRAN-CHECKS` を `PLAN-005` に割り当てているが、要件が要求する acceptance-matrix 各 row の self-contained field rule は `PLAN-005` の required outcomes に直接書かれていない。`PLAN-005` は matrix の必須 fields を列挙しているが、row ごとにその fields を自項目テキストで持ち、section defaults や neighboring rows に依存してはならないという断片を落としている。
-- evidence:
-  - `docs/requirements.md:46`
-  - `docs/requirements.md:55`
-  - `docs/reference_standards.md:114`
-  - `docs/reference_standards.md:119`
-  - `docs/plan.md:129`
-  - `docs/plan.md:131`
-  - `docs/plan.md:189`
-- impact: `REQ-GRAN-CHECKS` に対する citation は matrix completeness の中核条件を cited item 自身で直接再現しておらず、requirement 全体を満たす mapping になっていない。
-
-### F5
-
-- id: `REQ-CONTRACT-CLOSURE-EVIDENCE`
-- severity: `blocking`
-- finding: `docs/plan.md` の requirement-to-plan mapping は `REQ-CONTRACT-CLOSURE-EVIDENCE` を `PLAN-005` に割り当てているが、要件が明示する repository-local instruction files は deciding evidence source になれないという条件は `PLAN-005` 自身に直接書かれていない。plan 前文には `AGENTS.md` を consulted local guidance とする説明があるものの、mapping table が cite している `PLAN-005` の required outcomes には当該断片が存在しない。
-- evidence:
-  - `docs/requirements.md:61`
-  - `docs/reference_standards.md:180`
-  - `docs/plan.md:35`
-  - `docs/plan.md:137`
-  - `docs/plan.md:189`
-- impact: `REQ-CONTRACT-CLOSURE-EVIDENCE` に対する supporting-document alignment citation が authority/evidence boundary を cited item 本文で閉じておらず、directness requirement を満たさない。
+- blocking_findings: `none`
+- note: `docs/plan.md` stays within the two-document governing contract, keeps repository-local instruction files subordinate, and states the mapped outcomes directly in the cited `PLAN-...` items.
 
 ## Passed Checks
 
-- `REQ-GRAN-PLAN`: `PLAN-006` は downstream requirement-to-plan citation が cited `PLAN-...` item 自身の required outcomes に限定されることを直接述べている。証跡: `docs/plan.md:147`
-- `REQ-CONTRACT-CLOSURE-PLAN`: `PLAN-006` は supporting-governance documents が out-of-scope でも Architect-gate validity が `docs/requirements.md`、`docs/reference_standards.md`、`docs/plan.md` だけで decidable であることを直接述べている。証跡: `docs/plan.md:148`
-- `REQ-LOW-FRICTION-VALIDATION`: `PLAN-004` は lightweight stage set と external-network / full-dataset exclusion を直接述べている。証跡: `docs/plan.md:113`-`docs/plan.md:116`
+- `REQ-NB-TEMPLATE`: `PLAN-001` directly states notebook placement under `nbs/handlers/`, `nbdev` conventions, and generated `.py` non-canonical status. Evidence: `docs/requirements.md:83-86`, `docs/plan.md:66-79`
+- `REQ-CURRENT-STATE-FIDELITY`: `PLAN-001` directly states ordered baseline preservation, current-state descriptiveness, and provider-varying baseline sections. Evidence: `docs/requirements.md:88-91`, `docs/plan.md:75-77`
+- `REQ-POST-COMMIT-AUTHORITY`: `PLAN-004` directly states `.git/hooks/post-commit` authority and helper-script subordination. Evidence: `docs/requirements.md:105-108`, `docs/plan.md:107-120`
+- `REQ-LOW-FRICTION-VALIDATION`: `PLAN-004` directly states the lightweight stage set and excludes external-network and full-dataset execution from the post-commit path. Evidence: `docs/requirements.md:140-143`, `docs/plan.md:116-119`
+- `REQ-CHECK-COVERAGE`: `PLAN-004` directly maps each required failure class to its intended verification stage. Evidence: `docs/requirements.md:199-206`, `docs/plan.md:118`
+- `REQ-GRAN-CHECKS`: `PLAN-005` directly states full acceptance-matrix field coverage and the row-self-contained rule without relying on neighboring prose. Evidence: `docs/requirements.md:46-55`, `docs/plan.md:132-135`
+- `REQ-CONTRACT-CLOSURE-EVIDENCE`: `PLAN-005` directly keeps roadmap documentary evidence inside documentation scope and excludes repository-local instruction files from deciding evidence roles. Evidence: `docs/requirements.md:61-65`, `docs/plan.md:141-142`
+- `REQ-GRAN-PLAN`: `PLAN-006` directly requires downstream citations to point only to `PLAN-...` items whose own required outcomes state the mapped requirement outcome. Evidence: `docs/requirements.md:39-40`, `docs/plan.md:152`
+- `REQ-CONTRACT-CLOSURE-PLAN`: `PLAN-006` directly keeps Architect-gate validity decidable from `docs/requirements.md`, `docs/reference_standards.md`, and `docs/plan.md` when supporting documents are out of scope. Evidence: `docs/requirements.md:62`, `docs/plan.md:153-155`
+- `REQ-CONTRACT-CLOSURE-DOWNSTREAM`: `docs/plan.md` explicitly disclaims any independent Architect-gate algorithm and keeps pass or rejection governed upstream. Evidence: `docs/requirements.md:63-65`, `docs/plan.md:230-232`
 
 ## Open-Items
 
-- `docs/plan.md` の requirement-to-plan mapping table を、cited `PLAN-...` item 自身が requirement 全断片を直接述べる形へ修正すること。
-- `REQ-NB-TEMPLATE` と `REQ-CURRENT-STATE-FIDELITY` は、`PLAN-001` に不足断片を追記するか、fragment coverage を誤解させない mapping へ再構成すること。
-- `REQ-POST-COMMIT-AUTHORITY` は、`PLAN-004` に helper scripts subordinate rule を明記すること。
-- `REQ-GRAN-CHECKS` と `REQ-CONTRACT-CLOSURE-EVIDENCE` は、`PLAN-005` に row-self-contained rule と repository-local instruction files 非権威条件を明記すること。
-- 不足証跡: なし
+- `none`
+- 不足証跡: `なし`
