@@ -5,11 +5,11 @@ Roadmap-phase evidence paths stay inside the fixed documentation scope for docum
 
 | Requirement ID | Source | Plan Item | Roadmap Item | Roadmap-Phase Evidence Path | Later Implementation Evidence Path |
 |---|---|---|---|---|---|
-| REQ-GRAN-REQS-SCOPE | `docs/requirements.md` § Granularity Allocation | PLAN-001 | RM-001 | `docs/requirements.md`, `docs/reference_standards.md`, `docs/plan.md`, `docs/roadmap.md` | not applicable |
-| REQ-GRAN-REQS-COMPLETE | `docs/requirements.md` § Granularity Allocation | PLAN-001 | RM-001 | `docs/requirements.md`, `docs/reference_standards.md` | not applicable |
+| REQ-GRAN-REQS-SCOPE | `docs/requirements.md` § Granularity Allocation | PLAN-005 | RM-001 | `docs/requirements.md`, `docs/reference_standards.md`, `docs/plan.md`, `docs/roadmap.md` | not applicable |
+| REQ-GRAN-REQS-COMPLETE | `docs/requirements.md` § Granularity Allocation | PLAN-005 | RM-001 | `docs/requirements.md`, `docs/reference_standards.md`, `docs/plan.md`, `docs/roadmap.md` | not applicable |
 | REQ-GRAN-HOOK | `docs/requirements.md` § Granularity Allocation | PLAN-004 | RM-006 | `docs/requirements.md`, `docs/reference_standards.md`, `docs/plan.md`, `docs/roadmap.md` | `.git/hooks/post-commit` |
-| REQ-GRAN-STANDARDS | `docs/requirements.md` § Granularity Allocation | PLAN-005 | RM-001 | `docs/reference_standards.md`, `docs/roadmap.md` | not applicable |
-| REQ-GRAN-PLAN | `docs/requirements.md` § Granularity Allocation | PLAN-003 | RM-001 | `docs/requirements.md`, `docs/plan.md`, `docs/roadmap.md` | not applicable |
+| REQ-GRAN-STANDARDS | `docs/requirements.md` § Granularity Allocation | PLAN-005 | RM-001 | `docs/reference_standards.md`, `docs/plan.md`, `docs/roadmap.md` | not applicable |
+| REQ-GRAN-PLAN | `docs/requirements.md` § Granularity Allocation | PLAN-006 | RM-001 | `docs/requirements.md`, `docs/plan.md`, `docs/roadmap.md` | not applicable |
 | REQ-GRAN-ROADMAP | `docs/requirements.md` § Granularity Allocation | PLAN-005 | RM-001, RM-002 | `docs/requirements.md`, `docs/roadmap.md`, `docs/traceability_map.md` | not applicable |
 | REQ-GRAN-CONTRACT-DECIDABLE | `docs/requirements.md` § Granularity Allocation | PLAN-005 | RM-001 | `docs/requirements.md`, `docs/reference_standards.md`, `docs/roadmap.md` | `audit_status.json`, `audit_status.txt` |
 | REQ-GRAN-CONTRACT-SUBORD | `docs/requirements.md` § Granularity Allocation | PLAN-005 | RM-001 | `docs/requirements.md`, `docs/reference_standards.md`, `docs/roadmap.md` | not applicable |
@@ -18,7 +18,7 @@ Roadmap-phase evidence paths stay inside the fixed documentation scope for docum
 | REQ-CONTRACT-CLOSURE-AUTHORITY | `docs/requirements.md` § Governing Contract Closure Rules | PLAN-005 | RM-001 | `docs/requirements.md`, `docs/reference_standards.md`, `docs/roadmap.md` | `audit_status.json`, `audit_status.txt` |
 | REQ-CONTRACT-CLOSURE-SUPPORT | `docs/requirements.md` § Governing Contract Closure Rules | PLAN-005 | RM-001, RM-002 | `docs/requirements.md`, `docs/reference_standards.md`, `docs/acceptance_matrix.md`, `docs/traceability_map.md`, `docs/roadmap.md` | not applicable |
 | REQ-CONTRACT-CLOSURE-EVIDENCE | `docs/requirements.md` § Governing Contract Closure Rules | PLAN-005 | RM-001, RM-002 | `docs/requirements.md`, `docs/reference_standards.md`, `docs/acceptance_matrix.md`, `docs/traceability_map.md`, `docs/roadmap.md` | not applicable |
-| REQ-CONTRACT-CLOSURE-PLAN | `docs/requirements.md` § Governing Contract Closure Rules | PLAN-005 | RM-001 | `docs/requirements.md`, `docs/reference_standards.md`, `docs/plan.md`, `docs/roadmap.md` | not applicable |
+| REQ-CONTRACT-CLOSURE-PLAN | `docs/requirements.md` § Governing Contract Closure Rules | PLAN-006 | RM-001 | `docs/requirements.md`, `docs/reference_standards.md`, `docs/plan.md`, `docs/roadmap.md` | not applicable |
 | REQ-CONTRACT-CLOSURE-DOWNSTREAM | `docs/requirements.md` § Governing Contract Closure Rules | PLAN-005 | RM-001, RM-002 | `docs/requirements.md`, `docs/reference_standards.md`, `docs/plan.md`, `docs/acceptance_matrix.md`, `docs/traceability_map.md`, `docs/roadmap.md` | not applicable |
 | REQ-CONTRACT-CLOSURE-PRESENT-STATE | `docs/requirements.md` § Governing Contract Closure Rules | PLAN-006 | RM-001 | `docs/requirements.md`, `docs/reference_standards.md`, `docs/plan.md`, `docs/roadmap.md` | not applicable |
 | REQ-CONTRACT-CLOSURE-SUPPORT-SEPARATION | `docs/requirements.md` § Governing Contract Closure Rules | PLAN-005 | RM-001, RM-002 | `docs/requirements.md`, `docs/reference_standards.md`, `docs/plan.md`, `docs/acceptance_matrix.md`, `docs/traceability_map.md`, `docs/roadmap.md` | not applicable |
@@ -43,6 +43,6 @@ Roadmap-phase evidence paths stay inside the fixed documentation scope for docum
 | REQ-AC-TEMPLATE-NBDEV | `docs/requirements.md` § Acceptance Criteria | PLAN-001 | RM-003, RM-006 | `docs/requirements.md`, `docs/plan.md`, `docs/roadmap.md`, `docs/acceptance_matrix.md`, `docs/traceability_map.md` | `nbs/handlers/handler_template.ipynb`, generated module under `marisco/handlers/`, `.git/hooks/post-commit` |
 | REQ-AC-POST-COMMIT-SEQUENCE | `docs/requirements.md` § Acceptance Criteria | PLAN-004 | RM-006 | `docs/requirements.md`, `docs/plan.md`, `docs/roadmap.md`, `docs/acceptance_matrix.md`, `docs/traceability_map.md` | `.git/hooks/post-commit`, hook run log |
 | REQ-AC-POST-COMMIT-BOUNDARY | `docs/requirements.md` § Acceptance Criteria | PLAN-004 | RM-006 | `docs/requirements.md`, `docs/plan.md`, `docs/roadmap.md`, `docs/acceptance_matrix.md`, `docs/traceability_map.md` | `.git/hooks/post-commit`, hook run log |
-| REQ-AC-NO-REFACTOR | `docs/requirements.md` § Acceptance Criteria | PLAN-003, PLAN-006 | RM-005, RM-007 | `docs/requirements.md`, `docs/plan.md`, `docs/roadmap.md`, `docs/acceptance_matrix.md`, `docs/traceability_map.md` | `nbs/handlers/` |
+| REQ-AC-NO-REFACTOR | `docs/requirements.md` § Acceptance Criteria | PLAN-006 | RM-004, RM-005 | `docs/requirements.md`, `docs/plan.md`, `docs/roadmap.md`, `docs/acceptance_matrix.md`, `docs/traceability_map.md` | `nbs/handlers/` |
 | REQ-AC-PRESERVE-FLEXIBILITY | `docs/requirements.md` § Acceptance Criteria | PLAN-002 | RM-004 | `docs/requirements.md`, `docs/plan.md`, `docs/roadmap.md`, `docs/acceptance_matrix.md`, `docs/traceability_map.md` | `nbs/handlers/handler_template.ipynb` |
 | REQ-AC-READABILITY | `docs/requirements.md` § Acceptance Criteria | PLAN-003 | RM-005 | `docs/requirements.md`, `docs/plan.md`, `docs/roadmap.md`, `docs/acceptance_matrix.md`, `docs/traceability_map.md` | `nbs/handlers/handler_template.ipynb` |

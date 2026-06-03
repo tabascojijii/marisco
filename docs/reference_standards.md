@@ -110,6 +110,7 @@
 - Auditors may require requirements-level specificity only when the missing detail would otherwise block a scoped, evidence-backed pass or fail decision.
 - Terms such as `current pattern`, `lightweight`, `appropriate`, `existing flow`, or `similar structure` are not auditable by themselves unless the fixed audit scope also contains the governing definition or measurable boundary.
 - If a requirement depends on a comparison target, required structure, validation baseline, or implementation boundary, that reference must be named in a scoped document rather than inferred from repository-wide exploration.
+- Requirement-to-plan, requirement-to-roadmap, and requirement-to-evidence mappings must be semantically exact. A cited downstream item is valid only when its stated outcomes directly satisfy the referenced requirement; topical adjacency or generic governance language is insufficient.
 - Plans and roadmaps may add execution detail, but auditors must not treat them as substitutes for missing requirement-level acceptance criteria.
 - Findings should identify the missing contract boundary precisely enough that an upstream document owner can repair it without guessing.
 
@@ -171,6 +172,7 @@
 - For requirements-, plan-, and roadmap-phase auditing, required evidence must be satisfiable from the fixed documentation scope. Absent later implementation artifacts are not, by themselves, documentary-phase failures unless an in-scope document incorrectly claims those artifacts already exist.
 - For documentary phases, an in-scope plan or roadmap may schedule consistency repairs in supporting governance documents, but auditors must not treat that scheduled repair as a prerequisite proof of pass unless the supporting documents are also part of the fixed audit scope for that phase.
 - For those documentary phases, repository-local instruction files such as `AGENTS.md` may guide authoring behavior but must not be required as authority-bearing evidence for whether the governing contract is closed.
+- When a supporting governance document traces a requirement through `docs/plan.md` or `docs/roadmap.md`, every cited plan or roadmap item must itself contain the relevant required outcome. Auditors must reject mappings that require semantic guesswork or cross-item inference to become true.
 - When downstream documents mention repository-local instruction files, those mentions must be framed as consulted guidance or implementation discipline only. They must not be written as blocking documentary-phase gate conditions, deciding evidence paths, or replacement authority.
 - When a phase-specific fixed documentation scope includes supporting governance documents such as `docs/acceptance_matrix.md` or `docs/traceability_map.md`, those documents may be audited for consistency and completeness, but they must still be interpreted as subordinate operationalization of the governing two-document contract rather than as replacement authority.
 - The following artifacts are part of the workflow evidence contract:

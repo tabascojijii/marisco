@@ -21,10 +21,11 @@ The workstream deliverables remain:
 
 ## Architectural Response To The Audit
 
-`docs/audit_report.md` identified two structural defects that this revision removes:
+`docs/audit_report.md` identified prior structural defects that this revision removes:
 
-1. plan validity was made to depend on supporting-document alignment that may be outside the active plan-audit scope
-2. plan validity was framed as depending on rewriting its own governing authority sources
+1. requirement-to-plan mappings cited plan items whose stated outcomes did not actually satisfy the referenced requirements
+2. traceability links propagated those mismatches into supporting governance documents
+3. supporting-document alignment risked being read as a plan-validity prerequisite instead of same-change-set consistency work
 
 This revision responds by:
 
@@ -106,14 +107,16 @@ Required outcomes:
 - heavyweight operations excluded by `REQ-POST-COMMIT-LIGHTWEIGHT-BOUNDARY` remain excluded
 - the verification design stays compatible with Python `>=3.7`
 
-### PLAN-005 — Operationalize The Contract In Supporting Documents
+### PLAN-005 — Operationalize Governance Alignment In Supporting Documents
 
 Align supporting-governance documents to the governing contract and this plan without changing the authority boundary.
 
 Required outcomes:
 
+- downstream traces preserve the project-specific granularity and contract-closure semantics already defined in `docs/requirements.md` and `docs/reference_standards.md`
 - every normative `REQ-...` identifier currently defined in `docs/requirements.md` is represented in `docs/acceptance_matrix.md`
 - `docs/traceability_map.md` traces each normative `REQ-...` identifier from source through plan and roadmap evidence paths
+- every requirement-to-plan and requirement-to-roadmap citation in supporting documents points only to items whose stated required outcomes directly satisfy the cited requirement
 - neither supporting document introduces a new authority source, gate prerequisite, or substitute decision vocabulary
 - roadmap-phase documentary evidence paths remain inside the declared documentation scope
 
@@ -125,6 +128,7 @@ Carry the workstream boundaries intact into downstream planning and implementati
 
 Required outcomes:
 
+- the plan remains subordinate to requirement thresholds and does not define an alternate documentary-phase pass/fail algorithm
 - no plan item forces immediate refactoring of existing handlers
 - no plan item treats generated `.py` files as the canonical authoring surface
 - success remains tied to the actual deliverables instead of to speculative framework redesign
@@ -161,10 +165,10 @@ Required outcomes:
 |---|---|
 | PLAN-001 | `REQ-NB-TEMPLATE`, `REQ-CURRENT-STATE-FIDELITY`, `REQ-NBDEV-COMPAT`, `REQ-AC-TEMPLATE-EXISTS`, `REQ-AC-TEMPLATE-BASELINE`, `REQ-AC-TEMPLATE-NBDEV` |
 | PLAN-002 | `REQ-DIFFERENCE-VISIBILITY`, `REQ-PRESERVE-FLEXIBILITY`, `REQ-AVOID-PREMATURE-COMMONIZATION`, `REQ-AC-TEMPLATE-ZONES`, `REQ-AC-PRESERVE-FLEXIBILITY` |
-| PLAN-003 | `REQ-READABILITY`, `REQ-GRAN-PLAN`, `REQ-AC-READABILITY`, `REQ-AC-NO-REFACTOR` |
+| PLAN-003 | `REQ-READABILITY`, `REQ-AC-READABILITY` |
 | PLAN-004 | `REQ-GRAN-HOOK`, `REQ-POST-COMMIT-AUTHORITY`, `REQ-POST-COMMIT-SEQUENCE`, `REQ-POST-COMMIT-LIGHTWEIGHT-BOUNDARY`, `REQ-LOW-FRICTION-VALIDATION`, `REQ-PYTHON-BASELINE`, `REQ-CHECK-EXPORT`, `REQ-CHECK-COMPILE`, `REQ-CHECK-COVERAGE`, `REQ-AC-POST-COMMIT-SEQUENCE`, `REQ-AC-POST-COMMIT-BOUNDARY` |
-| PLAN-005 | `REQ-GRAN-CHECKS`, `REQ-GRAN-ROADMAP`, `REQ-GRAN-SUPPORTING-DOCS-ROLE`, `REQ-CONTRACT-CLOSURE-SUPPORT`, `REQ-CONTRACT-CLOSURE-EVIDENCE`, `REQ-CONTRACT-CLOSURE-DOWNSTREAM`, `REQ-CONTRACT-CLOSURE-SUPPORT-SEPARATION` |
-| PLAN-006 | `REQ-CONTRACT-CLOSURE-PLAN`, `REQ-CONTRACT-CLOSURE-PRESENT-STATE`, `REQ-AVOID-PREMATURE-COMMONIZATION`, `REQ-AC-NO-REFACTOR` |
+| PLAN-005 | `REQ-GRAN-REQS-SCOPE`, `REQ-GRAN-REQS-COMPLETE`, `REQ-GRAN-STANDARDS`, `REQ-GRAN-ROADMAP`, `REQ-GRAN-CONTRACT-DECIDABLE`, `REQ-GRAN-CONTRACT-SUBORD`, `REQ-GRAN-SUPPORTING-DOCS-ROLE`, `REQ-GRAN-CHECKS`, `REQ-CONTRACT-CLOSURE-AUTHORITY`, `REQ-CONTRACT-CLOSURE-SUPPORT`, `REQ-CONTRACT-CLOSURE-EVIDENCE`, `REQ-CONTRACT-CLOSURE-DOWNSTREAM`, `REQ-CONTRACT-CLOSURE-SUPPORT-SEPARATION` |
+| PLAN-006 | `REQ-GRAN-PLAN`, `REQ-CONTRACT-CLOSURE-PLAN`, `REQ-CONTRACT-CLOSURE-PRESENT-STATE`, `REQ-AVOID-PREMATURE-COMMONIZATION`, `REQ-AC-NO-REFACTOR` |
 
 ## Phase Breakdown
 
@@ -217,7 +221,9 @@ This plan does not:
 
 This revision addresses the audit findings by:
 
-- removing support-document completion as a prerequisite for deciding plan validity
+- removing semantically invalid requirement-to-plan mappings
+- aligning support-document traces to the plan items that actually carry the required outcomes
+- keeping support-document completion from becoming a prerequisite for deciding plan validity
 - removing prospective upstream rewrites as a prerequisite for deciding plan validity
 - keeping the governing authority in `docs/requirements.md` and `docs/reference_standards.md`
 - keeping supporting-governance documents required but subordinate
