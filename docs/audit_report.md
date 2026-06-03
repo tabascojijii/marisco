@@ -1,59 +1,34 @@
 # Audit Report
 
-## Summary
-- Scope scan completed for all lines of `AGENTS.md`, `docs/requirements.md`, `docs/plan.md`, and `docs/reference_standards.md`.
-- Result: `docs/plan.md` is not acceptable in its current form.
-- Decision candidate: `REJECT_TO_ARCHITECT`
-
 ## Scope
-- Read for judgment:
-  - `AGENTS.md`
-  - `docs/requirements.md`
-  - `docs/plan.md`
-  - `docs/reference_standards.md`
-- Not used for judgment:
-  - any repository-wide discovery
-  - any out-of-scope supporting document contents
+- Target: `docs/plan.md`
+- Fixed audit scope completed: `AGENTS.md`, `docs/requirements.md`, `docs/plan.md`, `docs/reference_standards.md`
+- Authority order applied: `docs/requirements.md` -> `docs/plan.md` -> `docs/reference_standards.md`
+
+## Result
+- Decision: `AUDIT_PASS_PLAN`
+- Outcome: no nonconformities found in `docs/plan.md` within the fixed scope
+
+## Checks
+| id | pass | evidence_path | metric_value | threshold |
+|---|---|---|---|---|
+| REQ-GRAN-PLAN | true | `docs/plan.md:11-13`, `docs/plan.md:202-204` | aligned | no_threshold_redefinition |
+| REQ-CONTRACT-CLOSURE-PLAN | true | `docs/plan.md:111-120`, `docs/requirements.md:56-57` | aligned | architect_gate_decidable_in_scope |
+| REQ-CONTRACT-CLOSURE-PRESENT-STATE | true | `docs/plan.md:13`, `docs/plan.md:45`, `docs/plan.md:120`, `docs/requirements.md:58` | aligned | no_prospective_dependency |
+| REQ-CONTRACT-CLOSURE-DOWNSTREAM | true | `docs/plan.md:13`, `docs/plan.md:120`, `docs/plan.md:202-204`, `docs/reference_standards.md:19`, `docs/reference_standards.md:126` | aligned | no_alternate_gate_logic |
+| REQ-POST-COMMIT-AUTHORITY | true | `docs/plan.md:104-107`, `docs/requirements.md:98-101` | aligned | hook_governed |
+| REQ-POST-COMMIT-SEQUENCE | true | `docs/plan.md:104-106`, `docs/requirements.md:103-108` | aligned | export_compile_import |
+| REQ-POST-COMMIT-LIGHTWEIGHT-BOUNDARY | true | `docs/plan.md:106-107`, `docs/requirements.md:110-117` | aligned | lightweight_only |
+| REQ-PYTHON-BASELINE | true | `docs/plan.md:107`, `docs/requirements.md:140` | aligned | python_gte_3_7 |
+| REQ-CURRENT-STATE-FIDELITY | true | `docs/plan.md:71-75`, `docs/requirements.md:81-85` | aligned | current_state_descriptive |
+| REQ-DIFFERENCE-VISIBILITY | true | `docs/plan.md:82-85`, `docs/requirements.md:86-91` | aligned | zones_explicit |
+| REQ-AVOID-PREMATURE-COMMONIZATION | true | `docs/plan.md:84`, `docs/plan.md:128-130`, `docs/requirements.md:125-127` | aligned | no_forced_refactor |
 
 ## Findings
+- None
 
-### F1
-- Severity: high
-- Title: plan acceptance is made to depend on out-of-scope supporting-document alignment
-- Evidence:
-  - `docs/plan.md:35` says supporting-document alignment is required in the same revision
-  - `docs/plan.md:107-117` defines `PLAN-005` as a required plan item
-  - `docs/plan.md:172-175` schedules `docs/acceptance_matrix.md` and `docs/traceability_map.md` realignment in Phase 1
-- Why this fails:
-  - `docs/requirements.md:56` says Architect gate success must remain decidable from the scoped governing contract and the plan itself rather than from out-of-scope supporting-document state
-  - `docs/requirements.md:55` says required documentary evidence paths must stay inside the declared fixed documentation scope
-  - `docs/reference_standards.md:169-172` preserves documentary-phase decidability from scoped evidence and keeps supporting documents subordinate
-- Impact:
-  - Within the fixed audit scope for this task, the plan introduces required outcomes whose completion cannot be verified without leaving scope
-  - This makes plan-phase acceptance structurally non-decidable from the permitted evidence set
-
-### F2
-- Severity: high
-- Title: the plan depends on rewriting its own governing authority sources instead of operating under the current governing baseline
-- Evidence:
-  - `docs/plan.md:11` says the plan first closes the governing contract
-  - `docs/plan.md:63` instructs revision of `docs/requirements.md` and `docs/reference_standards.md`
-  - `docs/plan.md:172-173` repeats those revisions as Phase 1 execution steps
-- Why this fails:
-  - `docs/requirements.md:38` says `docs/plan.md` may describe how requirements will be satisfied, but it must not tighten, relax, or replace requirement thresholds
-  - `docs/requirements.md:53` requires contract-validity and authority-boundary rules to already be stated in `docs/requirements.md` and `docs/reference_standards.md`
-  - `docs/reference_standards.md:9-17` defines the current two-document governance set as the active authority for documentary phases
-- Impact:
-  - The plan is not stable against the fixed requirements-first audit order because it treats upstream authority repair as a prerequisite to its own validity
-  - A plan-phase pass would therefore depend on prospective upstream rewrites rather than the current scoped authority set
-
-## 不足証跡
-- なし
+## Insufficient Evidence
+- None
 
 ## Open-Items
-- `docs/plan.md` must be revised so that plan-phase acceptance is decidable from `docs/requirements.md`, `docs/plan.md`, and `docs/reference_standards.md` alone.
-- `docs/plan.md` must stop making same-revision success depend on out-of-scope supporting-document alignment.
-- `docs/plan.md` must stop treating revision of `docs/requirements.md` and `docs/reference_standards.md` as a prerequisite for plan validity under the current audit.
-
-## Decision
-- `REJECT_TO_ARCHITECT`
+- None
