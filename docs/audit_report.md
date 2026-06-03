@@ -1,8 +1,8 @@
 # Requirements Audit Report
 
-**Audit Date**: 2026-06-02  
-**Auditor**: Auditor agent  
-**Phase**: requirements  
+**Audit Date**: 2026-06-03  
+**Auditor**: Auditor Agent (Claude Sonnet 4.6)  
+**Phase**: requirements-only  
 **Scope (fixed)**:
 - `AGENTS.md`
 - `docs/requirements.md`
@@ -14,10 +14,10 @@
 
 - **Decision**: `ESCALATION`
 - **Scope used for judgment**: `AGENTS.md`, `docs/requirements.md`, `docs/reference_standards.md`
-- **Rationale**: Three blocking conditions prevent AUDIT_PASS_REQUIREMENTS:
-  1. The declared deliverable "A lightweight post-commit verification flow" has normative functional requirements but its acceptance criteria are labeled `(informative)` only — no normative `REQ-AC-...` identifier covers this deliverable, making its acceptance gate formally unauditable.
-  2. The "Required Checks" subsection contains normative language ("must") without `REQ-...` identifiers, violating the Requirement Identifier Policy stated in the same document.
-  3. `docs/reference_standards.md` declares six required governance documents; their existence cannot be confirmed within the fixed audit scope.
+- **Rationale**: Two prior ESCALATION triggers (OI-001, OI-002 from 2026-06-02) are confirmed RESOLVED. Two new blocking conditions and one unchanged 不足証跡 prevent `AUDIT_PASS_REQUIREMENTS`:
+  1. `AUDIT_PASS_REQUIREMENTS` is not defined in `docs/reference_standards.md` § Workflow State Model — the required audit output token is absent from the governance vocabulary, constituting a 監査I/F契約不備 / 未定義語彙.
+  2. `audit_status.txt` output format is undefined in all scoped documents — `docs/reference_standards.md` § Audit Contract defines JSON structure only; no format rule exists for the TXT counterpart, constituting a 監査I/F契約不備.
+  3. *(unchanged 不足証跡)* Six governance documents required by `docs/reference_standards.md` § Required Documents cannot be verified within the fixed audit scope.
 
 ---
 
@@ -29,94 +29,88 @@ Automated progression is suspended pending human or principal review.
 
 ---
 
-## Findings
+## Prior Findings — Status Update
 
-### Finding 1 — `REQ_POST_COMMIT_AC_MISSING`
-
-**Severity**: ESCALATION trigger  
-**Location**: `docs/requirements.md` § Deliverables and § Acceptance Criteria
-
-The Deliverables section explicitly lists:
-
-> "A lightweight post-commit verification flow."
-
-Normative requirements governing this deliverable exist and are well-formed:
-- `REQ-POST-COMMIT-AUTHORITY` — defines hook-governed authority
-- `REQ-POST-COMMIT-SEQUENCE` — defines the three required stages
-- `REQ-POST-COMMIT-LIGHTWEIGHT-BOUNDARY` — defines the heavyweight-exclusion boundary
-
-However, the Acceptance Criteria section marks both corresponding acceptance entries as `(informative)`:
-
-```
-- (informative, see `REQ-POST-COMMIT-SEQUENCE`) A documented post-commit verification sequence …
-- (informative, see `REQ-POST-COMMIT-LIGHTWEIGHT-BOUNDARY`) The documented post-commit verification sequence …
-```
-
-No `REQ-AC-POST-COMMIT-...` identifier exists. Acceptance of this deliverable is therefore not normatively auditable: an auditor cannot formally determine whether the deliverable is accepted because no normative acceptance criterion governs it. The substance of the requirements (stages 1–3) is clear, but the formal acceptance gate does not exist.
-
-**Escalation basis**: `docs/reference_standards.md` § Escalation Decisions — "`ESCALATION` is required when requirements are contradictory, undefined, or not auditable."
-
-**Required repair**: Add one or more normative `REQ-AC-POST-COMMIT-...` entries to the Acceptance Criteria section, or provide a policy-level justification (with a `REQ-...` identifier) for why the deliverable's acceptance is intentionally informative-only.
+| Prior OI | Description | Status |
+|----------|-------------|--------|
+| OI-001 | `REQ-AC-POST-COMMIT-...` acceptance criteria missing; post-commit deliverable had only `(informative)` labels | **RESOLVED** — `REQ-AC-POST-COMMIT-SEQUENCE` and `REQ-AC-POST-COMMIT-BOUNDARY` are now present with normative `REQ-AC-...` identifiers |
+| OI-002 | Three normative "must" statements in § Required Checks had no `REQ-...` identifiers | **RESOLVED** — `REQ-CHECK-EXPORT`, `REQ-CHECK-COMPILE`, `REQ-CHECK-COVERAGE` are now present with proper identifiers |
+| OI-003 | Six required governance documents unverifiable within fixed audit scope | **UNCHANGED** — see Finding 3 below |
 
 ---
 
-### Finding 2 — `REQ_IDENTIFIER_POLICY_VIOLATION`
+## Current Findings
 
-**Severity**: Blocking secondary  
-**Location**: `docs/requirements.md` § Post-Commit Test Run Requirements → Required Checks
+### Finding 1 — `REQ_WORKFLOW_STATE_UNDEFINED` [BLOCKING]
 
-The Requirement Identifier Policy in the same document states:
+**Severity**: ESCALATION trigger — 未定義語彙 / 監査I/F契約不備  
+**Location**: `docs/reference_standards.md` § Workflow State Model
 
-> "All normative requirements in this document must use `REQ-...` identifiers."
+The audit invocation specifies that the only valid Auditor decisions are `AUDIT_PASS_REQUIREMENTS` or `ESCALATION`. However, `docs/reference_standards.md` § Workflow State Model defines only the following states:
 
-The "Required Checks" subsection contains three normative statements (using "must") that carry no `REQ-...` identifier:
+**Forward path**: `[USER]` → `[ARCHITECT]` → `[AUDIT_PASS_PLAN]` → `[PM]` → `[AUDIT_PASS_ROADMAP]` → `[IMPLEMENT]` → `[AUDIT_PASS_IMPLEMENT]` → `[DONE]`  
+**Rejection/escalation**: `REJECT_TO_ARCHITECT`, `REJECT_TO_PM`, `REJECT_TO_IMPLEMENT`, `ESCALATION`
 
-1. "Notebook/export-related changes **must** be validated through the export/regeneration stage defined in `REQ-POST-COMMIT-SEQUENCE`."
-2. "Generated Python files touched by the template workflow **must** pass the compile and import-smoke stages defined in `REQ-POST-COMMIT-SEQUENCE`."
-3. "The required check set **must** be sufficient to catch: broken notebook export structure / syntax errors in generated modules / obvious import-time breakage in touched code paths."
+`AUDIT_PASS_REQUIREMENTS` does not appear in this model. No predecessor state for a requirements-phase audit gate (analogous to the plan-phase `[ARCHITECT]` → `[AUDIT_PASS_PLAN]` pattern) is defined. The post-commit hook or downstream automation therefore has no governance-defined handler for this token.
 
-These statements are substantively traceable to `REQ-POST-COMMIT-SEQUENCE`, but their lack of independent identifiers prevents them from being individually cited in traceability maps, check catalogs, or audit citations without ambiguity.
+**Escalation basis**: `docs/reference_standards.md` § Escalation Decisions — "`ESCALATION` is required when requirements are contradictory, undefined, or not auditable." The audit output vocabulary includes a term that is undefined in the governance state contract.
 
-**Required repair**: Assign `REQ-...` identifiers to each of the three normative statements, or restructure them as explicitly labeled sub-points of `REQ-POST-COMMIT-SEQUENCE` with a policy note explaining they are non-independent elaborations.
+**Required repair**: Add `AUDIT_PASS_REQUIREMENTS` (and, for symmetry, a preceding `[REQUIREMENTS]` state or equivalent) to `docs/reference_standards.md` § Workflow State Model with defined successors and a clear mapping to what state or role the workflow advances to upon receipt of this token.
 
 ---
 
-### Finding 3 — `REQ_GOVERNANCE_DOCS_UNVERIFIABLE` (不足証跡)
+### Finding 2 — `REQ_AUDIT_IF_TXT_UNDEFINED` [BLOCKING]
+
+**Severity**: ESCALATION trigger — 監査I/F契約不備  
+**Location**: `docs/reference_standards.md` § Audit Contract (gap)
+
+The audit invocation requires output to both `audit_status.json` and `audit_status.txt`. `docs/reference_standards.md` § Audit Contract specifies the required structure for JSON output (required top-level keys: `decision`, `reason_codes`, `owner`, `next_gate`, `checks`; required per-check fields: `id`, `pass`, `evidence_path`, `metric_value`, `threshold`). No format, required fields, encoding rules, or relationship to the JSON contract is defined for `audit_status.txt` in any scoped document.
+
+Producing a compliant `audit_status.txt` without a defined format requires the Auditor to speculate. `docs/reference_standards.md` § Audit Scope Discipline states: "Avoid speculative reconstruction of evidence; missing evidence is a failure condition, not a prompt to guess." § Prohibited Actions states: "Do not invent requirement IDs, reason codes, or evidence paths that cannot be traced to repository content."
+
+**Note**: The `audit_status.txt` produced in this audit run is best-effort plain text. It must not be treated as a validated contract artifact until its format is defined.
+
+**Required repair**: Add to `docs/reference_standards.md` § Audit Contract (or to `docs/requirements.md`) a specification of `audit_status.txt`: required fields, field ordering, line format, and its relationship to the JSON contract (e.g., human-readable summary vs. machine-redundant copy).
+
+---
+
+### Finding 3 — `REQ_GOVERNANCE_DOCS_UNVERIFIABLE` (不足証跡) [UNCHANGED]
 
 **Severity**: Insufficient evidence — cannot confirm or deny  
 **Location**: `docs/reference_standards.md` § Required Documents
 
-`docs/reference_standards.md` declares the following documents as required by the governance workflow:
+`docs/reference_standards.md` declares the following documents as required by the governance workflow. Their existence cannot be confirmed or denied within the fixed audit scope (repository-wide file exploration is prohibited):
 
-| Document | Status within fixed audit scope |
-|----------|---------------------------------|
-| `docs/acceptance_matrix.md` | Cannot verify — outside scope |
-| `docs/check_catalog.md` | Cannot verify — outside scope |
-| `docs/audit_contract.md` | Cannot verify — outside scope |
-| `docs/escalation_policy.md` | Cannot verify — outside scope |
-| `docs/traceability_map.md` | Cannot verify — outside scope |
-| `docs/audit_examples.md` | Cannot verify — outside scope |
+| Document | Status |
+|----------|--------|
+| `docs/acceptance_matrix.md` | Cannot verify — outside fixed audit scope |
+| `docs/check_catalog.md` | Cannot verify — outside fixed audit scope |
+| `docs/audit_contract.md` | Cannot verify — outside fixed audit scope |
+| `docs/escalation_policy.md` | Cannot verify — outside fixed audit scope |
+| `docs/traceability_map.md` | Cannot verify — outside fixed audit scope |
+| `docs/audit_examples.md` | Cannot verify — outside fixed audit scope |
 
-`docs/reference_standards.md`: *"Missing required governance documents are not cosmetic issues; they are workflow contract failures."*
+`docs/reference_standards.md` states: *"Missing required governance documents are not cosmetic issues; they are workflow contract failures."*
 
-The fixed audit scope prohibits repository-wide file exploration. Existence of these documents cannot be confirmed or denied from `AGENTS.md`, `docs/requirements.md`, and `docs/reference_standards.md` alone.
+Because the Auditor cannot confirm these documents exist, the Auditor cannot confirm the workflow contract is intact.
 
-**Required action**: A human reviewer or a scoped verification step must confirm all six documents exist and are non-empty. This cannot be resolved within the current audit scope.
+**Required action**: A human reviewer must confirm all six documents exist and are non-empty. This cannot be resolved within the current audit scope. Existence confirmation should be made a prerequisites check before re-audit.
 
 ---
 
-## Passing Observations (PASS Checks)
+## Passing Checks
 
-The following aspects of `docs/requirements.md` are well-formed:
+The following aspects of `docs/requirements.md` are well-formed and satisfactory in the current version:
 
-- **Identifier uniqueness**: All `REQ-...` identifiers in the Granularity Allocation section are distinct (`REQ-GRAN-REQS-SCOPE`, `REQ-GRAN-REQS-COMPLETE`, `REQ-GRAN-HOOK`, `REQ-GRAN-STANDARDS`, `REQ-GRAN-PLAN`, `REQ-GRAN-ROADMAP`, `REQ-GRAN-CONTRACT-DECIDABLE`, `REQ-GRAN-CONTRACT-SUBORD`, `REQ-GRAN-CHECKS`). No duplicates exist.
-- **Abstract-term resolution**: "current handler notebook pattern" is bounded within the Handler Template Baseline section ("means the minimum notebook structure defined in this section, not an inferred repository-wide average"), satisfying the `reference_standards.md` Audit Granularity Policy.
-- **Lightweight boundary**: `REQ-POST-COMMIT-LIGHTWEIGHT-BOUNDARY` provides enumerated heavyweight exclusions, resolving the abstract-term auditability concern for "lightweight."
-- **Contract decidability**: `REQ-GRAN-CONTRACT-DECIDABLE` is satisfied — the machine-readable audit contract structure (5 top-level keys, 5 checks-entry keys, reason-code prefix vocabulary) is fully derivable from `docs/reference_standards.md` without auxiliary documents.
-- **Post-commit authority**: `REQ-POST-COMMIT-AUTHORITY` correctly defines `.git/hooks/post-commit` as the governance entry point and subordinates helper scripts.
-- **Template acceptance criteria**: `REQ-AC-TEMPLATE-EXISTS`, `REQ-AC-TEMPLATE-BASELINE`, `REQ-AC-TEMPLATE-ZONES`, `REQ-AC-TEMPLATE-NBDEV`, and `REQ-AC-NO-REFACTOR` are normative, identified, and auditable.
-- **Scope boundaries**: Out-of-scope items (`src/`, `tests/`, `artifacts/`, `docs/plan.md`, `docs/roadmap.md`) are correctly identified and excluded from requirements-phase acceptance.
-- **AGENTS.md alignment**: Requirements are consistent with `AGENTS.md` notebook-first conventions, `nbdev` operating model, and validation heuristics.
+- **Identifier uniqueness and completeness**: All normative requirements carry `REQ-...` identifiers. Granularity Allocation (`REQ-GRAN-*`, 9 identifiers), Functional Requirements (`REQ-NB-TEMPLATE`, `REQ-CURRENT-STATE-FIDELITY`, `REQ-DIFFERENCE-VISIBILITY`, `REQ-NBDEV-COMPAT`, `REQ-POST-COMMIT-AUTHORITY`, `REQ-POST-COMMIT-SEQUENCE`, `REQ-POST-COMMIT-LIGHTWEIGHT-BOUNDARY`), Non-Functional Requirements (`REQ-PRESERVE-FLEXIBILITY`, `REQ-AVOID-PREMATURE-COMMONIZATION`, `REQ-READABILITY`, `REQ-LOW-FRICTION-VALIDATION`), Required Checks (`REQ-CHECK-EXPORT`, `REQ-CHECK-COMPILE`, `REQ-CHECK-COVERAGE`), Acceptance Criteria (`REQ-AC-TEMPLATE-EXISTS`, `REQ-AC-TEMPLATE-BASELINE`, `REQ-AC-TEMPLATE-ZONES`, `REQ-AC-TEMPLATE-NBDEV`, `REQ-AC-POST-COMMIT-SEQUENCE`, `REQ-AC-POST-COMMIT-BOUNDARY`, `REQ-AC-NO-REFACTOR`). No duplicates found.
+- **Abstract-term resolution**: "current handler notebook pattern" is bounded by § Handler Template Baseline ("means the minimum notebook structure defined in this section, not an inferred repository-wide average"). "lightweight" is bounded by `REQ-POST-COMMIT-LIGHTWEIGHT-BOUNDARY` with 4 explicit heavyweight exclusions. Both satisfy `docs/reference_standards.md` § Audit Granularity Policy.
+- **Post-commit acceptance criteria**: `REQ-AC-POST-COMMIT-SEQUENCE` and `REQ-AC-POST-COMMIT-BOUNDARY` are normative, carry `REQ-AC-...` identifiers, and are auditable from the fixed scope. (Prior OI-001 RESOLVED.)
+- **Required Checks identifiers**: `REQ-CHECK-EXPORT`, `REQ-CHECK-COMPILE`, `REQ-CHECK-COVERAGE` carry proper `REQ-...` identifiers. (Prior OI-002 RESOLVED.)
+- **Contract decidability**: The machine-readable audit contract structure (5 top-level keys, 5 per-check keys, reason-code prefix vocabulary) is fully specified in `docs/reference_standards.md` § Audit Contract, satisfying `REQ-GRAN-CONTRACT-DECIDABLE` at the format/schema level.
+- **Post-commit authority placement**: `REQ-POST-COMMIT-AUTHORITY` correctly defines `.git/hooks/post-commit` as the governance entry point. The authoritative documentation of the verification sequence resides in `docs/requirements.md` (`REQ-POST-COMMIT-SEQUENCE`), not exclusively in the runtime hook. This satisfies the audit instruction's requirement for scoped governance document authority.
+- **AGENTS.md alignment**: No contradictions found. Python >= 3.7 constraint, notebook-first operating model, lightweight validation preference, and absence of a dedicated `tests/` directory are consistent across all three scoped documents.
+- **Scope boundary clarity**: Out-of-scope items (`src/`, `tests/`, `artifacts/`, `docs/plan.md`, `docs/roadmap.md`) are explicitly identified in both § In-Scope / Out-of-Scope and § Validation Baseline For This Workstream.
+- **Non-blocking open decisions**: Three open decisions in § Open Decisions (template filename, scaffold style, reference handler choice) are pre-planning items and do not create contradiction within requirements.md.
 
 ---
 
@@ -125,12 +119,14 @@ The following aspects of `docs/requirements.md` are well-formed:
 | id | pass | evidence_path | metric_value | threshold |
 |----|------|---------------|--------------|-----------|
 | CHECK-001 | true | `docs/requirements.md` § Granularity Allocation | 9 distinct `REQ-GRAN-...` identifiers, 0 duplicates | 0 duplicate identifiers |
-| CHECK-002 | false | `docs/requirements.md` § Acceptance Criteria | 2 acceptance criteria for post-commit deliverable labeled `(informative)`; 0 normative `REQ-AC-POST-COMMIT-...` IDs | each deliverable must have ≥1 normative `REQ-AC-...` criterion |
-| CHECK-003 | false | `docs/requirements.md` § Required Checks | 3 normative "must" statements without `REQ-...` identifiers | all normative requirements must carry `REQ-...` identifiers |
-| CHECK-004 | true | `docs/reference_standards.md` § Audit Contract + `docs/requirements.md` § REQ-GRAN-CONTRACT-DECIDABLE | contract structure (5+5 keys, reason-code prefix) fully specified in scoped documents | decidable from fixed scope per `REQ-GRAN-CONTRACT-DECIDABLE` |
-| CHECK-005 | true | `docs/requirements.md` § Handler Template Baseline | 8 ordered structural sections enumerated; abstract term "current handler notebook pattern" bounded within document | baseline and term definitions must reside in scoped document |
-| CHECK-006 | true | `docs/requirements.md` §§ REQ-POST-COMMIT-SEQUENCE, REQ-POST-COMMIT-LIGHTWEIGHT-BOUNDARY | post-commit authority and 3-stage sequence defined in scoped governance documents | authority must reside in scoped governance documents, not only in runtime hook |
-| CHECK-007 | indeterminate | `docs/reference_standards.md` § Required Documents | 6 required governance documents declared; none verifiable within fixed audit scope | all 6 must exist per `reference_standards.md` |
+| CHECK-002 | true | `docs/requirements.md` § Acceptance Criteria | `REQ-AC-POST-COMMIT-SEQUENCE` and `REQ-AC-POST-COMMIT-BOUNDARY` present with normative identifiers | each deliverable must have ≥1 normative `REQ-AC-...` criterion |
+| CHECK-003 | true | `docs/requirements.md` § Post-Commit Test Run Requirements → Required Checks | `REQ-CHECK-EXPORT`, `REQ-CHECK-COMPILE`, `REQ-CHECK-COVERAGE` present with `REQ-...` identifiers | all normative requirements must carry `REQ-...` identifiers |
+| CHECK-004 | true | `docs/reference_standards.md` § Audit Contract + `docs/requirements.md` § REQ-GRAN-CONTRACT-DECIDABLE | contract schema (5+5 keys, reason-code prefix vocabulary) fully specified in scoped documents | decidable from fixed scope per `REQ-GRAN-CONTRACT-DECIDABLE` |
+| CHECK-005 | true | `docs/requirements.md` § Handler Template Baseline | 8 ordered structural sections enumerated; "current handler notebook pattern" bounded within document | baseline and abstract-term definitions must reside in scoped document |
+| CHECK-006 | true | `docs/requirements.md` §§ REQ-POST-COMMIT-SEQUENCE, REQ-POST-COMMIT-LIGHTWEIGHT-BOUNDARY | 3-stage sequence and 4 heavyweight exclusions defined in scoped governance documents | verification sequence authority must reside in scoped governance documents |
+| CHECK-007 | false | `docs/reference_standards.md` § Workflow State Model | `AUDIT_PASS_REQUIREMENTS` absent from defined state vocabulary | all audit output tokens must appear as defined states in the Workflow State Model |
+| CHECK-008 | false | `docs/reference_standards.md` § Audit Contract (gap) | `audit_status.txt` format undefined in all scoped documents | audit output format must be specified in scoped governance documents |
+| CHECK-009 | indeterminate | `docs/reference_standards.md` § Required Documents | 6 required governance documents declared; none verifiable within fixed audit scope | all 6 must exist per `docs/reference_standards.md` |
 
 ---
 
@@ -154,7 +150,9 @@ Documents required by `docs/reference_standards.md` but unverifiable within fixe
 
 | ID | Description | Owner | Blocking |
 |----|-------------|-------|---------|
-| OI-001 | Add normative `REQ-AC-POST-COMMIT-...` acceptance criterion for the post-commit verification flow deliverable, or provide an identified policy exception justifying informative-only treatment | Requirements owner (USER) | Yes |
-| OI-002 | Assign `REQ-...` identifiers to the 3 normative statements in "Required Checks", or annotate them as non-independent elaborations of `REQ-POST-COMMIT-SEQUENCE` | Requirements owner (USER) | Yes |
+| OI-001 | *(RESOLVED 2026-06-03)* Add normative `REQ-AC-POST-COMMIT-...` acceptance criterion for post-commit deliverable | — | — |
+| OI-002 | *(RESOLVED 2026-06-03)* Assign `REQ-...` identifiers to normative statements in § Required Checks | — | — |
 | OI-003 | Confirm existence of all 6 required governance documents listed in `docs/reference_standards.md` § Required Documents | Architect / Requirements owner | Yes |
-| OI-004 | After OI-001 through OI-003 are resolved, re-run requirements-phase audit for `AUDIT_PASS_REQUIREMENTS` determination | Auditor | — |
+| OI-004 | Add `AUDIT_PASS_REQUIREMENTS` (and predecessor state) to `docs/reference_standards.md` § Workflow State Model with defined successors | Requirements owner / Architect | Yes |
+| OI-005 | Define `audit_status.txt` format in `docs/reference_standards.md` § Audit Contract or `docs/requirements.md` | Requirements owner / Architect | Yes |
+| OI-006 | After OI-003 through OI-005 are resolved, re-run requirements-phase audit for `AUDIT_PASS_REQUIREMENTS` determination | Auditor | — |

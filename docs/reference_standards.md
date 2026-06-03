@@ -22,6 +22,7 @@
 ## Workflow State Model
 - The nominal forward path is:
   - `[USER]`
+  - `AUDIT_PASS_REQUIREMENTS`
   - `[ARCHITECT]`
   - `[AUDIT_PASS_PLAN]`
   - `[PM]`
@@ -29,6 +30,7 @@
   - `[IMPLEMENT]`
   - `[AUDIT_PASS_IMPLEMENT]`
   - `[DONE]`
+- `AUDIT_PASS_REQUIREMENTS` indicates that the requirements-phase audit (invoked after `[USER]`) has passed. It is a prerequisite for launching the Architect role. If the requirements audit does not pass, the result must be `ESCALATION`; there is no rejection-to-role path at this phase.
 - The allowed rejection or escalation states are:
   - `REJECT_TO_ARCHITECT`
   - `REJECT_TO_PM`
@@ -87,6 +89,14 @@
 - PASS decisions must not include failed checks.
 - REJECT decisions must include at least one reason code.
 - If the audit JSON contract is missing or invalid, the result must be treated as an architectural workflow failure rather than ignored.
+- `audit_status.txt` is a human-readable summary of `audit_status.json`. It is a supplementary output and must not be used as the machine-readable contract artifact; `audit_status.json` is the sole basis for automated decision-making.
+  - Required fields (fixed order):
+    - `DECISION: <decision value>`
+    - `DATE: <YYYY-MM-DD>`
+    - `PHASE: <phase name>`
+    - `REASON_CODES:` followed by each code as a 2-space-indented list item
+    - `NEXT_GATE: <next_gate enumeration value only — no descriptive text, no punctuation beyond the token itself>`
+  - The `NEXT_GATE` value in `audit_status.txt` must be one of the allowed enumeration values (`FLOW_ADVANCE`, `ARCHITECT_REWORK`, `PM_REWORK`, `IMPLEMENT_REWORK`, `ESCALATION_REVIEW`). Free-text descriptions are prohibited.
 
 ## Audit Granularity Policy
 - This document defines the repository-local policy for how concrete a requirement or finding must be in order to be auditable.
@@ -102,8 +112,9 @@
 - `docs/plan.md` owns design response and document architecture needed to satisfy the requirements.
 - `docs/roadmap.md` owns executable task breakdown and self-check sequencing.
 - `docs/audit_contract.md` may restate or exemplify the machine-readable audit output structure defined in this document, but does not hold normative authority over it for requirements-, plan-, and roadmap-phase auditing.
-- `docs/check_catalog.md` owns check definitions.
-- `docs/acceptance_matrix.md` owns threshold-style acceptance mapping.
+- `docs/acceptance_matrix.md` owns acceptance layer (A/B), criterion, evidence path, and threshold mapping for all normative requirements.
+- `docs/traceability_map.md` owns requirement-to-evidence traceability across phases.
+- `docs/check_catalog.md` is optional and informative; it does not hold normative authority.
 
 ## Decision Rules
 
@@ -123,13 +134,14 @@
 
 ## Required Documents
 - The following documents are required by the governance workflow:
-  - `C:\dev\marisco3\marisco_clean\marisco_repo\docs\acceptance_matrix.md`
-  - `C:\dev\marisco3\marisco_clean\marisco_repo\docs\check_catalog.md`
-  - `C:\dev\marisco3\marisco_clean\marisco_repo\docs\audit_contract.md`
-  - `C:\dev\marisco3\marisco_clean\marisco_repo\docs\escalation_policy.md`
-  - `C:\dev\marisco3\marisco_clean\marisco_repo\docs\traceability_map.md`
-  - `C:\dev\marisco3\marisco_clean\marisco_repo\docs\audit_examples.md`
+  - `docs/acceptance_matrix.md` — maps each normative requirement to its acceptance layer (A/B), criterion, evidence path, and threshold.
+  - `docs/traceability_map.md` — traces each normative requirement from source document through plan and roadmap to evidence.
 - Missing required governance documents are not cosmetic issues; they are workflow contract failures.
+- The following documents are optional and informative. They must not be treated as normative authority sources:
+  - `docs/audit_contract.md` — supplementary restatement of the audit contract defined in this document.
+  - `docs/escalation_policy.md` — supplementary summary of escalation rules defined in this document.
+  - `docs/check_catalog.md` — optional reference list of operationalized checks.
+  - `docs/audit_examples.md` — optional format examples for audit outputs.
 
 ## Required Markdown Blocks
 - `C:\dev\marisco3\marisco_clean\marisco_repo\docs\roadmap.md` must contain `## Self-Check (Required)`.

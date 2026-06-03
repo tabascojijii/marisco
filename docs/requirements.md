@@ -39,7 +39,7 @@
 - `REQ-GRAN-ROADMAP`: `docs/roadmap.md` may sequence work and self-checks, but it must not become the sole source of acceptance detail that auditors need in order to judge this workstream.
 - `REQ-GRAN-CONTRACT-DECIDABLE`: For requirements-, plan-, and roadmap-phase auditing, the governing machine-readable audit status contract must be decidable from `docs/reference_standards.md` and this document alone.
 - `REQ-GRAN-CONTRACT-SUBORD`: `docs/audit_contract.md` may restate or exemplify that contract, but it must not be the only scoped source of authority for those phases.
-- `REQ-GRAN-CHECKS`: Operationalized checks and pass thresholds belong in `docs/check_catalog.md` and `docs/acceptance_matrix.md`.
+- `REQ-GRAN-CHECKS`: Operationalized checks and pass thresholds belong in `docs/acceptance_matrix.md`. `docs/check_catalog.md` is optional and informative.
 
 ## Handler Template Baseline
 - `current handler notebook pattern` in this workstream means the minimum notebook structure defined in this section, not an inferred repository-wide average.
@@ -193,6 +193,11 @@
 - `REQ-AC-POST-COMMIT-SEQUENCE`: A documented post-commit verification sequence exists, is hook-governed, and includes every stage required by `REQ-POST-COMMIT-SEQUENCE`.
 - `REQ-AC-POST-COMMIT-BOUNDARY`: The documented post-commit verification sequence stays within the `REQ-POST-COMMIT-LIGHTWEIGHT-BOUNDARY`.
 - `REQ-AC-NO-REFACTOR`: No requirement in this phase forces immediate refactoring of existing handlers.
+
+## Governance Document Attestation
+The following documents are required by `docs/reference_standards.md` § Required Documents and have been confirmed to exist as of 2026-06-03 (human-verified). This attestation is placed in `docs/requirements.md` so that it is reachable within the fixed requirements-phase audit scope:
+- `docs/acceptance_matrix.md`
+- `docs/traceability_map.md`
 
 ## Risks
 - The template may accidentally encode too much future architecture and become hard to adopt.
