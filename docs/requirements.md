@@ -137,7 +137,9 @@
 ## Template Requirements Detail
 
 ### Required Template Sections
-- `default_exp` declaration
+(informative, see `REQ-CURRENT-STATE-FIDELITY` and `REQ-NB-TEMPLATE`)
+The section structure below restates § Handler Template Baseline for readability. No normative obligation beyond `REQ-CURRENT-STATE-FIDELITY` and `REQ-NB-TEMPLATE` is introduced here. The `default_exp` declaration is covered by `REQ-NB-TEMPLATE` ("follow the repository's `nbdev` conventions, including `default_exp` and exported cells").
+- `default_exp` declaration (see `REQ-NB-TEMPLATE`)
 - Title and short purpose statement
 - Configuration and input source section
 - Data loading section
@@ -151,12 +153,14 @@
   - known pain points
 
 ### Template Guidance Requirements
-- The template must document the current handler shape first, before proposing any future refactoring direction.
-- The template must indicate where provider-specific read logic belongs.
-- The template must indicate where callback definitions belong.
-- The template must indicate where to place `get_attrs`.
-- The template must indicate how `encode()` should be assembled.
-- The template should encourage use of reusable APIs when they already exist, without requiring speculative abstractions.
+(informative, see `REQ-CURRENT-STATE-FIDELITY` and `REQ-DIFFERENCE-VISIBILITY`)
+The guidance below elaborates how the requirements above are applied in practice. No normative obligation beyond `REQ-CURRENT-STATE-FIDELITY` and `REQ-DIFFERENCE-VISIBILITY` is introduced here.
+- The template documents the current handler shape first, before any future refactoring direction (elaborates `REQ-CURRENT-STATE-FIDELITY`).
+- The template indicates where provider-specific read logic belongs (elaborates `REQ-DIFFERENCE-VISIBILITY`).
+- The template indicates where callback definitions belong (elaborates `REQ-CURRENT-STATE-FIDELITY` § Handler Template Baseline).
+- The template indicates where to place `get_attrs` (elaborates `REQ-CURRENT-STATE-FIDELITY` § Handler Template Baseline).
+- The template indicates how `encode()` should be assembled (elaborates `REQ-CURRENT-STATE-FIDELITY` § Handler Template Baseline).
+- The template encourages use of reusable APIs when they already exist, without requiring speculative abstractions (elaborates `REQ-DIFFERENCE-VISIBILITY`).
 
 ## Post-Commit Test Run Requirements
 
@@ -175,6 +179,8 @@
   - obvious import-time breakage in touched code paths
 
 ### Recommended Minimum Post-Commit Check Set
+(informative, see `REQ-POST-COMMIT-SEQUENCE`)
+The items below restate the three stages defined in `REQ-POST-COMMIT-SEQUENCE` for readability. `REQ-POST-COMMIT-SEQUENCE` is the normative source; this list introduces no additional obligations.
 - `nbdev` export or equivalent regeneration step
 - `python -m py_compile` on touched generated files or relevant modules
 - lightweight import smoke checks for affected modules
