@@ -1,9 +1,9 @@
 {
-  "timestamp_utc": "2026-06-03T15:19:22Z",
+  "timestamp_utc": "2026-06-03T15:23:58Z",
   "phase": "PM_AUDIT",
-  "final_decision": "REJECT_TO_PM",
-  "final_owner": "PM",
-  "final_next_gate": "PM_REWORK",
+  "final_decision": "REJECT_TO_ARCHITECT",
+  "final_owner": "Architect",
+  "final_next_gate": "ARCHITECT_REWORK",
   "final_reason_code": "PM_EXECUTION_ID_MISMATCH",
   "auditor_decision": "AUDIT_PASS_ROADMAP",
   "escalated_by_hook": true,

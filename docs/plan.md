@@ -21,13 +21,13 @@ The workstream deliverables remain:
 
 ## Architectural Response To The Audit
 
-`docs/audit_report.md` identified prior structural defects that this revision removes:
+This revision is structured to prevent the defect classes that previously made this workstream hard to audit within a fixed documentation scope:
 
 1. requirement-to-plan mappings cited plan items whose stated outcomes did not actually satisfy the referenced requirements
 2. traceability links propagated those mismatches into supporting governance documents
 3. supporting-document alignment risked being read as a plan-validity prerequisite instead of same-change-set consistency work
 
-This revision responds by:
+The plan responds by:
 
 - treating `docs/requirements.md` and `docs/reference_standards.md` as already-authoritative current-state inputs
 - keeping Architect-gate decidability inside `docs/requirements.md`, `docs/reference_standards.md`, and `docs/plan.md`
@@ -245,7 +245,7 @@ This plan does not:
 
 ## Audit Closure Intent
 
-This revision addresses the audit findings by:
+This revision closes the targeted structural risks by:
 
 - removing semantically invalid requirement-to-plan mappings
 - aligning support-document traces to the plan items that actually carry the required outcomes
