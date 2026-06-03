@@ -1,31 +1,30 @@
 # Audit Report
 
 ## Scope
-- Files read for judgment only: `AGENTS.md`, `docs/requirements.md`, `docs/plan.md`, `docs/reference_standards.md`
-- Audit method: complete read of all in-scope lines before decision
-- Authority order applied: `docs/requirements.md` -> `docs/plan.md` -> `docs/reference_standards.md`
+- Completed full read of `AGENTS.md`
+- Completed full read of `docs/requirements.md`
+- Completed full read of `docs/plan.md`
+- Completed full read of `docs/reference_standards.md`
+- No repository-wide recursive discovery performed
 
 ## Decision
 - `REJECT_TO_ARCHITECT`
 
 ## Findings
-1. `REQ-GRAN-PLAN` mapping is not semantically exact.
-   `docs/plan.md:175-176` maps `PLAN-005` and `PLAN-006` to upstream granularity and contract-closure requirements. However `PLAN-005` only defines supporting-document alignment outcomes at `docs/plan.md:120-125`, and `PLAN-006` only defines downstream guardrails at `docs/plan.md:135-140`. These plan items do not directly restate or satisfy several mapped upstream requirements, including `REQ-GRAN-REQS-SCOPE`, `REQ-GRAN-REQS-COMPLETE`, `REQ-GRAN-STANDARDS`, and `REQ-GRAN-CONTRACT-SUBORD` from `docs/requirements.md:34-43`, nor do they directly carry those exact outcomes as required by `docs/requirements.md:38-39,50-51` and `docs/reference_standards.md:113-114,176-177`. This leaves the published requirement-to-plan mapping dependent on inferential repair.
-2. Verification mappings overclaim direct coverage.
-   `docs/plan.md:174` maps `PLAN-004` to `REQ-LOW-FRICTION-VALIDATION`, `REQ-CHECK-COVERAGE`, `REQ-AC-POST-COMMIT-SEQUENCE`, and `REQ-AC-POST-COMMIT-BOUNDARY`. `PLAN-004` at `docs/plan.md:107-112` directly states the hook surface, required stages, heavyweight exclusions, and Python baseline compatibility. It does not directly state the `quickly enough to remain practical during normal development` outcome required by `docs/requirements.md:135-137`, and it does not directly state the explicit breakage-detection sufficiency required by `docs/requirements.md:193-199`. Under the exact-mapping rules in `docs/requirements.md:38-39,50-51` and `docs/reference_standards.md:113-114,176-177`, those citations are not fully supported by the text of the mapped plan item itself.
+1. `ARCH_REQ_GRAN_CHECKS_MAPPING_INCOMPLETE`
+   `docs/requirements.md:0043-0049` requires `docs/acceptance_matrix.md` coverage to include acceptance layer, criterion, roadmap evidence path, later implementation evidence path or `not applicable`, and both roadmap and later implementation thresholds or `not applicable` for every normative `REQ-...` identifier. `docs/plan.md:0120-0130` maps `REQ-GRAN-CHECKS` to `PLAN-005`, but `PLAN-005` states only requirement representation, tracing, direct citation discipline, authority boundary preservation, and in-scope roadmap evidence paths. It does not directly state the missing acceptance-matrix field set or threshold obligations required by `REQ-GRAN-CHECKS`. Under `docs/reference_standards.md:0113-0115`, this is not a semantically exact requirement-to-plan mapping.
+2. `ARCH_REQ_GRAN_HOOK_MAPPING_OVERCLAIM`
+   `docs/requirements.md:0036` defines `REQ-GRAN-HOOK` as a two-part rule: the reusable `post-commit` hook is an orchestration surface, and it is not the source of project-specific granularity policy. `docs/plan.md:0103-0115` maps `REQ-GRAN-HOOK` to `PLAN-004`, but `PLAN-004` only states that `.git/hooks/post-commit` remains the governing orchestration surface. The plan item does not directly state the second required outcome that project-specific granularity remains owned elsewhere. Under `docs/reference_standards.md:0113-0115`, the cited plan item overclaims coverage.
 
-## Check Summary
-| Check | Result | Evidence |
-|---|---|---|
-| `REQ-CONTRACT-CLOSURE-PLAN` | PASS | `docs/plan.md:127,135-136,213` |
-| `REQ-GRAN-PLAN` | FAIL | `docs/plan.md:175-176`; `docs/requirements.md:38-39,50-51`; `docs/reference_standards.md:113-114,176-177` |
-| `REQ-LOW-FRICTION-VALIDATION` | FAIL | `docs/plan.md:107-112,174`; `docs/requirements.md:135-137` |
-| `REQ-CHECK-COVERAGE` | FAIL | `docs/plan.md:107-112,174`; `docs/requirements.md:193-199` |
+## Checks
+| id | pass | evidence_path | metric_value | threshold |
+|---|---|---|---|---|
+| `REQ-GRAN-CHECKS` | `false` | `docs/requirements.md:0043-0049; docs/plan.md:0120-0130; docs/plan.md:0179-0180; docs/reference_standards.md:0113-0115` | `plan_item_missing_acceptance_layer_criterion_evidence_and_threshold_fields` | `plan_item_directly_states_all_required_matrix_fields_and_thresholds` |
+| `REQ-GRAN-HOOK` | `false` | `docs/requirements.md:0036; docs/plan.md:0103-0115; docs/plan.md:0179; docs/reference_standards.md:0113-0115` | `plan_item_states_only_orchestration_surface` | `plan_item_directly_states_orchestration_surface_and_non_granularity_policy_boundary` |
 
 ## 不足証跡
-- なし
+- None
 
 ## Open-Items
-- `docs/plan.md` の Requirement-to-Plan Mapping から、plan item 自身が直接成果を明記していない `REQ-...` 参照を削除または差し替えること。
-- `PLAN-004` に `REQ-LOW-FRICTION-VALIDATION` と `REQ-CHECK-COVERAGE` を残す場合は、実用的な迅速性と必要な破壊検知範囲を plan item 本文に明示すること。
-- `PLAN-005` と `PLAN-006` に残す `REQ-...` 参照は、各 plan item の stated required outcomes と 1 対 1 で照合できるものだけに限定すること。
+- Revise `PLAN-005` so the cited plan item directly states every `REQ-GRAN-CHECKS` matrix-field and threshold obligation if that requirement will continue to map to `PLAN-005`.
+- Revise `PLAN-004` or the requirement-to-plan mapping so `REQ-GRAN-HOOK` is cited only to a plan item that directly states both required outcome fragments.
