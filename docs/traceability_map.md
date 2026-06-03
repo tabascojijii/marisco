@@ -25,3 +25,6 @@ Authority: `docs/requirements.md` is the normative source for all REQ-IDs listed
 | REQ-AC-POST-COMMIT-SEQUENCE | `docs/requirements.md` § Acceptance Criteria | TBD | TBD | `docs/requirements.md` |
 | REQ-AC-POST-COMMIT-BOUNDARY | `docs/requirements.md` § Acceptance Criteria | TBD | TBD | `docs/requirements.md` |
 | REQ-AC-NO-REFACTOR | `docs/requirements.md` § Acceptance Criteria | TBD | TBD | `docs/requirements.md` |
+| REQ-AC-PRESERVE-FLEXIBILITY | `docs/requirements.md` § Acceptance Criteria | TBD | TBD | `nbs/handlers/` |
+| REQ-AC-READABILITY | `docs/requirements.md` § Acceptance Criteria | TBD | TBD | `nbs/handlers/` |
+| REQ-PYTHON-BASELINE | `docs/requirements.md` § Constraints | TBD | TBD | `nbs/handlers/`, hook scripts |

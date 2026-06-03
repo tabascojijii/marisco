@@ -19,6 +19,9 @@ Layer A = blocking acceptance gate. Layer B = supporting quality check.
 | REQ-NBDEV-COMPAT | B | Template exportable via current `nbdev` flow; exported files importable; no broken exports or circular imports | generated `.py` | export and import succeed without error |
 | REQ-POST-COMMIT-SEQUENCE | B | 3-stage verification sequence (export, compile, import-smoke) defined in scoped governance documents | `docs/requirements.md` | all 3 stages enumerated |
 | REQ-POST-COMMIT-LIGHTWEIGHT-BOUNDARY | B | Heavyweight exclusions (dataset downloads, remote API, full NetCDF runs, regression suites) enumerated | `docs/requirements.md` | 4 exclusions listed |
+| REQ-AC-PRESERVE-FLEXIBILITY | A | Template contains no section mandating immediate normalization; provider-varying sections are marked provider-specific | `nbs/handlers/` | all provider-specific sections explicitly labeled; no forced-normalization clause |
+| REQ-AC-READABILITY | A | Template follows literate-programming style with prose adjacent to code cells; no unexplained generated-code patterns | `nbs/handlers/` | prose present in each section; style consistent with existing handler notebooks |
+| REQ-PYTHON-BASELINE | B | Verification steps and supporting code target Python `>=3.7` | `nbs/handlers/`, hook scripts | no Python version incompatibility introduced |
 | REQ-CHECK-EXPORT | B | Notebook/export changes validated through export/regeneration stage | hook run log | export stage executes without error |
 | REQ-CHECK-COMPILE | B | Generated Python files pass `python -m py_compile` and import-smoke | generated `.py` | no compile or import-time errors |
 | REQ-CHECK-COVERAGE | B | Check set detects broken export structure, syntax errors, and import-time breakage | hook run log | all 3 failure categories detectable |

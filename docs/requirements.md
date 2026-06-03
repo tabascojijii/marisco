@@ -119,8 +119,8 @@
 
 ## Constraints
 - The repository is notebook-first and uses `nbdev`; generated files are derived artifacts.
-- Existing handlers should continue to function without mandatory migration to the template at creation time.
-- The project currently targets Python `>=3.7`, so any verification step or future supporting code must respect that baseline unless explicitly changed elsewhere.
+- (informative, see `REQ-AVOID-PREMATURE-COMMONIZATION`) Existing handlers are not required to migrate to the template at creation time.
+- `REQ-PYTHON-BASELINE`: Any verification step or future supporting code introduced by this workstream must target Python `>=3.7` unless the project baseline is explicitly changed elsewhere.
 
 ## In-Scope
 - Creating the first explicit handler notebook template.
@@ -193,6 +193,8 @@
 - `REQ-AC-POST-COMMIT-SEQUENCE`: A documented post-commit verification sequence exists, is hook-governed, and includes every stage required by `REQ-POST-COMMIT-SEQUENCE`.
 - `REQ-AC-POST-COMMIT-BOUNDARY`: The documented post-commit verification sequence stays within the `REQ-POST-COMMIT-LIGHTWEIGHT-BOUNDARY`.
 - `REQ-AC-NO-REFACTOR`: No requirement in this phase forces immediate refactoring of existing handlers.
+- `REQ-AC-PRESERVE-FLEXIBILITY`: The template contains no section that mandates immediate normalization of all provider differences; each section that varies by provider is explicitly marked as provider-specific rather than as a required refactoring target.
+- `REQ-AC-READABILITY`: The template sections follow the literate-programming style of existing handler notebooks (prose explanation adjacent to code cells; no unexplained generated-code patterns).
 
 ## Governance Document Attestation
 The following documents are required by `docs/reference_standards.md` § Required Documents and have been confirmed to exist as of 2026-06-03 (human-verified). This attestation is placed in `docs/requirements.md` so that it is reachable within the fixed requirements-phase audit scope:
@@ -212,7 +214,7 @@ The following documents are required by `docs/reference_standards.md` § Require
 - Defer broad structural refactoring until commonization decisions are explicitly agreed.
 
 ## Open Decisions
-- Final filename and location of the template notebook.
+- Final filename of the template notebook.
 - Whether the first template should be pure scaffold or scaffold plus inline authoring guidance.
 - Which one existing handler should be used first as the calibration reference for template fidelity.
 
