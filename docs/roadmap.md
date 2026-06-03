@@ -141,6 +141,7 @@ Required outcomes:
 
 ## Self-Check (Required)
 
+- [x] `docs/roadmap.md` is explicitly aligned with `docs/requirements.md`, `docs/reference_standards.md`, and `docs/plan.md`, and it does not tighten, relax, or replace the governing thresholds or meanings they define.
 - [x] `docs/roadmap.md` treats `docs/requirements.md` and `docs/reference_standards.md` as the governing authority sources and does not promote `AGENTS.md` into co-equal authority.
 - [x] Every `RM-...` item states its mapped outcome directly enough to support semantic-exact traceability from `docs/traceability_map.md`.
 - [x] The roadmap remains aligned with `docs/plan.md` plan intent and does not tighten, relax, or replace requirement thresholds.
