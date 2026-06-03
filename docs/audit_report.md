@@ -1,87 +1,54 @@
 # Audit Report
 
-**Phase:** Roadmap  
-**Date:** 2026-06-03  
-**Decision:** `REJECT_TO_PM`
-
 ## Summary
 
-The required docset exists within scope: `docs/acceptance_matrix.md` and `docs/traceability_map.md` are present, and the roadmap keeps `AGENTS.md` in a consulted-only role.
-
-The rejection is caused by semantic-exactness failures in roadmap-to-requirement tracing. `RM-001` and `RM-002` are cited for governance requirements whose mapped outcomes they do not directly state, and both supporting-governance documents repeat those invalid citations. The governing contract in `docs/requirements.md` and `docs/reference_standards.md` remains usable, so the repair point is PM rather than Architect.
-
-## Scope
-
-- `AGENTS.md`
-- `docs/requirements.md`
-- `docs/plan.md`
-- `docs/roadmap.md`
-- `docs/reference_standards.md`
-- `docs/acceptance_matrix.md`
-- `docs/traceability_map.md`
-
-## Method
-
-- Read every in-scope file completely before judging.
-- Checked roadmap text against direct-mapping rules in the governing contract.
-- Audited required supporting documents for existence and alignment inside the fixed documentary scope.
+- audit_target: `docs/plan.md`
+- audit_scope: `AGENTS.md`, `docs/requirements.md`, `docs/plan.md`, `docs/reference_standards.md`
+- scan_status: `complete`
+- decision: `REJECT_TO_ARCHITECT`
 
 ## Findings
 
-### AO-001
+### F1
 
-`RM-001` is over-cited for governance requirements that demand direct outcome text in the cited roadmap item. The traceability map uses `RM-001` for `REQ-GRAN-REQS-SCOPE`, `REQ-GRAN-REQS-COMPLETE`, `REQ-GRAN-STANDARDS`, `REQ-GRAN-CONTRACT-DECIDABLE`, `REQ-CONTRACT-CLOSURE-AUTHORITY`, and `REQ-CONTRACT-CLOSURE-SUPPORT-SEPARATION`, but `RM-001` only states general authority-boundary and evidence-scope guardrails. It does not directly state project-specific granularity ownership, requirements-level completeness, ownership of audit-depth and abstract-term handling, or that the machine-readable audit-status contract is decidable from the two-document governing set alone.
+- id: `REQ-GRAN-PLAN`
+- severity: `blocking`
+- finding: `docs/plan.md` の要件対応表が `REQ-GRAN-PLAN` を `PLAN-006` に割り当てているが、`PLAN-006` の必須成果は要件閾値への従属と代替アルゴリズム禁止しか明示しておらず、同要件が要求する downstream requirement-to-plan citation の semantic-exactness 条件を自項目内で直接述べていない。
+- evidence:
+  - `docs/requirements.md:39`
+  - `docs/reference_standards.md:114`
+  - `docs/reference_standards.md:115`
+  - `docs/reference_standards.md:118`
+  - `docs/plan.md:133`
+  - `docs/plan.md:134`
+  - `docs/plan.md:147`
+  - `docs/plan.md:148`
+  - `docs/plan.md:188`
+- impact: `docs/plan.md` 自身の requirement-to-plan mapping が nearby plan item への依存で成立しており、plan-phase で要求される direct mapping 条件を満たさない。
 
-Evidence:
+### F2
 
-- `docs/requirements.md:35-55`
-- `docs/requirements.md:59-65`
-- `docs/reference_standards.md:114-119`
-- `docs/reference_standards.md:181-184`
-- `docs/roadmap.md:28-33`
-- `docs/traceability_map.md:10-19`
-- `docs/traceability_map.md:22-28`
+- id: `REQ-CONTRACT-CLOSURE-PLAN`
+- severity: `blocking`
+- finding: `docs/plan.md` の要件対応表が `REQ-CONTRACT-CLOSURE-PLAN` を `PLAN-006` に割り当てているが、同要件の中核である supporting-governance documents が out-of-scope の場合でも gate validity が governing contract と plan だけで decidable であることは `PLAN-005` の注記で述べられており、`PLAN-006` 自体には直接書かれていない。
+- evidence:
+  - `docs/requirements.md:62`
+  - `docs/reference_standards.md:179`
+  - `docs/reference_standards.md:181`
+  - `docs/plan.md:139`
+  - `docs/plan.md:147`
+  - `docs/plan.md:148`
+  - `docs/plan.md:188`
+- impact: `REQ-CONTRACT-CLOSURE-PLAN` に対する plan-level citation が self-contained ではなく、cited item 自身に必要成果が存在しない。
 
-Impact:
+## Passed Checks
 
-- roadmap-phase traceability is not semantically exact
-- the supporting-governance docset overclaims roadmap coverage for multiple blocking governance requirements
-- the roadmap self-check at `docs/roadmap.md:136` is not currently true
-
-### AO-002
-
-`RM-002` is cited for `REQ-GRAN-CHECKS`, but the cited roadmap item does not directly state the required acceptance-matrix completeness outcome. The requirement and plan demand that `docs/acceptance_matrix.md` contain one row for every normative `REQ-...` identifier with all required fields and thresholds. `RM-002` only states traceability directness, evidence-scope limits, acceptance of `REQ-AC-...` as normative, and subordinate status of supporting documents.
-
-Evidence:
-
-- `docs/requirements.md:46-55`
-- `docs/plan.md:128-135`
-- `docs/roadmap.md:39-44`
-- `docs/acceptance_matrix.md:22`
-- `docs/traceability_map.md:21`
-
-Impact:
-
-- the roadmap does not directly carry a mapped outcome that supporting documents claim it carries
-- supporting-governance alignment is incomplete for a blocking matrix requirement
-
-## Required Docset Result
-
-- `docs/acceptance_matrix.md`: present
-- `docs/traceability_map.md`: present
-- Existence alone passes, but alignment does not pass because the cited roadmap items are not semantically exact for all mapped governance requirements.
-
-## Insufficient Evidence
-
-- none
+- `REQ-NB-TEMPLATE`: `PLAN-001` が `nbs/handlers/` 配下の notebook、`nbdev` 準拠、generated `.py` 非正本を直接述べている。証跡: `docs/plan.md:72`-`docs/plan.md:77`
+- `REQ-POST-COMMIT-SEQUENCE`: `PLAN-004` が export/regeneration、`python -m py_compile`、import smoke checks を直接述べている。証跡: `docs/plan.md:111`-`docs/plan.md:117`
+- `REQ-LOW-FRICTION-VALIDATION`: `PLAN-004` が lightweight stage set と external-network/full-dataset exclusion を直接述べている。証跡: `docs/plan.md:113`-`docs/plan.md:116`
 
 ## Open-Items
 
-| ID | Severity | Requirement-Ref | Reason-Code | Evidence | Fix-Instruction | Owner |
-|---|---|---|---|---|---|---|
-| AO-001 | High | `REQ-GRAN-REQS-SCOPE`, `REQ-GRAN-REQS-COMPLETE`, `REQ-GRAN-STANDARDS`, `REQ-GRAN-CONTRACT-DECIDABLE`, `REQ-CONTRACT-CLOSURE-AUTHORITY`, `REQ-CONTRACT-CLOSURE-SUPPORT-SEPARATION` | `PM_TRACE_DIRECTNESS_GAP` | `docs/roadmap.md:28-33`; `docs/traceability_map.md:10-19`; `docs/traceability_map.md:22-28` | Expand `RM-001` or split it into additional `RM-...` items so each cited requirement is stated directly in roadmap text, then realign `docs/traceability_map.md` and any affected `docs/acceptance_matrix.md` rows. | PM |
-| AO-002 | High | `REQ-GRAN-CHECKS` | `PM_MATRIX_MAPPING_GAP` | `docs/roadmap.md:39-44`; `docs/traceability_map.md:21`; `docs/acceptance_matrix.md:22` | Add roadmap text that directly states the full acceptance-matrix completeness obligation, or remap `REQ-GRAN-CHECKS` to a roadmap item that already states it directly, then update supporting-governance rows to match. | PM |
-
-## Decision Basis
-
-`REJECT_TO_PM` is the correct disposition because the governing requirements, standards, and Architect plan are usable. The defects are in PM-phase roadmap wording and the subordinate supporting-governance mappings that depend on that wording.
+- `docs/plan.md` の requirement-to-plan mapping table を、各 requirement が実際に直接述べられている `PLAN-...` 項目へ修正すること。
+- `REQ-GRAN-PLAN` と `REQ-CONTRACT-CLOSURE-PLAN` については、必要なら `PLAN-006` に不足成果を追記するか、mapping を `PLAN-005` を含む正しい項目へ付け替えること。
+- 不足証跡: なし
