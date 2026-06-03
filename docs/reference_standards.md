@@ -11,6 +11,7 @@
 - Together, `docs/requirements.md` and `docs/reference_standards.md` form the normative two-document governance set for this workflow.
 - For requirements-, plan-, and roadmap-phase auditing, the contract rules defined in this document are the authoritative scoped source.
 - `docs/audit_contract.md` must not override this document for phases whose fixed audit scope does not include it.
+- `docs/acceptance_matrix.md` and `docs/traceability_map.md` are required supporting governance documents. They operationalize and trace the two-document governance set, but they do not become alternate authority sources for deciding whether that governing contract is well-formed.
 - `C:\dev\marisco3\marisco_clean\marisco_repo\CONVENTIONS.md` is the companion source for implementation and UX conventions.
 - `C:\dev\marisco3\marisco_clean\marisco_repo\DEPENDENCIES.md` is the companion source for runtime, development, asset, and external-service dependency inventory.
 - `C:\dev\marisco3\marisco_clean\marisco_repo\docs\core_philosophy.md` is informative background only and must not be treated as an independent source of audit or acceptance authority.
@@ -115,6 +116,7 @@
 - `docs/acceptance_matrix.md` owns acceptance layer (A/B), criterion, roadmap-phase documentary evidence path, later implementation evidence path, roadmap threshold, and later implementation threshold mapping for all normative requirements.
 - `docs/traceability_map.md` owns requirement-to-evidence traceability across phases.
 - `docs/check_catalog.md` is optional and informative; it does not hold normative authority.
+- Required supporting governance documents must remain subordinate to the two-document governance set. If they are incomplete or inconsistent, that is an architectural defect in supporting operationalization, not a transfer of governing authority away from `docs/requirements.md` and this document.
 
 ## Decision Rules
 
@@ -160,6 +162,7 @@
 ## Evidence And Artifact Rules
 - Evidence should be file-backed whenever possible, not prose-only.
 - For requirements-, plan-, and roadmap-phase auditing, required evidence must be satisfiable from the fixed documentation scope. Absent later implementation artifacts are not, by themselves, documentary-phase failures unless an in-scope document incorrectly claims those artifacts already exist.
+- When a phase-specific fixed documentation scope includes supporting governance documents such as `docs/acceptance_matrix.md` or `docs/traceability_map.md`, those documents may be audited for consistency and completeness, but they must still be interpreted as subordinate operationalization of the governing two-document contract rather than as replacement authority.
 - The following artifacts are part of the workflow evidence contract:
   - `C:\dev\marisco3\marisco_clean\marisco_repo\artifacts\acceptance_gate_report.json`
   - `C:\dev\marisco3\marisco_clean\marisco_repo\artifacts\md_json_completeness_report.json`

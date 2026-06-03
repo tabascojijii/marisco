@@ -31,21 +31,21 @@ This roadmap translates `docs/plan.md` into executable PM work items for the han
 
 Verify that `docs/requirements.md`, `docs/plan.md`, and `docs/reference_standards.md` remain mutually consistent before implementation begins. Confirm that the PM roadmap does not introduce new acceptance thresholds, new workflow states, or alternate evidence paths that conflict with the governing documents.
 
-Maps to: `PLAN-007`
+Maps to: `PLAN-001`, `PLAN-006`
 Roadmap-phase evidence: `docs/roadmap.md`, `docs/requirements.md`, `docs/plan.md`, `docs/reference_standards.md`
 
 ### RM-002 — Publish Traceability-Ready Roadmap
 
 Create a roadmap structure that gives each implementation area an executable task owner, ordered step sequence, and explicit evidence destination. Ensure the roadmap contains the required self-check block and is specific enough for `docs/traceability_map.md` to reference concrete roadmap items.
 
-Maps to: `PLAN-007`
+Maps to: `PLAN-005`
 Roadmap-phase evidence: `docs/roadmap.md`, `docs/traceability_map.md`
 
 ### RM-003 — Build The Template Notebook Skeleton
 
 Implement the new handler template notebook at `nbs/handlers/handler_template.ipynb` using the 8 ordered baseline sections from `docs/requirements.md`. Include `default_exp`, correct `#| export` use where appropriate, and notes that the template is current-state descriptive rather than future-state prescriptive.
 
-Maps to: `PLAN-001`
+Maps to: `PLAN-002`
 Roadmap-phase evidence: `docs/roadmap.md`, `docs/requirements.md`, `docs/plan.md`, `docs/traceability_map.md`
 Later implementation evidence: `nbs/handlers/handler_template.ipynb`, generated `.py`
 
@@ -53,7 +53,7 @@ Later implementation evidence: `nbs/handlers/handler_template.ipynb`, generated 
 
 Annotate the template so reviewers can distinguish provider-specific logic, reusable callback-based logic, and likely future commonization candidates. Keep these labels descriptive only; they must not imply mandatory normalization or immediate migration.
 
-Maps to: `PLAN-002`, `PLAN-008`
+Maps to: `PLAN-003`, `PLAN-006`
 Roadmap-phase evidence: `docs/roadmap.md`, `docs/requirements.md`, `docs/traceability_map.md`
 Later implementation evidence: `nbs/handlers/handler_template.ipynb`
 
@@ -61,7 +61,7 @@ Later implementation evidence: `nbs/handlers/handler_template.ipynb`
 
 Add adjacent prose to every baseline section so the notebook remains understandable as both implementation scaffold and documentation. Use the HELCOM notebook only as a read-only calibration reference and note any structural divergence in the template notes rather than rewriting existing handlers.
 
-Maps to: `PLAN-003`, `PLAN-001`, `PLAN-008`
+Maps to: `PLAN-002`, `PLAN-003`, `PLAN-006`
 Roadmap-phase evidence: `docs/roadmap.md`, `docs/plan.md`, `docs/traceability_map.md`
 Later implementation evidence: `nbs/handlers/handler_template.ipynb`
 
@@ -77,7 +77,7 @@ Later implementation evidence: `.git/hooks/post-commit`
 
 Make the post-commit flow generate the three required JSON artifacts under `artifacts/` with one shared `execution_id` per hook invocation. Artifact generation is part of the deliverable, not an optional add-on.
 
-Maps to: `PLAN-005`
+Maps to: `PLAN-004`
 Roadmap-phase evidence: `docs/roadmap.md`, `docs/plan.md`, `docs/reference_standards.md`, `docs/traceability_map.md`
 Later implementation evidence: `artifacts/acceptance_gate_report.json`, `artifacts/md_json_completeness_report.json`, `artifacts/json_schema_validation_report.json`
 
@@ -85,7 +85,7 @@ Later implementation evidence: `artifacts/acceptance_gate_report.json`, `artifac
 
 Keep any new notebook-exported code and hook-supporting code compatible with Python `>=3.7`. Validate the smallest affected surface first, then run lightweight static or CLI-adjacent checks before any broader verification, consistent with `AGENTS.md`.
 
-Maps to: `PLAN-006`
+Maps to: `PLAN-002`, `PLAN-004`, `PLAN-006`
 Roadmap-phase evidence: `docs/roadmap.md`, `AGENTS.md`, `docs/requirements.md`, `docs/traceability_map.md`
 Later implementation evidence: `nbs/handlers/handler_template.ipynb`, `.git/hooks/post-commit`
 

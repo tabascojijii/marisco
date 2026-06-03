@@ -2,230 +2,215 @@
 
 **Phase:** Architect  
 **Date:** 2026-06-03  
-**Authority Sources:** `docs/requirements.md`, `docs/reference_standards.md`, `docs/audit_report.md`
+**Authority Sources:** `AGENTS.md`, `docs/requirements.md`, `docs/reference_standards.md`  
+**Informative Audit Input:** `docs/audit_report.md`
 
 ## Purpose
 
-This plan repairs the structural governance defects identified in `docs/audit_report.md` before any downstream implementation work proceeds. It defines Architect-owned plan items that:
+This plan defines the Architect response for the handler-template workstream. It first closes the governing contract between `docs/requirements.md` and `docs/reference_standards.md`, then translates that contract into an implementation-ready design for the actual workstream deliverables:
 
-- close the normative contract between `docs/requirements.md` and `docs/reference_standards.md`
-- restore full normative coverage in `docs/acceptance_matrix.md`
-- keep roadmap-phase auditing decidable from the fixed documentation scope alone
-- preserve a clean boundary between documentary acceptance and later implementation evidence
+- an explicit handler template notebook under `nbs/handlers/`
+- a checklist or equivalent guidance that separates provider-specific sections from reusable sections
+- a hook-governed lightweight post-commit verification flow
+- usage documentation that explains how the template should be used before any commonization effort
 
-This plan is subordinate to `docs/requirements.md` for acceptance meaning and to `docs/reference_standards.md` for workflow behavior.
+`docs/audit_report.md` is treated as a diagnostic input to this revision, not as a governing authority source.
 
-## Audit-Driven Design Response
+## Architectural Response To The Audit
 
-`docs/audit_report.md` identified three upstream defects that must be corrected at the Architect layer:
+The current audit identifies four failure modes that this plan must eliminate:
 
-1. `docs/acceptance_matrix.md` did not cover every normative `REQ-...` identifier.
-2. Roadmap-phase acceptance still depended on out-of-scope implementation evidence paths.
-3. Artifact-failure rules were not phase-qualified inside the normative governance set.
+1. plan-phase acceptance drifted into required supporting documents as if they were governing authority
+2. the plan emphasized governance repair but under-specified the real workstream deliverables
+3. the plan elevated `docs/audit_report.md` into an authority source
+4. the plan replaced the source-of-truth rule `every normative REQ-...` with a brittle fixed-count threshold
 
-The repair strategy in this plan is therefore contract-first:
+The design response is:
 
-- define phase-aware evidence ownership in the governing documents themselves
-- require every normative requirement to have documentary evidence for roadmap-phase auditing
-- treat implementation artifacts as later evidence, not as prerequisites for requirements-, plan-, or roadmap-phase PASS decisions
+- keep the governing contract in `docs/requirements.md` and `docs/reference_standards.md`
+- treat `docs/acceptance_matrix.md` and `docs/traceability_map.md` as required supporting documents that must align to that contract without replacing it
+- structure the plan around the substantive handler-template deliverables, with governance repair only as enabling work
+- express coverage in terms of all currently normative requirement identifiers defined in `docs/requirements.md`, never a copied count
 
-## Architectural Principles
+## Design Principles
 
-### AP-1 — Two-Layer Evidence Model
+### DP-1 — Governing Authority Stays Upstream
 
-Every normative requirement in this workstream must be expressible in two evidence layers:
+Acceptance meaning and audit-contract meaning remain owned by `docs/requirements.md` and `docs/reference_standards.md`. This plan may explain how those requirements will be satisfied, but it must not tighten, relax, or replace them.
 
-- documentary evidence used during requirements-, plan-, and roadmap-phase auditing
-- later implementation evidence used during implementation-phase auditing when concrete files, hook outputs, or generated artifacts exist
+### DP-2 — Supporting Governance Documents Stay Subordinate
 
-No roadmap-phase check may require reading files outside the fixed documentation scope.
+`docs/acceptance_matrix.md` and `docs/traceability_map.md` are required and must be kept internally consistent with this plan, but they operationalize and trace the governing contract rather than define it.
 
-### AP-2 — Normative Closure Lives Upstream
+### DP-3 — Deliverables Come Before Commonization
 
-If a phase boundary, artifact rule, or acceptance threshold is ambiguous, the repair target is `docs/requirements.md` or `docs/reference_standards.md`, not downstream prose in `docs/plan.md` or `docs/roadmap.md`.
+The first deliverable is a current-state explicit template. It must document the existing handler shape clearly enough to support later commonization discussions, without forcing immediate refactoring.
 
-### AP-3 — Matrix Completeness Is Mandatory
+### DP-4 — Notebook-First Execution
 
-`docs/acceptance_matrix.md` is not a partial convenience table. It is a normative operationalization surface and must cover every `REQ-...` identifier defined in `docs/requirements.md`.
+The implementation path must remain notebook-first. The canonical behavioral changes live in notebook sources, with generated Python treated as derived output.
 
-### AP-4 — Traceability Must Preserve Phase Separation
+### DP-5 — Lightweight Verification Boundary
 
-`docs/traceability_map.md` must show, per requirement, which evidence is sufficient at roadmap phase and which evidence is expected later at implementation phase. That separation must be explicit, not inferred.
+Post-commit verification for this workstream exists to catch export, syntax, and import-time breakage quickly. It does not expand into dataset downloads, remote API usage, full NetCDF runs, or broad regression execution.
 
 ## Plan Items
 
-### PLAN-001 — Close the Requirements Contract
+### PLAN-001 — Close The Governing Contract
 
-Revise `docs/requirements.md` so the source-of-truth contract explicitly requires phase-aware operationalization in `docs/acceptance_matrix.md`.
-
-Required outcomes:
-
-- `REQ-GRAN-CHECKS` explicitly requires full normative coverage for every `REQ-...`
-- the matrix contract explicitly includes:
-  - layer
-  - criterion
-  - roadmap-phase documentary evidence path
-  - later implementation evidence path or `not applicable`
-  - roadmap threshold
-  - later implementation threshold or `not applicable`
-- the validation baseline explicitly states that requirements-, plan-, and roadmap-phase audits are judged from the fixed documentation scope only
-
-Rationale:
-This removes the prior defect where acceptance semantics depended on unstated phase interpretation.
-
-### PLAN-002 — Close the Reference Standards Contract
-
-Revise `docs/reference_standards.md` so artifact and evidence rules are phase-qualified inside the normative governance set.
+Revise `docs/requirements.md` and `docs/reference_standards.md` so they explicitly close the authority boundary that the audit found ambiguous.
 
 Required outcomes:
 
-- `Granularity Ownership Boundary` names the full phase-aware ownership of `docs/acceptance_matrix.md`
-- `Evidence And Artifact Rules` states that absent later implementation artifacts are not documentary-phase failures by themselves
-- implementation-phase artifact failure remains mandatory once those artifacts are in scope
-- `Validation And Test Baseline` explicitly states that earlier documentary phases must be decidable from documentary evidence alone
+- the two-document governance set is explicit and self-sufficient for requirements-, plan-, and roadmap-phase contract interpretation
+- `docs/acceptance_matrix.md` and `docs/traceability_map.md` are explicitly defined as required supporting governance documents
+- supporting governance documents are stated to be subordinate operationalization surfaces, not replacement authority sources
+- plan-phase and roadmap-phase documentary acceptance remains decidable without importing out-of-scope authority
 
-Rationale:
-This removes the ambiguity called out in the audit around `artifacts/*.json` and other future outputs.
+### PLAN-002 — Define The Handler Template Architecture
 
-### PLAN-003 — Rebuild the Acceptance Matrix as a Complete Normative Surface
-
-Replace `docs/acceptance_matrix.md` with a fully covered, phase-aware matrix.
+Specify the architecture of the explicit handler template notebook so PM and Implementer work from a concrete current-state target.
 
 Required outcomes:
 
-- every normative requirement in `docs/requirements.md` is listed exactly once
-- the matrix covers all `33/33` currently normative requirements in scope
-- each row contains:
-  - layer
-  - criterion
-  - roadmap-phase documentary evidence path
-  - later implementation evidence path
-  - roadmap threshold
-  - later implementation threshold
-- roadmap-phase rows rely only on documentation-scope evidence paths
+- the template target is an `nbs/handlers/` notebook, not a generated `.py` file
+- the template preserves the ordered Handler Template Baseline from `docs/requirements.md`
+- the template is explicitly current-state descriptive
+- the template identifies where provider-specific logic is expected to vary
 
-Rationale:
-This resolves the audit finding that the matrix had incomplete coverage and mixed future evidence into documentary acceptance.
+### PLAN-003 — Define Zone Guidance And Usage Documentation
 
-### PLAN-004 — Align the Traceability Map to the Two-Layer Evidence Model
-
-Revise `docs/traceability_map.md` so every requirement maps to:
-
-- an Architect plan item
-- a PM roadmap item
-- roadmap-phase documentary evidence
-- later implementation evidence when applicable
+Architect the guidance surfaces that accompany the template so reviewers can distinguish stable reusable structure from provider-specific variance.
 
 Required outcomes:
 
-- no requirement remains without a plan item
-- roadmap-phase evidence stays within the fixed documentation scope
-- later implementation evidence is preserved without being misclassified as roadmap-phase evidence
+- the template or its paired usage guidance identifies provider-specific zones
+- the template or its paired usage guidance identifies reusable callback-oriented zones
+- likely future commonization candidates are marked as discussion inputs, not refactoring mandates
+- maintainers are told how to use the template before any broad handler migration begins
 
-Rationale:
-This ensures PM and Auditor work from the same phase boundaries without reconstructing intent.
+### PLAN-004 — Define Hook-Governed Lightweight Verification
 
-### PLAN-005 — Recast the Plan as the Architectural Bridge, Not an Override
-
-`docs/plan.md` itself must remain an implementation strategy document, not a place where acceptance meaning is invented or waived.
+Architect the post-commit verification flow required by this workstream.
 
 Required outcomes:
 
-- plan items reference upstream requirements instead of replacing them
-- this plan explicitly treats contract repairs as prerequisites for downstream implementation planning
-- the plan preserves the original workstream intent:
-  - explicit handler template notebook
-  - current-state fidelity
-  - lightweight hook-governed verification
-  - no forced immediate commonization
+- `.git/hooks/post-commit` remains the governing orchestration surface
+- the documented minimum sequence is export/regeneration, `python -m py_compile`, and lightweight import smoke checks
+- heavyweight categories excluded by `REQ-POST-COMMIT-LIGHTWEIGHT-BOUNDARY` remain excluded
+- the validation design stays compatible with the repository's practical validation order in `AGENTS.md`
 
-Rationale:
-This prevents the earlier failure mode where plan prose tried to explain away unresolved upstream ambiguity.
+### PLAN-005 — Align Required Supporting Governance Documents
 
-### PLAN-006 — Preserve Downstream Implementation Guardrails
+Revise `docs/acceptance_matrix.md` and `docs/traceability_map.md` so they faithfully operationalize the repaired contract and this plan.
 
-After the documentary contract is repaired, downstream execution remains governed by the original workstream requirements.
+Required outcomes:
 
-Architectural guardrails to preserve:
+- every normative `REQ-...` identifier currently defined in `docs/requirements.md` is represented without fixed-count duplication
+- no matrix or traceability row implies that required supporting documents outrank the governing contract
+- roadmap-phase documentary evidence stays inside the declared documentation scope
+- later implementation evidence remains tracked separately for downstream phases
 
-- the template remains notebook-first under `nbs/handlers/`
-- generated `.py` files remain derived artifacts
-- post-commit verification remains hook-governed
-- the lightweight verification boundary remains export / compile / import-smoke only
-- provider-specific variation remains explicitly allowed
-- existing handlers are not forced into immediate refactoring during this workstream
+### PLAN-006 — Preserve Implementation Guardrails
 
-Rationale:
-The governance repair must not accidentally mutate the substantive intent of the handler-template workstream.
+Carry the workstream's substantive boundaries intact into downstream planning.
+
+Required outcomes:
+
+- no plan item forces immediate refactoring of existing handlers
+- no plan item authorizes direct generated-code edits as the canonical behavior change
+- Python `>=3.7` compatibility remains the baseline for any new supporting code
+- success criteria continue to point at the actual deliverables: template notebook, zone guidance, hook-governed lightweight verification, and usage documentation
+
+## Deliverable Architecture
+
+### Deliverable Group A — Template Assets
+
+- explicit handler template notebook under `nbs/handlers/`
+- baseline sections in required order
+- prose and code layout consistent with literate notebook use
+
+### Deliverable Group B — Guidance Assets
+
+- provider-specific versus reusable zone markers
+- notes on likely commonization candidates
+- usage guidance for authors adopting the template
+
+### Deliverable Group C — Verification Assets
+
+- hook-governed post-commit sequence definition
+- export, compile, and import-smoke stages only
+- explicit heavyweight exclusions
+
+### Deliverable Group D — Governance Support Assets
+
+- acceptance matrix aligned to every normative requirement
+- traceability map aligned from requirements through plan and roadmap to evidence
 
 ## Requirement-to-Plan Mapping
 
 | Plan Item | Primary Requirements Served |
 |---|---|
-| PLAN-001 | `REQ-GRAN-REQS-SCOPE`, `REQ-GRAN-REQS-COMPLETE`, `REQ-GRAN-CONTRACT-DECIDABLE`, `REQ-GRAN-CHECKS` |
-| PLAN-002 | `REQ-GRAN-STANDARDS`, `REQ-GRAN-CONTRACT-DECIDABLE`, `REQ-GRAN-CONTRACT-SUBORD` |
-| PLAN-003 | `REQ-GRAN-CHECKS` |
-| PLAN-004 | `REQ-GRAN-ROADMAP`, `REQ-GRAN-CHECKS` |
-| PLAN-005 | `REQ-GRAN-PLAN`, `REQ-GRAN-ROADMAP` |
-| PLAN-006 | `REQ-NB-TEMPLATE`, `REQ-CURRENT-STATE-FIDELITY`, `REQ-DIFFERENCE-VISIBILITY`, `REQ-NBDEV-COMPAT`, `REQ-POST-COMMIT-AUTHORITY`, `REQ-POST-COMMIT-SEQUENCE`, `REQ-POST-COMMIT-LIGHTWEIGHT-BOUNDARY`, `REQ-PRESERVE-FLEXIBILITY`, `REQ-AVOID-PREMATURE-COMMONIZATION`, `REQ-READABILITY`, `REQ-LOW-FRICTION-VALIDATION`, `REQ-CHECK-EXPORT`, `REQ-CHECK-COMPILE`, `REQ-CHECK-COVERAGE`, `REQ-AC-*`, `REQ-PYTHON-BASELINE` |
+| PLAN-001 | `REQ-GRAN-REQS-SCOPE`, `REQ-GRAN-REQS-COMPLETE`, `REQ-GRAN-CONTRACT-DECIDABLE`, `REQ-GRAN-CONTRACT-SUBORD`, `REQ-GRAN-SUPPORTING-DOCS-ROLE` |
+| PLAN-002 | `REQ-NB-TEMPLATE`, `REQ-CURRENT-STATE-FIDELITY`, `REQ-NBDEV-COMPAT`, `REQ-AC-TEMPLATE-EXISTS`, `REQ-AC-TEMPLATE-BASELINE`, `REQ-AC-TEMPLATE-NBDEV` |
+| PLAN-003 | `REQ-DIFFERENCE-VISIBILITY`, `REQ-PRESERVE-FLEXIBILITY`, `REQ-AVOID-PREMATURE-COMMONIZATION`, `REQ-READABILITY`, `REQ-AC-TEMPLATE-ZONES`, `REQ-AC-PRESERVE-FLEXIBILITY`, `REQ-AC-READABILITY` |
+| PLAN-004 | `REQ-GRAN-HOOK`, `REQ-POST-COMMIT-AUTHORITY`, `REQ-POST-COMMIT-SEQUENCE`, `REQ-POST-COMMIT-LIGHTWEIGHT-BOUNDARY`, `REQ-LOW-FRICTION-VALIDATION`, `REQ-CHECK-EXPORT`, `REQ-CHECK-COMPILE`, `REQ-CHECK-COVERAGE`, `REQ-AC-POST-COMMIT-SEQUENCE`, `REQ-AC-POST-COMMIT-BOUNDARY` |
+| PLAN-005 | `REQ-GRAN-CHECKS`, `REQ-GRAN-ROADMAP` |
+| PLAN-006 | `REQ-GRAN-PLAN`, `REQ-PYTHON-BASELINE`, `REQ-AC-NO-REFACTOR` |
 
 ## Phase Breakdown
 
-### Phase 1 — Governance Repair
+### Phase 1 — Contract Repair
 
 | Step | Action | Plan Item |
 |---|---|---|
-| A1 | Close `docs/requirements.md` phase-aware matrix contract | PLAN-001 |
-| A2 | Close `docs/reference_standards.md` phase boundary and artifact rules | PLAN-002 |
-| A3 | Replace `docs/acceptance_matrix.md` with complete normative coverage | PLAN-003 |
-| A4 | Align `docs/traceability_map.md` with documentary-vs-implementation evidence separation | PLAN-004 |
-| A5 | Rewrite `docs/plan.md` so it documents the repair architecture instead of compensating informally | PLAN-005 |
+| A1 | tighten the authority boundary in `docs/requirements.md` | PLAN-001 |
+| A2 | tighten the authority boundary in `docs/reference_standards.md` | PLAN-001 |
+| A3 | realign `docs/acceptance_matrix.md` to the repaired contract | PLAN-005 |
+| A4 | realign `docs/traceability_map.md` to the repaired contract | PLAN-005 |
 
-### Phase 2 — Downstream Planning Preservation
+### Phase 2 — Deliverable Architecture
 
 | Step | Action | Plan Item |
 |---|---|---|
-| B1 | Confirm the repaired documents do not alter notebook-first intent | PLAN-006 |
-| B2 | Confirm the repaired documents do not force immediate handler refactoring | PLAN-006 |
-| B3 | Confirm the repaired documents preserve hook-governed lightweight verification intent | PLAN-006 |
+| B1 | define the notebook-first template target and baseline sections | PLAN-002 |
+| B2 | define provider-specific, reusable, and commonization-candidate zones | PLAN-003 |
+| B3 | define usage guidance expectations for template authors | PLAN-003 |
+| B4 | define the lightweight hook-governed verification sequence | PLAN-004 |
 
-## Verification Strategy
+### Phase 3 — Downstream Guardrails
 
-### Documentary Verification
+| Step | Action | Plan Item |
+|---|---|---|
+| C1 | confirm no plan item forces immediate handler migration | PLAN-006 |
+| C2 | confirm no plan item treats generated Python as canonical | PLAN-006 |
+| C3 | confirm verification and support code remain within Python `>=3.7` | PLAN-006 |
 
-The repaired docset passes the Architect gate only if all of the following are true:
+## Architect Gate Criteria
 
-- `docs/requirements.md` and `docs/reference_standards.md` now close the phase boundary without relying on extra-scope interpretation
-- `docs/acceptance_matrix.md` maps every normative requirement in scope
-- roadmap-phase evidence paths point only to files in the fixed documentation scope
-- later implementation evidence paths are still preserved for downstream phases
-- `docs/traceability_map.md` agrees with the acceptance matrix on phase separation
+The Architect gate is satisfied only if all of the following are true:
 
-### Residual Downstream Verification
-
-This plan does not waive later implementation evidence. After roadmap phase:
-
-- the template notebook will still need to exist under `nbs/handlers/`
-- the generated module will still need to export and import cleanly
-- `.git/hooks/post-commit` will still need to implement the required lightweight sequence
-- required JSON artifacts will still need to satisfy the shared `execution_id` contract when implementation-phase evidence is in scope
+- `docs/plan.md` is subordinate to `docs/requirements.md` and `docs/reference_standards.md`
+- the plan no longer treats `docs/audit_report.md` as an authority source
+- the plan describes how the actual workstream deliverables will be produced
+- the plan does not use copied fixed-count coverage thresholds
+- the required supporting governance documents are aligned in the same change set without being elevated above the governing contract
 
 ## Non-Goals
 
 This plan does not:
 
-- create or edit the handler template notebook itself
-- implement `.git/hooks/post-commit`
-- require a git commit
-- change the substantive acceptance intent of the workstream
-- move implementation-phase evidence into roadmap-phase scope
+- claim that the template notebook already exists
+- claim that `.git/hooks/post-commit` is already implemented
+- require git commit operations
+- force migration of existing handlers into a shared pipeline during this phase
+- change the repository's notebook-first source-of-truth model
 
-## Audit Alignment
+## Audit Closure Intent
 
-This revised plan resolves the three open items in `docs/audit_report.md` as follows:
+This revision addresses the audit findings by:
 
-- `OI-001` by requiring complete `33/33` normative coverage in `docs/acceptance_matrix.md`
-- `OI-002` by enforcing documentary evidence paths for roadmap-phase acceptance
-- `OI-003` by phase-qualifying artifact-failure rules inside `docs/reference_standards.md`
-
-The plan therefore positions the docset for a clean Architect re-audit without shifting unresolved ambiguity downstream.
+- removing out-of-scope gate dependence from the plan's governing authority
+- restoring deliverable-centered planning
+- demoting `docs/audit_report.md` to informative input
+- replacing fixed-count language with source-of-truth coverage language tied to all normative `REQ-...` identifiers currently defined in `docs/requirements.md`

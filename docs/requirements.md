@@ -39,12 +39,14 @@
 - `REQ-GRAN-ROADMAP`: `docs/roadmap.md` may sequence work and self-checks, but it must not become the sole source of acceptance detail that auditors need in order to judge this workstream.
 - `REQ-GRAN-CONTRACT-DECIDABLE`: For requirements-, plan-, and roadmap-phase auditing, the governing machine-readable audit status contract must be decidable from `docs/reference_standards.md` and this document alone.
 - `REQ-GRAN-CONTRACT-SUBORD`: `docs/audit_contract.md` may restate or exemplify that contract, but it must not be the only scoped source of authority for those phases.
+- `REQ-GRAN-SUPPORTING-DOCS-ROLE`: `docs/acceptance_matrix.md` and `docs/traceability_map.md` are required supporting governance documents for operationalization and cross-phase consistency, but they do not supersede the two-document governing contract defined by this document and `docs/reference_standards.md`.
 - `REQ-GRAN-CHECKS`: Operationalized checks and pass thresholds belong in `docs/acceptance_matrix.md`. For every normative `REQ-...` identifier in this document, the matrix must define:
   - acceptance layer
   - criterion
   - roadmap-phase documentary evidence path that is readable within the fixed documentation scope
   - later implementation evidence path, or `not applicable` when none exists
   - threshold for the roadmap phase and threshold for the later implementation phase, or `not applicable` when no later implementation threshold exists
+  For this workstream, those supporting documents must stay subordinate to the governing contract above: they may operationalize, trace, and cross-reference requirements, but they must not become the sole place where auditors must look in order to determine whether the governing contract itself is well-formed.
   `docs/check_catalog.md` is optional and informative.
 
 ## Handler Template Baseline
