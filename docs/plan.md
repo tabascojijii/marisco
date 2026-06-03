@@ -144,6 +144,8 @@ Carry the workstream boundaries intact into downstream planning and implementati
 
 Required outcomes:
 
+- any downstream requirement-to-plan citation must point only to a `PLAN-...` item whose own required outcomes explicitly state the mapped requirement outcome; plan mappings must not rely on nearby topic overlap, neighboring plan items, or general plan narrative to appear complete
+- when supporting-governance documents are outside the active fixed audit scope, Architect-gate validity remains decidable from `docs/requirements.md`, `docs/reference_standards.md`, and `docs/plan.md` alone; supporting-document alignment may be scheduled in the same change set, but it is not a prerequisite input for deciding plan validity
 - the plan remains subordinate to requirement thresholds and does not define an alternate documentary-phase pass/fail algorithm
 - Architect-phase validity is judged from the current in-scope governing documents and this plan, not from hypothetical future rewrites proposed elsewhere
 - no plan item forces immediate refactoring of existing handlers
