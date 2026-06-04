@@ -1,39 +1,53 @@
 {
-  "execution_id": "PM_AUDIT-20260604T144438Z-ebdb2b",
-  "timestamp_utc": "2026-06-04T14:46:55Z",
-  "phase": "PM_AUDIT",
-  "decision": "AUDIT_PASS_ROADMAP",
+  "execution_id": "PLAN_AUDIT-20260604T144942Z-f91cfd",
+  "timestamp_utc": "2026-06-04T14:50:47Z",
+  "phase": "PLAN_AUDIT",
+  "decision": "AUDIT_PASS_PLAN",
   "reason_codes": [],
-  "owner": "PM",
+  "owner": "Architect",
   "next_gate": "FLOW_ADVANCE",
   "checks": [
     {
-      "id": "REQ-GRAN-CONTRACT-DECIDABLE",
+      "id": "REQ-GRAN-PLAN",
       "pass": true,
-      "evidence_path": "docs/requirements.md; docs/reference_standards.md",
-      "metric_value": "two_document_contract_decidable",
-      "threshold": "contract_decidable_from_two_document_governance_set"
+      "evidence_path": "docs/plan.md",
+      "metric_value": "subordinate_to_requirements_and_no_local_threshold_redefinition",
+      "threshold": "required"
     },
     {
-      "id": "REQ-GRAN-ROADMAP-AC-DIRECT",
+      "id": "REQ-CONTRACT-CLOSURE-PLAN",
       "pass": true,
-      "evidence_path": "docs/roadmap.md; docs/traceability_map.md",
-      "metric_value": "rm_citations_direct",
-      "threshold": "every_req_ac_trace_points_to_rm_item_that_directly_states_the_acceptance_outcome"
+      "evidence_path": "docs/plan.md",
+      "metric_value": "architect_gate_decidable_from_governing_contract_and_plan",
+      "threshold": "required"
     },
     {
-      "id": "REQ-GRAN-CHECKS",
+      "id": "REQ-POST-COMMIT-LIGHTWEIGHT-BOUNDARY",
       "pass": true,
-      "evidence_path": "docs/acceptance_matrix.md; docs/traceability_map.md",
-      "metric_value": "supporting_docset_complete_and_aligned",
-      "threshold": "every_normative_req_has_complete_fielded_operationalization_and_semantically_exact_citations"
+      "evidence_path": "docs/plan.md",
+      "metric_value": "export_compile_import_smoke_only_with_explicit_exclusions",
+      "threshold": "required"
     },
     {
-      "id": "REQ-GRAN-SUPPORTING-DOCS-ROLE",
+      "id": "REQ-CHECK-COVERAGE",
       "pass": true,
-      "evidence_path": "docs/requirements.md; docs/reference_standards.md; docs/acceptance_matrix.md; docs/traceability_map.md",
-      "metric_value": "supporting_docs_subordinate",
-      "threshold": "required_supporting_governance_documents_exist_and_remain_non_authority_replacements"
+      "evidence_path": "docs/plan.md",
+      "metric_value": "stage_to_failure_class_mapping_explicit",
+      "threshold": "required"
+    },
+    {
+      "id": "REQ-AC-POST-COMMIT-SEQUENCE",
+      "pass": true,
+      "evidence_path": "docs/plan.md",
+      "metric_value": "hook_governed_sequence_contains_all_required_stages",
+      "threshold": "required"
+    },
+    {
+      "id": "REQ-AC-NO-REFACTOR",
+      "pass": true,
+      "evidence_path": "docs/plan.md",
+      "metric_value": "no_immediate_refactor_mandated",
+      "threshold": "required"
     }
   ],
   "report_alignment": {
