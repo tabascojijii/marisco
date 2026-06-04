@@ -13,9 +13,9 @@ While `docs/requirements.md` keeps the final handler-template filename as an ope
 | REQ-GRAN-REQS-COMPLETE | `docs/requirements.md` § Granularity Allocation | PLAN-005 | RM-001 | `docs/requirements.md`, `docs/reference_standards.md`, `docs/plan.md`, `docs/roadmap.md` | not applicable |
 | REQ-GRAN-HOOK | `docs/requirements.md` § Granularity Allocation | PLAN-004 | RM-006 | `docs/requirements.md`, `docs/reference_standards.md`, `docs/plan.md`, `docs/roadmap.md` | `artifacts/acceptance_gate_report.json` |
 | REQ-GRAN-STANDARDS | `docs/requirements.md` § Granularity Allocation | PLAN-005 | RM-001 | `docs/reference_standards.md`, `docs/plan.md`, `docs/roadmap.md` | not applicable |
-| REQ-GRAN-PLAN | `docs/requirements.md` § Granularity Allocation | PLAN-006 | RM-001 | `docs/requirements.md`, `docs/plan.md`, `docs/roadmap.md` | not applicable |
+| REQ-GRAN-PLAN | `docs/requirements.md` § Granularity Allocation | PLAN-006 | RM-002 | `docs/requirements.md`, `docs/plan.md`, `docs/roadmap.md`, `docs/traceability_map.md` | not applicable |
 | REQ-GRAN-PLAN-AC-DIRECT | `docs/requirements.md` § Granularity Allocation | PLAN-005 | RM-002 | `docs/requirements.md`, `docs/plan.md`, `docs/roadmap.md`, `docs/traceability_map.md` | not applicable |
-| REQ-GRAN-ROADMAP | `docs/requirements.md` § Granularity Allocation | PLAN-005 | RM-001 | `docs/requirements.md`, `docs/roadmap.md`, `docs/traceability_map.md` | not applicable |
+| REQ-GRAN-ROADMAP | `docs/requirements.md` § Granularity Allocation | PLAN-005 | RM-001, RM-002 | `docs/requirements.md`, `docs/roadmap.md`, `docs/traceability_map.md` | not applicable |
 | REQ-GRAN-ROADMAP-AC-DIRECT | `docs/requirements.md` § Granularity Allocation | PLAN-005 | RM-002 | `docs/requirements.md`, `docs/plan.md`, `docs/roadmap.md`, `docs/traceability_map.md` | not applicable |
 | REQ-GRAN-CONTRACT-DECIDABLE | `docs/requirements.md` § Granularity Allocation | PLAN-005 | RM-001 | `docs/requirements.md`, `docs/reference_standards.md`, `docs/roadmap.md` | `audit_status.json`, `audit_status.txt` |
 | REQ-GRAN-CONTRACT-SUBORD | `docs/requirements.md` § Granularity Allocation | PLAN-005 | RM-001 | `docs/requirements.md`, `docs/reference_standards.md`, `docs/roadmap.md` | not applicable |

@@ -26,8 +26,12 @@ This roadmap remains subordinate to the governing two-document contract formed b
 
 Required execution outcomes:
 
+- project-specific acceptance granularity for this workstream remains defined in `docs/requirements.md` and is not relocated into `docs/roadmap.md`, `docs/acceptance_matrix.md`, `docs/traceability_map.md`, the hook, or repository-local guidance
+- when a revision set repairs a structural governance defect, roadmap execution consumes the repaired present-tense governing contract from `docs/requirements.md` and `docs/reference_standards.md` first rather than compensating for an upstream gap locally in downstream text
+- repository-wide audit-depth rules, abstract-term handling, and documentary-phase audit-status semantics remain owned by `docs/reference_standards.md`
 - execution work treats `docs/requirements.md` and `docs/reference_standards.md` as the only co-equal authority sources for requirements-, plan-, and roadmap-phase contract validity
 - execution work uses `docs/plan.md` as upstream design input and keeps `docs/roadmap.md` subordinate to that governing contract
+- roadmap sequencing and self-check text remain execution-facing only and do not become the sole source of acceptance detail that auditors need in order to judge this workstream
 - roadmap execution does not introduce a new gate prerequisite, alternate decision algorithm, or substitute decision vocabulary
 - roadmap execution keeps documentary-phase evidence paths inside the fixed documentation scope
 - repository-local guidance such as `AGENTS.md` may be consulted for authoring discipline but must not become deciding documentary evidence for contract closure
@@ -42,6 +46,7 @@ Required execution outcomes:
 - for every normative `REQ-...` identifier, `docs/acceptance_matrix.md` states acceptance layer, criterion, roadmap-phase documentary evidence path, later implementation evidence path or `not applicable`, roadmap threshold, and later implementation threshold or `not applicable`
 - each `docs/acceptance_matrix.md` row carries those required fields in the row text itself rather than relying on section defaults, neighboring rows, or surrounding prose
 - `docs/traceability_map.md` traces each normative `REQ-...` identifier from `docs/requirements.md` through `docs/plan.md` and this roadmap to documentary and later implementation evidence paths
+- any requirement-to-plan mapping used by supporting governance documents cites only `PLAN-...` items whose stated outcomes directly satisfy the referenced requirement, and no supporting document replaces a requirement threshold with topic-adjacent plan prose
 - every requirement-to-plan and requirement-to-roadmap citation in supporting governance documents points only to `PLAN-...` and `RM-...` items whose stated outcomes directly satisfy the cited requirement
 - every citation for a `REQ-AC-...` identifier points only to `PLAN-...` and `RM-...` items that directly state the cited acceptance outcome itself
 - supporting-governance text does not use generic governance language, nearby context, or cross-item inference to make an otherwise incomplete mapping appear valid
@@ -138,7 +143,8 @@ Required execution outcomes:
 ## Self-Check (Required)
 
 - [x] `docs/roadmap.md` treats `docs/requirements.md` and `docs/reference_standards.md` as the only co-equal authority sources and keeps `docs/plan.md` as upstream design input only.
-- [x] Every `RM-...` item directly states the outcome it is meant to satisfy so supporting-governance citations do not need cross-item inference.
+- [x] `RM-001` directly states the requirements-granularity boundary, standards ownership boundary, roadmap-subordination boundary, and present-tense contract-repair rule that supporting-governance traces cite it for.
+- [x] `RM-002` directly states the plan-mapping directness rule and the roadmap-mapping directness rule so supporting-governance citations do not need cross-item inference.
 - [x] Template deliverable text stays aligned with `docs/requirements.md` on notebook-first authoring, `nbs/handlers/` placement, ordered baseline sections, and open filename status.
 - [x] Post-commit verification text stays aligned with `docs/requirements.md` and `docs/plan.md` on hook governance, required lightweight stages, heavyweight exclusions, and stage-to-failure coverage.
 - [x] Supporting-governance alignment remains subordinate to the two-document governing contract and does not redefine authority boundaries.
