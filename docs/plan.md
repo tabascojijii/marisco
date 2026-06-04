@@ -91,6 +91,7 @@ Required outcomes:
 - the template guidance explicitly identifies which baseline sections are expected to vary by provider
 - the template is designed to export through the current `nbdev` flow and to remain importable after generation
 - the notebook structure avoids introducing a broken `default_exp`, invalid export cell, or circular import by default
+- the implementation-phase evidence contract for `REQ-AC-TEMPLATE-EXISTS`, `REQ-AC-TEMPLATE-BASELINE`, and `REQ-AC-TEMPLATE-NBDEV` is explicit: `artifacts/acceptance_gate_report.json` must name the canonical notebook target under `nbs/handlers/`, record whether the file exists, record that all baseline sections are present in order, and record the export plus import-smoke outcomes against the derived module targets
 
 ### PLAN-002 — Define Variation And Reuse Zones
 
@@ -105,6 +106,7 @@ Required outcomes:
 - sections that vary by provider are explicitly framed as provider-specific rather than as mandatory refactoring targets
 - the template guidance explicitly preserves the current need to absorb imperfect external data
 - the template guidance does not imply immediate normalization of provider differences
+- the implementation-phase evidence contract for `REQ-AC-TEMPLATE-ZONES` and `REQ-AC-PRESERVE-FLEXIBILITY` is explicit: `artifacts/acceptance_gate_report.json` must name the canonical notebook target and record visible provider-specific, reusable, and commonization-candidate markers, plus record that provider-varying sections are labeled as provider-specific rather than as normalization or refactoring mandates
 
 ### PLAN-003 — Define Usage Guidance For Authors
 
@@ -117,6 +119,7 @@ Required outcomes:
 - the template scaffold is specified to keep prose explanation adjacent to code across its baseline sections, without relying on unexplained generated-code patterns
 - usage guidance reinforces notebook-first authoring and forbids generated-file-only behavior changes
 - usage guidance preserves flexibility for imperfect provider inputs
+- the implementation-phase evidence contract for `REQ-AC-READABILITY` is explicit: `artifacts/acceptance_gate_report.json` must name the canonical notebook target and record that prose explanation remains adjacent to code across the baseline sections without unexplained generated-code patterns
 
 ### PLAN-004 — Define Hook-Governed Lightweight Verification
 
@@ -155,6 +158,7 @@ Required outcomes:
 - `docs/traceability_map.md` traces each normative `REQ-...` identifier from source through plan and roadmap evidence paths
 - every requirement-to-plan and requirement-to-roadmap citation in supporting documents points only to items whose stated required outcomes directly satisfy the cited requirement
 - every requirement-to-plan and requirement-to-roadmap citation in supporting documents for a `REQ-AC-...` identifier points only to items that directly state the cited acceptance outcome itself rather than only a related deliverable class, target location, prerequisite design constraint, or surrounding narrative
+- supporting-document rows and trace links for `REQ-AC-TEMPLATE-BASELINE`, `REQ-AC-TEMPLATE-ZONES`, `REQ-AC-PRESERVE-FLEXIBILITY`, and `REQ-AC-READABILITY` explicitly operationalize the same artifact-backed evidence contract stated in `PLAN-001`, `PLAN-002`, and `PLAN-003`; they must not weaken those thresholds into generic template-exists or smoke-only evidence
 - roadmap citations remain subordinate to the governing contract and do not become the sole source of acceptance detail that auditors need in order to judge this workstream
 - neither supporting document introduces a new authority source, gate prerequisite, or substitute decision vocabulary
 - roadmap-phase documentary evidence paths remain inside the declared documentation scope
@@ -185,12 +189,14 @@ Required outcomes:
 - explicit handler template notebook under `nbs/handlers/`
 - baseline sections preserved in required order
 - prose-plus-code structure consistent with notebook-first maintenance
+- artifact-backed acceptance evidence for notebook existence, ordered baseline-section coverage, and `nbdev` export/import outcomes
 
 ### Deliverable Group B — Guidance Asset
 
 - checklist or equivalent usage guidance for authors
 - markers for provider-specific, reusable, and future-commonization zones
 - notes on known pain points and boundaries
+- artifact-backed acceptance evidence for zone visibility and provider-specific flexibility labeling
 
 ### Deliverable Group C — Verification Asset
 
@@ -204,6 +210,7 @@ Required outcomes:
 - acceptance matrix covering every normative requirement
 - traceability map linking each normative requirement to plan, roadmap, and evidence paths
 - implementation-evidence mappings that remain auditable from `artifacts/acceptance_gate_report.json` when canonical sources live outside the fixed implementation scope
+- same-change-set operationalization of the template-content evidence thresholds for baseline, zone, flexibility, and readability acceptance points
 
 ## Requirement-to-Plan Mapping
 
@@ -233,6 +240,7 @@ Required outcomes:
 | A1 | define the notebook template target and required baseline sections | PLAN-001 |
 | A2 | define provider-specific, reusable, and commonization-candidate zones | PLAN-002 |
 | A3 | define author usage guidance and readability expectations | PLAN-003 |
+| A4 | define the artifact-backed notebook-content evidence contract for baseline, zone, flexibility, and readability acceptance points | PLAN-001, PLAN-002, PLAN-003 |
 
 ### Phase 2 — Verification Design
 
@@ -248,6 +256,7 @@ Required outcomes:
 | C1 | align `docs/acceptance_matrix.md` to the current normative requirement set | PLAN-005 |
 | C2 | align `docs/traceability_map.md` to the current normative requirement set and evidence boundaries | PLAN-005 |
 | C3 | confirm no supporting document redefines the authority boundary | PLAN-005 |
+| C4 | keep template-content evidence thresholds identical across plan and supporting-governance documents | PLAN-005 |
 
 ### Phase 4 — Downstream Guardrails
 
