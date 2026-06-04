@@ -1,11 +1,11 @@
 {
-  "timestamp_utc": "2026-06-04T14:43:02Z",
+  "timestamp_utc": "2026-06-04T14:48:17Z",
   "phase": "PM_AUDIT",
-  "final_decision": "REJECT_TO_PM",
-  "final_owner": "PM",
-  "final_next_gate": "PM_REWORK",
-  "final_reason_code": "PM_TRACE_RM001_OVERMAPPED",
-  "auditor_decision": "REJECT_TO_PM",
-  "escalated_by_hook": false,
+  "final_decision": "REJECT_TO_ARCHITECT",
+  "final_owner": "Architect",
+  "final_next_gate": "ARCHITECT_REWORK",
+  "final_reason_code": "ARCH_COMPOSITE_LOOP_DETECTED",
+  "auditor_decision": "AUDIT_PASS_ROADMAP",
+  "escalated_by_hook": true,
   "source_audit_status_file": "audit_status.json"
 }
