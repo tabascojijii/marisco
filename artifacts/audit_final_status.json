@@ -1,11 +1,11 @@
 {
-  "timestamp_utc": "2026-06-04T10:23:39Z",
-  "phase": "PM_AUDIT",
-  "final_decision": "AUDIT_PASS_ROADMAP",
-  "final_owner": "PM",
-  "final_next_gate": "FLOW_ADVANCE",
-  "final_reason_code": "NONE",
-  "auditor_decision": "AUDIT_PASS_ROADMAP",
+  "timestamp_utc": "2026-06-04T10:27:30Z",
+  "phase": "IMPLEMENT_AUDIT",
+  "final_decision": "REJECT_TO_IMPLEMENT",
+  "final_owner": "Implementer",
+  "final_next_gate": "IMPLEMENT_REWORK",
+  "final_reason_code": "IMPLEMENT_EVIDENCE_ARTIFACT_MISSING_TEMPLATE_ATTESTATION",
+  "auditor_decision": "REJECT_TO_IMPLEMENT",
   "escalated_by_hook": false,
   "source_audit_status_file": "audit_status.json"
 }
