@@ -27,10 +27,14 @@ This roadmap remains subordinate to the governing two-document contract formed b
 Required execution outcomes:
 
 - project-specific acceptance granularity for this workstream remains defined in `docs/requirements.md` and is not relocated into `docs/roadmap.md`, `docs/acceptance_matrix.md`, `docs/traceability_map.md`, the hook, or repository-local guidance
+- roadmap execution does not leave unresolved contradiction-closing or auditability-closing requirement detail to downstream compensation; if the governing two-document contract has a missing boundary that would block scoped auditing, that upstream defect is closed in `docs/requirements.md` and `docs/reference_standards.md` before roadmap or supporting-governance text is used to mirror the repair
 - when a revision set repairs a structural governance defect, roadmap execution consumes the repaired present-tense governing contract from `docs/requirements.md` and `docs/reference_standards.md` first rather than compensating for an upstream gap locally in downstream text
 - repository-wide audit-depth rules, abstract-term handling, and documentary-phase audit-status semantics remain owned by `docs/reference_standards.md`
 - execution work treats `docs/requirements.md` and `docs/reference_standards.md` as the only co-equal authority sources for requirements-, plan-, and roadmap-phase contract validity
+- the machine-readable audit-status contract needed for requirements-, plan-, and roadmap-phase decisions remains decidable from `docs/requirements.md` and `docs/reference_standards.md` alone without requiring `docs/audit_contract.md`, `docs/acceptance_matrix.md`, `docs/traceability_map.md`, or roadmap prose as co-equal authority
+- `docs/audit_contract.md` may restate or exemplify the audit-status contract, but roadmap execution keeps it subordinate and non-exclusive rather than treating it as a required co-equal authority source
 - execution work uses `docs/plan.md` as upstream design input and keeps `docs/roadmap.md` subordinate to that governing contract
+- roadmap execution does not make Architect-gate validity depend on supporting-governance completion; Architect-phase contract closure remains decidable from `docs/requirements.md`, `docs/reference_standards.md`, and `docs/plan.md`, while same-change-set support-document alignment remains downstream consistency work only
 - roadmap sequencing and self-check text remain execution-facing only and do not become the sole source of acceptance detail that auditors need in order to judge this workstream
 - roadmap execution does not introduce a new gate prerequisite, alternate decision algorithm, or substitute decision vocabulary
 - roadmap execution keeps documentary-phase evidence paths inside the fixed documentation scope
@@ -143,7 +147,7 @@ Required execution outcomes:
 ## Self-Check (Required)
 
 - [x] `docs/roadmap.md` treats `docs/requirements.md` and `docs/reference_standards.md` as the only co-equal authority sources and keeps `docs/plan.md` as upstream design input only.
-- [x] `RM-001` directly states the requirements-granularity boundary, standards ownership boundary, roadmap-subordination boundary, and present-tense contract-repair rule that supporting-governance traces cite it for.
+- [x] `RM-001` directly states the contradiction-closing upstream-repair rule, two-document audit-contract decidability rule, `docs/audit_contract.md` subordinate status, Architect-gate decidability boundary, and roadmap-subordination rule that supporting-governance traces cite it for.
 - [x] `RM-002` directly states the plan-mapping directness rule and the roadmap-mapping directness rule so supporting-governance citations do not need cross-item inference.
 - [x] Template deliverable text stays aligned with `docs/requirements.md` on notebook-first authoring, `nbs/handlers/` placement, ordered baseline sections, and open filename status.
 - [x] Post-commit verification text stays aligned with `docs/requirements.md` and `docs/plan.md` on hook governance, required lightweight stages, heavyweight exclusions, and stage-to-failure coverage.
