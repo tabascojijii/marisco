@@ -1,48 +1,37 @@
-Execution-ID: PM_AUDIT-20260604T145304Z-9932ab
-Phase: PM_AUDIT
-Decision: AUDIT_PASS_ROADMAP
-Next-Gate: FLOW_ADVANCE
+# Plan Audit Report
 
-# Audit Report
+Execution-ID: PLAN_AUDIT-20260604T151458Z-80186e
+Phase: PLAN_AUDIT
+Decision: REJECT_TO_ARCHITECT
+Next-Gate: ARCHITECT_REWORK
 
 ## Scope
-- AGENTS.md
-- docs/requirements.md
-- docs/plan.md
-- docs/roadmap.md
-- docs/reference_standards.md
-- docs/acceptance_matrix.md
-- docs/traceability_map.md
 
-## Audit-Basis
-- Governing authority: `docs/requirements.md`, `docs/reference_standards.md`
-- Supporting consistency surfaces: `docs/acceptance_matrix.md`, `docs/traceability_map.md`
-- Consulted local guidance only: `AGENTS.md`
-
-## Summary
-- Fixed-scope full scan completed across all in-scope documents.
-- Required docset exists: `docs/acceptance_matrix.md`, `docs/traceability_map.md`.
-- No roadmap-phase contradiction, authority-boundary drift, missing required block, or semantically invalid downstream mapping was found within the fixed documentation scope.
-
-## Checks
-- `REQ-GRAN-ROADMAP`: `docs/roadmap.md` remains subordinate to `docs/requirements.md` and does not become the sole source of acceptance detail.
-- `REQ-GRAN-CHECKS`: `docs/acceptance_matrix.md` operationalizes the normative `REQ-...` set with row-level criterion, evidence-path, and threshold fields.
-- `REQ-GRAN-ROADMAP-AC-DIRECT`: `docs/traceability_map.md` maps `REQ-AC-...` identifiers only to roadmap items that directly state the cited acceptance outcomes.
-- `REQ-CONTRACT-CLOSURE-DOWNSTREAM`: `docs/plan.md`, `docs/roadmap.md`, `docs/acceptance_matrix.md`, and `docs/traceability_map.md` stay subordinate to the two-document governing contract.
-- `REQ-AC-POST-COMMIT-SEQUENCE`: `RM-006` directly states hook governance plus export, compile, and import-smoke stages.
-- `REQ-AC-POST-COMMIT-BOUNDARY`: `RM-006` directly preserves the lightweight boundary and explicitly excludes heavyweight categories.
-- `REQ-AC-TEMPLATE-BASELINE`: `RM-003` directly states the ordered Handler Template Baseline.
-- `REQ-AC-TEMPLATE-ZONES`: `RM-004` directly states provider-specific, reusable, and future-commonization zone marking.
-- `REQ-AC-READABILITY`: `RM-005` directly states prose-adjacent notebook readability expectations.
-- `REQ-DOCSET-REQUIRED`: `docs/acceptance_matrix.md` and `docs/traceability_map.md` both exist and are aligned to the same governing contract and evidence model.
+- Fixed audit scope completed in full before decision:
+- `AGENTS.md`
+- `docs/requirements.md`
+- `docs/plan.md`
+- `docs/reference_standards.md`
 
 ## Findings
-- none
+
+1. `PLAN-005` overclaims `REQ-GRAN-CONTRACT-DECIDABLE`.
+`docs/requirements.md:44` requires the governing machine-readable audit-status contract to be decidable from `docs/requirements.md` and `docs/reference_standards.md` alone. `docs/plan.md:232` maps `PLAN-005` to that requirement, but `PLAN-005` itself at `docs/plan.md:152-176` states ownership and subordination rules without directly stating that the machine-readable audit-status contract is fully decidable from the governing two-document contract alone. Under the directness rule in `docs/reference_standards.md:24-32` and `docs/reference_standards.md:126-130`, that blanket mapping is invalid.
+
+2. `PLAN-005` overclaims `REQ-CONTRACT-CLOSURE-AUTHORITY`.
+`docs/requirements.md:62` requires every rule needed to decide contract validity, authority boundaries, and allowed audit-status semantics to be stated in `docs/requirements.md` and `docs/reference_standards.md` without requiring supporting-governance documents, roadmap text, or repository-local instruction files as additional authority. `docs/plan.md:232` maps `PLAN-005` to that requirement, but `PLAN-005` at `docs/plan.md:152-176` does not directly state the full allowed-audit-status-semantics portion of that requirement or state that the governing two-document contract alone is sufficient for those semantics. Because the mapped fragment is not directly present in the cited item, the mapping fails the directness rule.
 
 ## Insufficient Evidence
+
 - none
 
 ## Open-Items
-| ID | Severity | Requirement-Ref | Reason-Code | Evidence | Fix-Instruction | Owner |
-|---|---|---|---|---|---|---|
-| none | none | none | none | none | none | none |
+
+- Revise `PLAN-005` so the item itself directly states that the machine-readable audit-status contract and allowed audit-status semantics for requirements-, plan-, and roadmap-phase auditing are decidable from `docs/requirements.md` and `docs/reference_standards.md` alone.
+- Re-check the `PLAN-005` mapping row after the above text exists in the item itself, not only in surrounding narrative or inferred ownership language.
+
+## Decision Basis
+
+- `docs/reference_standards.md:24-32` requires direct statement in the cited document's own text.
+- `docs/reference_standards.md:126-130` rejects downstream mappings that overclaim fragments not directly stated by the cited item.
+- The detected defects are plan-design and mapping defects, so `REJECT_TO_ARCHITECT` is the allowed disposition under `docs/reference_standards.md:154-157`.

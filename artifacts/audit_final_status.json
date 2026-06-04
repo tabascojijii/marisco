@@ -1,11 +1,11 @@
 {
-  "timestamp_utc": "2026-06-04T14:58:36Z",
-  "phase": "ARCHITECT_REWORK",
-  "final_decision": "ESCALATION",
+  "timestamp_utc": "2026-06-04T15:18:47Z",
+  "phase": "PLAN_AUDIT",
+  "final_decision": "REJECT_TO_ARCHITECT",
   "final_owner": "Architect",
-  "final_next_gate": "ESCALATION_REVIEW",
-  "final_reason_code": "ARCH_EXPECTED_FILESET_MISSING",
-  "auditor_decision": "NO_OP_COMMIT_BLOCKED",
-  "escalated_by_hook": true,
+  "final_next_gate": "ARCHITECT_REWORK",
+  "final_reason_code": "REQ-GRAN-CONTRACT-DECIDABLE",
+  "auditor_decision": "REJECT_TO_ARCHITECT",
+  "escalated_by_hook": false,
   "source_audit_status_file": "audit_status.json"
 }

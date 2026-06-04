@@ -1,81 +1,42 @@
 {
-  "execution_id": "PM_AUDIT-20260604T145304Z-9932ab",
-  "timestamp_utc": "2026-06-04T14:55:28Z",
-  "phase": "PM_AUDIT",
-  "decision": "AUDIT_PASS_ROADMAP",
-  "reason_codes": [],
-  "owner": "PM",
-  "next_gate": "FLOW_ADVANCE",
+  "execution_id": "PLAN_AUDIT-20260604T151458Z-80186e",
+  "timestamp_utc": "2026-06-04T15:17:15Z",
+  "phase": "PLAN_AUDIT",
+  "decision": "REJECT_TO_ARCHITECT",
+  "reason_codes": [
+    "ARCH_PLAN005_REQ_GRAN_CONTRACT_DECIDABLE_DIRECTNESS_GAP",
+    "ARCH_PLAN005_REQ_CONTRACT_CLOSURE_AUTHORITY_DIRECTNESS_GAP"
+  ],
+  "owner": "Architect",
+  "next_gate": "ARCHITECT_REWORK",
   "checks": [
     {
-      "id": "REQ-GRAN-ROADMAP",
-      "pass": true,
-      "evidence_path": "docs/roadmap.md",
-      "metric_value": "roadmap_subordinate_to_governing_contract",
-      "threshold": "required"
+      "id": "REQ-GRAN-CONTRACT-DECIDABLE",
+      "pass": false,
+      "evidence_path": "docs/requirements.md:44; docs/plan.md:152-176; docs/plan.md:232",
+      "metric_value": "plan_item_lacks_direct_decidability_statement_from_governing_two_document_contract_alone",
+      "threshold": "direct_statement_of_machine_readable_contract_decidability_from_docs_requirements_md_and_docs_reference_standards_md_alone"
     },
     {
-      "id": "REQ-GRAN-CHECKS",
-      "pass": true,
-      "evidence_path": "docs/acceptance_matrix.md",
-      "metric_value": "normative_requirement_rows_with_required_fields_present",
-      "threshold": "required"
+      "id": "REQ-CONTRACT-CLOSURE-AUTHORITY",
+      "pass": false,
+      "evidence_path": "docs/requirements.md:62; docs/plan.md:152-176; docs/plan.md:232",
+      "metric_value": "plan_item_lacks_direct_statement_covering_allowed_audit_status_semantics_in_governing_two_document_contract_alone",
+      "threshold": "direct_statement_of_contract_validity_authority_boundaries_and_allowed_audit_status_semantics_in_docs_requirements_md_and_docs_reference_standards_md_without_additional_authority_sources"
     },
     {
-      "id": "REQ-GRAN-ROADMAP-AC-DIRECT",
+      "id": "REQ-POST-COMMIT-SEQUENCE",
       "pass": true,
-      "evidence_path": "docs/traceability_map.md",
-      "metric_value": "req_ac_to_rm_mappings_direct",
-      "threshold": "required"
+      "evidence_path": "docs/plan.md:134-144",
+      "metric_value": "export_compile_import_smoke_stages_stated_directly",
+      "threshold": "all_required_post_commit_stages_stated_directly"
     },
     {
-      "id": "REQ-CONTRACT-CLOSURE-DOWNSTREAM",
+      "id": "REQ-CONTRACT-CLOSURE-PLAN",
       "pass": true,
-      "evidence_path": "docs/plan.md; docs/roadmap.md; docs/acceptance_matrix.md; docs/traceability_map.md",
-      "metric_value": "downstream_docs_remain_subordinate",
-      "threshold": "required"
-    },
-    {
-      "id": "REQ-AC-POST-COMMIT-SEQUENCE",
-      "pass": true,
-      "evidence_path": "docs/roadmap.md",
-      "metric_value": "hook_governed_export_compile_import_smoke_sequence_stated",
-      "threshold": "required"
-    },
-    {
-      "id": "REQ-AC-POST-COMMIT-BOUNDARY",
-      "pass": true,
-      "evidence_path": "docs/roadmap.md",
-      "metric_value": "lightweight_boundary_and_heavyweight_exclusions_stated",
-      "threshold": "required"
-    },
-    {
-      "id": "REQ-AC-TEMPLATE-BASELINE",
-      "pass": true,
-      "evidence_path": "docs/roadmap.md",
-      "metric_value": "ordered_handler_template_baseline_stated",
-      "threshold": "required"
-    },
-    {
-      "id": "REQ-AC-TEMPLATE-ZONES",
-      "pass": true,
-      "evidence_path": "docs/roadmap.md",
-      "metric_value": "provider_reusable_commonization_zones_stated",
-      "threshold": "required"
-    },
-    {
-      "id": "REQ-AC-READABILITY",
-      "pass": true,
-      "evidence_path": "docs/roadmap.md",
-      "metric_value": "literate_notebook_readability_stated",
-      "threshold": "required"
-    },
-    {
-      "id": "REQ-DOCSET-REQUIRED",
-      "pass": true,
-      "evidence_path": "docs/acceptance_matrix.md; docs/traceability_map.md",
-      "metric_value": "required_supporting_docset_present_and_aligned",
-      "threshold": "required"
+      "evidence_path": "docs/plan.md:185-187",
+      "metric_value": "plan_validity_kept_decidable_from_governing_contract_and_plan",
+      "threshold": "no_dependence_on_out_of_scope_supporting_document_state_or_future_rewrites"
     }
   ],
   "report_alignment": {
@@ -85,6 +46,6 @@
   },
   "validation_summary": {
     "schema_valid": true,
-    "failed_check_count": 0
+    "failed_check_count": 2
   }
 }
