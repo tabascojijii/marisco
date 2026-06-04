@@ -1,36 +1,65 @@
 {
-  "execution_id": "IMPLEMENT_AUDIT-20260604T102429Z-0d5be9",
-  "timestamp_utc": "2026-06-04T10:25:31Z",
+  "execution_id": "IMPLEMENT_AUDIT-20260604T134917Z-605104",
+  "timestamp_utc": "2026-06-04T13:52:20Z",
   "phase": "IMPLEMENT_AUDIT",
   "decision": "REJECT_TO_IMPLEMENT",
   "reason_codes": [
-    "IMPLEMENT_EVIDENCE_ARTIFACT_MISSING_TEMPLATE_ATTESTATION",
-    "IMPLEMENT_EVIDENCE_ARTIFACT_MISSING_REQUIRED_STAGE_RESULTS",
-    "IMPLEMENT_VALIDATION_TARGET_MISSING"
+    "IMPLEMENT_TEMPLATE_BASELINE_EVIDENCE_MISSING",
+    "IMPLEMENT_TEMPLATE_ZONE_EVIDENCE_MISSING",
+    "IMPLEMENT_TEMPLATE_FLEXIBILITY_EVIDENCE_MISSING",
+    "IMPLEMENT_TEMPLATE_READABILITY_EVIDENCE_MISSING"
   ],
   "owner": "Implementer",
   "next_gate": "IMPLEMENT_REWORK",
   "checks": [
     {
+      "id": "REQ-GRAN-SUPPORTING-DOCS-ROLE",
+      "pass": true,
+      "evidence_path": "docs/acceptance_matrix.md;docs/traceability_map.md",
+      "metric_value": "required_supporting_docs_present",
+      "threshold": "required_supporting_docs_present_and_subordinate"
+    },
+    {
       "id": "REQ-AC-TEMPLATE-EXISTS",
-      "pass": false,
-      "evidence_path": "artifacts/acceptance_gate_report.json",
-      "metric_value": "missing_canonical_handler_template_attestation",
-      "threshold": "artifact_names_handler_template_notebook_path_and_observed_result"
+      "pass": true,
+      "evidence_path": "tests/test_handler_template_smoke.py;artifacts/acceptance_gate_report.json",
+      "metric_value": "pytest_2_passed_and_canonical_template_path_recorded",
+      "threshold": "handler_template_notebook_exists_and_is_named_in_artifact"
     },
     {
-      "id": "REQ-AC-POST-COMMIT-SEQUENCE",
-      "pass": false,
-      "evidence_path": "artifacts/acceptance_gate_report.json",
-      "metric_value": "missing_export_compile_import_smoke_stage_results",
-      "threshold": "artifact_records_all_required_hook_governed_stage_results"
+      "id": "REQ-AC-TEMPLATE-NBDEV",
+      "pass": true,
+      "evidence_path": "tests/test_handler_template_smoke.py;artifacts/acceptance_gate_report.json",
+      "metric_value": "import_smoke_pass_and_export_compile_import_stage_results_recorded",
+      "threshold": "export_and_import_smoke_evidence_present"
     },
     {
-      "id": "REQ-CHECK-COMPILE",
+      "id": "REQ-AC-TEMPLATE-BASELINE",
       "pass": false,
-      "evidence_path": "tests/;artifacts/acceptance_gate_report.json",
-      "metric_value": "pytest_target_missing_and_no_substitute_lightweight_results_recorded",
-      "threshold": "lightweight_compile_and_import_smoke_results_recorded_in_artifact"
+      "evidence_path": "tests/test_handler_template_smoke.py;artifacts/acceptance_gate_report.json",
+      "metric_value": "no_scoped_attestation_of_ordered_baseline_sections",
+      "threshold": "artifact_records_all_ordered_baseline_sections_present"
+    },
+    {
+      "id": "REQ-AC-TEMPLATE-ZONES",
+      "pass": false,
+      "evidence_path": "tests/test_handler_template_smoke.py;artifacts/acceptance_gate_report.json",
+      "metric_value": "no_scoped_attestation_of_provider_specific_reusable_commonization_markers",
+      "threshold": "artifact_records_visible_zone_markers"
+    },
+    {
+      "id": "REQ-AC-PRESERVE-FLEXIBILITY",
+      "pass": false,
+      "evidence_path": "artifacts/acceptance_gate_report.json",
+      "metric_value": "no_scoped_attestation_of_provider_specific_labels_without_normalization_mandate",
+      "threshold": "artifact_records_provider_specific_labels_without_refactor_mandate"
+    },
+    {
+      "id": "REQ-AC-READABILITY",
+      "pass": false,
+      "evidence_path": "artifacts/acceptance_gate_report.json",
+      "metric_value": "no_scoped_attestation_of_literate_prose_adjacent_to_code",
+      "threshold": "artifact_records_readability_expectation_met"
     }
   ],
   "report_alignment": {
@@ -40,42 +69,6 @@
   },
   "validation_summary": {
     "schema_valid": true,
-    "failed_check_count": 3
-  },
-  "remediation_evidence": {
-    "template_attestation": {
-      "canonical_target_path": "nbs/handlers/handler_template.ipynb",
-      "generated_module_path": "marisco/handlers/handler_template.py",
-      "observed_result": "handler_template_notebook_created_and_exported"
-    },
-    "post_commit_verification": {
-      "canonical_hook_path": ".git/hooks/post-commit",
-      "observed_result": "required_lightweight_sequence_executed_for_remediation_evidence",
-      "stages": [
-        {
-          "name": "export_regeneration",
-          "command": "python - <<PY from nbdev.export import nb_export; nb_export('nbs/handlers/handler_template.ipynb') PY",
-          "pass": true,
-          "target_path": "nbs/handlers/handler_template.ipynb;marisco/handlers/handler_template.py"
-        },
-        {
-          "name": "py_compile",
-          "command": "python -m py_compile marisco/handlers/handler_template.py tests/test_handler_template_smoke.py",
-          "pass": true,
-          "target_path": "marisco/handlers/handler_template.py;tests/test_handler_template_smoke.py"
-        },
-        {
-          "name": "import_smoke",
-          "command": "python -c import importlib; importlib.import_module('marisco.handlers.handler_template')",
-          "pass": true,
-          "target_path": "marisco.handlers.handler_template"
-        }
-      ]
-    },
-    "tests_validation": {
-      "command": "pytest tests/",
-      "pass": true,
-      "observed_result": "2_passed"
-    }
+    "failed_check_count": 4
   }
 }
