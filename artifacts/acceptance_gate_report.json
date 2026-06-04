@@ -1,60 +1,36 @@
 {
-  "execution_id": "PM_AUDIT-20260604T101935Z-22e4a5",
-  "timestamp_utc": "2026-06-04T10:21:47Z",
-  "phase": "PM_AUDIT",
-  "decision": "AUDIT_PASS_ROADMAP",
-  "reason_codes": [],
-  "owner": "PM",
-  "next_gate": "FLOW_ADVANCE",
+  "execution_id": "IMPLEMENT_AUDIT-20260604T102429Z-0d5be9",
+  "timestamp_utc": "2026-06-04T10:25:31Z",
+  "phase": "IMPLEMENT_AUDIT",
+  "decision": "REJECT_TO_IMPLEMENT",
+  "reason_codes": [
+    "IMPLEMENT_EVIDENCE_ARTIFACT_MISSING_TEMPLATE_ATTESTATION",
+    "IMPLEMENT_EVIDENCE_ARTIFACT_MISSING_REQUIRED_STAGE_RESULTS",
+    "IMPLEMENT_VALIDATION_TARGET_MISSING"
+  ],
+  "owner": "Implementer",
+  "next_gate": "IMPLEMENT_REWORK",
   "checks": [
     {
-      "id": "REQ-GRAN-CHECKS",
-      "pass": true,
-      "evidence_path": "docs/requirements.md;docs/acceptance_matrix.md;docs/traceability_map.md",
-      "metric_value": "43_of_43_requirements_covered_in_matrix_and_traceability",
-      "threshold": "all_normative_requirements_covered"
+      "id": "REQ-AC-TEMPLATE-EXISTS",
+      "pass": false,
+      "evidence_path": "artifacts/acceptance_gate_report.json",
+      "metric_value": "missing_canonical_handler_template_attestation",
+      "threshold": "artifact_names_handler_template_notebook_path_and_observed_result"
     },
     {
-      "id": "REQ-GRAN-SUPPORTING-DOCS-ROLE",
-      "pass": true,
-      "evidence_path": "docs/reference_standards.md;docs/acceptance_matrix.md;docs/traceability_map.md",
-      "metric_value": "supporting_docs_present_and_subordinate",
-      "threshold": "required_supporting_docs_exist_and_do_not_replace_governing_authority"
+      "id": "REQ-AC-POST-COMMIT-SEQUENCE",
+      "pass": false,
+      "evidence_path": "artifacts/acceptance_gate_report.json",
+      "metric_value": "missing_export_compile_import_smoke_stage_results",
+      "threshold": "artifact_records_all_required_hook_governed_stage_results"
     },
     {
-      "id": "REQ-GRAN-ROADMAP",
-      "pass": true,
-      "evidence_path": "docs/requirements.md;docs/plan.md;docs/roadmap.md",
-      "metric_value": "roadmap_items_directly_state_mapped_outcomes",
-      "threshold": "roadmap_sequences_work_without_becoming_sole_acceptance_authority"
-    },
-    {
-      "id": "REQ-GRAN-ROADMAP-AC-DIRECT",
-      "pass": true,
-      "evidence_path": "docs/requirements.md;docs/roadmap.md;docs/traceability_map.md",
-      "metric_value": "req_ac_mappings_use_direct_roadmap_outcomes",
-      "threshold": "every_req_ac_to_rm_mapping_is_semantically_exact"
-    },
-    {
-      "id": "REQ-CONTRACT-CLOSURE-EVIDENCE",
-      "pass": true,
-      "evidence_path": "AGENTS.md;docs/requirements.md;docs/reference_standards.md;docs/acceptance_matrix.md;docs/traceability_map.md",
-      "metric_value": "documentary_evidence_paths_stay_in_scope_and_agents_guidance_is_consulted_only",
-      "threshold": "no_repository_local_guidance_as_deciding_contract_evidence"
-    },
-    {
-      "id": "REQ-LOW-FRICTION-VALIDATION",
-      "pass": true,
-      "evidence_path": "docs/requirements.md;docs/plan.md;docs/roadmap.md",
-      "metric_value": "lightweight_boundary_and_exclusions_explicit",
-      "threshold": "post_commit_path_directly_states_allowed_stages_and_heavyweight_exclusions"
-    },
-    {
-      "id": "REQ-CHECK-COVERAGE",
-      "pass": true,
-      "evidence_path": "docs/requirements.md;docs/plan.md;docs/roadmap.md",
-      "metric_value": "stage_to_failure_class_coverage_explicit",
-      "threshold": "export_compile_import_smoke_coverage_directly_stated"
+      "id": "REQ-CHECK-COMPILE",
+      "pass": false,
+      "evidence_path": "tests/;artifacts/acceptance_gate_report.json",
+      "metric_value": "pytest_target_missing_and_no_substitute_lightweight_results_recorded",
+      "threshold": "lightweight_compile_and_import_smoke_results_recorded_in_artifact"
     }
   ],
   "report_alignment": {
@@ -64,6 +40,6 @@
   },
   "validation_summary": {
     "schema_valid": true,
-    "failed_check_count": 0
+    "failed_check_count": 3
   }
 }
