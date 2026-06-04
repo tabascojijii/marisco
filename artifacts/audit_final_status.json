@@ -1,11 +1,11 @@
 {
-  "timestamp_utc": "2026-06-04T14:51:44Z",
-  "phase": "PLAN_AUDIT",
-  "final_decision": "AUDIT_PASS_PLAN",
+  "timestamp_utc": "2026-06-04T14:58:36Z",
+  "phase": "ARCHITECT_REWORK",
+  "final_decision": "ESCALATION",
   "final_owner": "Architect",
-  "final_next_gate": "FLOW_ADVANCE",
-  "final_reason_code": "NONE",
-  "auditor_decision": "AUDIT_PASS_PLAN",
-  "escalated_by_hook": false,
+  "final_next_gate": "ESCALATION_REVIEW",
+  "final_reason_code": "ARCH_EXPECTED_FILESET_MISSING",
+  "auditor_decision": "NO_OP_COMMIT_BLOCKED",
+  "escalated_by_hook": true,
   "source_audit_status_file": "audit_status.json"
 }

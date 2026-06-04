@@ -1,13 +1,13 @@
 # Escalation Report
 
-- Timestamp (UTC): 2026-06-04T14:07:36Z
-- Phase: PM_CREATE
+- Timestamp (UTC): 2026-06-04T14:58:36Z
+- Phase: ARCHITECT_REWORK
 - Final Decision: ESCALATION
 - Auditor Decision: NO_OP_COMMIT_BLOCKED
-- Reason-Code: PM_NO_OP_COMMIT_BLOCKED
+- Reason-Code: ARCH_EXPECTED_FILESET_MISSING
 
 ## Summary
-- PM_CREATE produced no staged changes twice consecutively. Escalating.
+- ARCHITECT_REWORK did not update docs/plan.md. Escalating.
 - The workflow blocked a role or audit commit because the expected staged changes were missing.
 
 ## Required Human Actions
