@@ -1,42 +1,39 @@
 {
-  "execution_id": "PM_AUDIT-20260604T143816Z-4e0806",
-  "timestamp_utc": "2026-06-04T14:38:16Z",
+  "execution_id": "PM_AUDIT-20260604T144438Z-ebdb2b",
+  "timestamp_utc": "2026-06-04T14:46:55Z",
   "phase": "PM_AUDIT",
-  "decision": "REJECT_TO_PM",
-  "reason_codes": [
-    "PM_TRACE_RM001_OVERMAPPED",
-    "PM_SUPPORTING_DOC_DIRECTNESS_MISMATCH"
-  ],
+  "decision": "AUDIT_PASS_ROADMAP",
+  "reason_codes": [],
   "owner": "PM",
-  "next_gate": "PM_REWORK",
+  "next_gate": "FLOW_ADVANCE",
   "checks": [
     {
-      "id": "REQ-GRAN-ROADMAP",
-      "pass": false,
-      "evidence_path": "docs/traceability_map.md; docs/roadmap.md",
-      "metric_value": "RM-001 cited for requirement fragments not directly stated in roadmap item text",
-      "threshold": "every cited RM item directly states the mapped requirement fragment"
+      "id": "REQ-GRAN-CONTRACT-DECIDABLE",
+      "pass": true,
+      "evidence_path": "docs/requirements.md; docs/reference_standards.md",
+      "metric_value": "two_document_contract_decidable",
+      "threshold": "contract_decidable_from_two_document_governance_set"
+    },
+    {
+      "id": "REQ-GRAN-ROADMAP-AC-DIRECT",
+      "pass": true,
+      "evidence_path": "docs/roadmap.md; docs/traceability_map.md",
+      "metric_value": "rm_citations_direct",
+      "threshold": "every_req_ac_trace_points_to_rm_item_that_directly_states_the_acceptance_outcome"
     },
     {
       "id": "REQ-GRAN-CHECKS",
-      "pass": false,
+      "pass": true,
       "evidence_path": "docs/acceptance_matrix.md; docs/traceability_map.md",
-      "metric_value": "supporting-governance directness threshold conflicts with current RM-001 trace rows",
-      "threshold": "every normative REQ row and downstream citation is semantically exact"
+      "metric_value": "supporting_docset_complete_and_aligned",
+      "threshold": "every_normative_req_has_complete_fielded_operationalization_and_semantically_exact_citations"
     },
     {
       "id": "REQ-GRAN-SUPPORTING-DOCS-ROLE",
       "pass": true,
       "evidence_path": "docs/requirements.md; docs/reference_standards.md; docs/acceptance_matrix.md; docs/traceability_map.md",
-      "metric_value": "required supporting governance documents exist and are explicitly subordinate",
-      "threshold": "supporting documents exist and are not elevated to co-equal authority"
-    },
-    {
-      "id": "REQ-GRAN-CONTRACT-DECIDABLE",
-      "pass": true,
-      "evidence_path": "docs/requirements.md; docs/reference_standards.md",
-      "metric_value": "governing two-document contract states documentary-phase audit-status rules in scope",
-      "threshold": "documentary-phase contract is decidable from requirements and reference standards alone"
+      "metric_value": "supporting_docs_subordinate",
+      "threshold": "required_supporting_governance_documents_exist_and_remain_non_authority_replacements"
     }
   ],
   "report_alignment": {
@@ -46,6 +43,6 @@
   },
   "validation_summary": {
     "schema_valid": true,
-    "failed_check_count": 2
+    "failed_check_count": 0
   }
 }
