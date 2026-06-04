@@ -38,6 +38,7 @@ Required outcomes:
 Required outcomes:
 
 - `docs/acceptance_matrix.md` remains the operational source for acceptance layer, criterion, documentary evidence path, later implementation evidence path, roadmap threshold, and later implementation threshold for every normative `REQ-...` identifier
+- for any acceptance point whose canonical implementation surface remains under `nbs/handlers/`, `.git/hooks/post-commit`, or another location outside `src/`, `tests/`, or `artifacts/`, `docs/acceptance_matrix.md` uses `artifacts/acceptance_gate_report.json` as the later implementation evidence path and requires that artifact to record the checked canonical target path and observed result
 - each supporting-governance row or trace entry cited by this workstream must carry its own required fields rather than borrowing missing content from neighboring rows, defaults, or surrounding prose
 - `docs/traceability_map.md` traces every normative `REQ-...` identifier to plan and roadmap items whose own text directly states the mapped outcome
 - when a traced identifier is a `REQ-AC-...` requirement, the cited roadmap item directly states the acceptance outcome itself rather than only a related deliverable class, location, or preparatory step
