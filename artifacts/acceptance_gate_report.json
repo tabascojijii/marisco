@@ -1,52 +1,80 @@
 {
-  "execution_id": "PLAN_AUDIT-20260604T144942Z-f91cfd",
-  "timestamp_utc": "2026-06-04T14:50:47Z",
-  "phase": "PLAN_AUDIT",
-  "decision": "AUDIT_PASS_PLAN",
+  "execution_id": "PM_AUDIT-20260604T145304Z-9932ab",
+  "timestamp_utc": "2026-06-04T14:55:28Z",
+  "phase": "PM_AUDIT",
+  "decision": "AUDIT_PASS_ROADMAP",
   "reason_codes": [],
-  "owner": "Architect",
+  "owner": "PM",
   "next_gate": "FLOW_ADVANCE",
   "checks": [
     {
-      "id": "REQ-GRAN-PLAN",
+      "id": "REQ-GRAN-ROADMAP",
       "pass": true,
-      "evidence_path": "docs/plan.md",
-      "metric_value": "subordinate_to_requirements_and_no_local_threshold_redefinition",
+      "evidence_path": "docs/roadmap.md",
+      "metric_value": "roadmap_subordinate_to_governing_contract",
       "threshold": "required"
     },
     {
-      "id": "REQ-CONTRACT-CLOSURE-PLAN",
+      "id": "REQ-GRAN-CHECKS",
       "pass": true,
-      "evidence_path": "docs/plan.md",
-      "metric_value": "architect_gate_decidable_from_governing_contract_and_plan",
+      "evidence_path": "docs/acceptance_matrix.md",
+      "metric_value": "normative_requirement_rows_with_required_fields_present",
       "threshold": "required"
     },
     {
-      "id": "REQ-POST-COMMIT-LIGHTWEIGHT-BOUNDARY",
+      "id": "REQ-GRAN-ROADMAP-AC-DIRECT",
       "pass": true,
-      "evidence_path": "docs/plan.md",
-      "metric_value": "export_compile_import_smoke_only_with_explicit_exclusions",
+      "evidence_path": "docs/traceability_map.md",
+      "metric_value": "req_ac_to_rm_mappings_direct",
       "threshold": "required"
     },
     {
-      "id": "REQ-CHECK-COVERAGE",
+      "id": "REQ-CONTRACT-CLOSURE-DOWNSTREAM",
       "pass": true,
-      "evidence_path": "docs/plan.md",
-      "metric_value": "stage_to_failure_class_mapping_explicit",
+      "evidence_path": "docs/plan.md; docs/roadmap.md; docs/acceptance_matrix.md; docs/traceability_map.md",
+      "metric_value": "downstream_docs_remain_subordinate",
       "threshold": "required"
     },
     {
       "id": "REQ-AC-POST-COMMIT-SEQUENCE",
       "pass": true,
-      "evidence_path": "docs/plan.md",
-      "metric_value": "hook_governed_sequence_contains_all_required_stages",
+      "evidence_path": "docs/roadmap.md",
+      "metric_value": "hook_governed_export_compile_import_smoke_sequence_stated",
       "threshold": "required"
     },
     {
-      "id": "REQ-AC-NO-REFACTOR",
+      "id": "REQ-AC-POST-COMMIT-BOUNDARY",
       "pass": true,
-      "evidence_path": "docs/plan.md",
-      "metric_value": "no_immediate_refactor_mandated",
+      "evidence_path": "docs/roadmap.md",
+      "metric_value": "lightweight_boundary_and_heavyweight_exclusions_stated",
+      "threshold": "required"
+    },
+    {
+      "id": "REQ-AC-TEMPLATE-BASELINE",
+      "pass": true,
+      "evidence_path": "docs/roadmap.md",
+      "metric_value": "ordered_handler_template_baseline_stated",
+      "threshold": "required"
+    },
+    {
+      "id": "REQ-AC-TEMPLATE-ZONES",
+      "pass": true,
+      "evidence_path": "docs/roadmap.md",
+      "metric_value": "provider_reusable_commonization_zones_stated",
+      "threshold": "required"
+    },
+    {
+      "id": "REQ-AC-READABILITY",
+      "pass": true,
+      "evidence_path": "docs/roadmap.md",
+      "metric_value": "literate_notebook_readability_stated",
+      "threshold": "required"
+    },
+    {
+      "id": "REQ-DOCSET-REQUIRED",
+      "pass": true,
+      "evidence_path": "docs/acceptance_matrix.md; docs/traceability_map.md",
+      "metric_value": "required_supporting_docset_present_and_aligned",
       "threshold": "required"
     }
   ],
