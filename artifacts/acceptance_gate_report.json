@@ -1,0 +1,55 @@
+{
+  "decision": "AUDIT_PASS_PLAN",
+  "reason_codes": [],
+  "owner": "Architect",
+  "next_gate": "FLOW_ADVANCE",
+  "checks": [
+    {
+      "id": "REQ-GRAN-PLAN",
+      "pass": true,
+      "evidence_path": "docs/plan.md:164-167",
+      "metric_value": "direct_outcome_mapping_present",
+      "threshold": "mapped_requirement_outcome_explicit"
+    },
+    {
+      "id": "REQ-CONTRACT-CLOSURE-PLAN",
+      "pass": true,
+      "evidence_path": "docs/plan.md:13-15;docs/plan.md:165-167",
+      "metric_value": "present_tense_contract_consumed",
+      "threshold": "no_deferred_upstream_rewrite_dependency"
+    },
+    {
+      "id": "REQ-CONTRACT-CLOSURE-DOWNSTREAM",
+      "pass": true,
+      "evidence_path": "docs/plan.md:13;docs/plan.md:38-40;docs/plan.md:156;docs/plan.md:252",
+      "metric_value": "no_independent_gate_logic_stated",
+      "threshold": "downstream_documents_remain_subordinate"
+    },
+    {
+      "id": "REQ-POST-COMMIT-SEQUENCE",
+      "pass": true,
+      "evidence_path": "docs/plan.md:122-127",
+      "metric_value": "export_compile_import_smoke_all_present",
+      "threshold": "all_required_stages_present"
+    },
+    {
+      "id": "REQ-CHECK-COVERAGE",
+      "pass": true,
+      "evidence_path": "docs/plan.md:127",
+      "metric_value": "three_failure_classes_stage_mapped",
+      "threshold": "direct_stage_to_failure_mapping_present"
+    }
+  ],
+  "execution_id": "PLAN_AUDIT-20260604T091512Z-46f948",
+  "timestamp_utc": "2026-06-04T09:16:56Z",
+  "phase": "PLAN_AUDIT",
+  "report_alignment": {
+    "audit_report_present": true,
+    "audit_report_execution_id_present": true,
+    "audit_report_execution_id_match": true
+  },
+  "validation_summary": {
+    "schema_valid": true,
+    "failed_check_count": 0
+  }
+}
