@@ -1,48 +1,55 @@
 {
-  "decision": "AUDIT_PASS_PLAN",
+  "decision": "AUDIT_PASS_ROADMAP",
   "reason_codes": [],
-  "owner": "Architect",
+  "owner": "PM",
   "next_gate": "FLOW_ADVANCE",
   "checks": [
     {
-      "id": "REQ-GRAN-PLAN",
+      "id": "REQ-GRAN-ROADMAP",
       "pass": true,
-      "evidence_path": "docs/plan.md:164-167",
-      "metric_value": "direct_outcome_mapping_present",
-      "threshold": "mapped_requirement_outcome_explicit"
+      "evidence_path": "docs/roadmap.md",
+      "metric_value": "governing_authority_and_subordination_explicit",
+      "threshold": "roadmap_subordinate_and_not_sole_acceptance_source"
     },
     {
-      "id": "REQ-CONTRACT-CLOSURE-PLAN",
+      "id": "REQ-GRAN-CHECKS",
       "pass": true,
-      "evidence_path": "docs/plan.md:13-15;docs/plan.md:165-167",
-      "metric_value": "present_tense_contract_consumed",
-      "threshold": "no_deferred_upstream_rewrite_dependency"
+      "evidence_path": "docs/roadmap.md;docs/acceptance_matrix.md;docs/traceability_map.md",
+      "metric_value": "all_normative_requirements_operationalized_in_scope",
+      "threshold": "every_normative_req_has_in_scope_operationalization"
     },
     {
-      "id": "REQ-CONTRACT-CLOSURE-DOWNSTREAM",
+      "id": "REQ-GRAN-ROADMAP-AC-DIRECT",
       "pass": true,
-      "evidence_path": "docs/plan.md:13;docs/plan.md:38-40;docs/plan.md:156;docs/plan.md:252",
-      "metric_value": "no_independent_gate_logic_stated",
-      "threshold": "downstream_documents_remain_subordinate"
+      "evidence_path": "docs/roadmap.md;docs/traceability_map.md",
+      "metric_value": "acceptance_criterion_to_roadmap_mappings_direct",
+      "threshold": "every_req_ac_mapping_points_to_direct_roadmap_outcome"
     },
     {
       "id": "REQ-POST-COMMIT-SEQUENCE",
       "pass": true,
-      "evidence_path": "docs/plan.md:122-127",
+      "evidence_path": "docs/roadmap.md",
       "metric_value": "export_compile_import_smoke_all_present",
       "threshold": "all_required_stages_present"
     },
     {
       "id": "REQ-CHECK-COVERAGE",
       "pass": true,
-      "evidence_path": "docs/plan.md:127",
+      "evidence_path": "docs/roadmap.md",
       "metric_value": "three_failure_classes_stage_mapped",
       "threshold": "direct_stage_to_failure_mapping_present"
+    },
+    {
+      "id": "REQ-CONTRACT-CLOSURE-EVIDENCE",
+      "pass": true,
+      "evidence_path": "docs/roadmap.md;docs/acceptance_matrix.md;docs/traceability_map.md",
+      "metric_value": "documentary_evidence_paths_in_scope_and_guidance_non_authoritative",
+      "threshold": "all_documentary_evidence_paths_in_scope"
     }
   ],
-  "execution_id": "PLAN_AUDIT-20260604T091512Z-46f948",
-  "timestamp_utc": "2026-06-04T09:16:56Z",
-  "phase": "PLAN_AUDIT",
+  "execution_id": "PM_AUDIT-20260604T094940Z-3c8a0f",
+  "timestamp_utc": "2026-06-04T09:50:26Z",
+  "phase": "PM_AUDIT",
   "report_alignment": {
     "audit_report_present": true,
     "audit_report_execution_id_present": true,
