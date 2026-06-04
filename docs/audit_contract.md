@@ -27,6 +27,8 @@
 - threshold
 
 ## Contract Rules
+- Auditors judge documentary satisfaction using direct statements in cited documents.
+- `docs/traceability_map.md` and `docs/acceptance_matrix.md` are secondary indexing artifacts. They may organize evidence, but they may not repair missing requirement meaning or missing downstream direct statements.
 - `decision` must be one of the values allowed by `docs/requirements.md`.
 - `reason_codes` must be a list, even when empty.
 - `checks[]` entries must use `REQ-...` ids.

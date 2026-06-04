@@ -5,6 +5,8 @@ Roadmap-phase evidence paths stay inside the fixed documentation scope for docum
 `docs/audit_report.md` may identify trace defects or evidence gaps, but trace closure must be readable from repaired authority-bearing text in `docs/requirements.md`, `docs/reference_standards.md`, `docs/plan.md`, and `docs/roadmap.md` rather than from the audit narrative alone.
 Every cited `PLAN-...` and `RM-...` item must itself state the mapped outcome directly. This map must not rely on cross-item inference, neighboring prose, or milestone summaries to repair an otherwise incomplete trace.
 This directness rule applies equally to `REQ-AC-...` identifiers; acceptance-criteria traces must point to downstream items that state the acceptance outcome itself directly.
+A trace mapping is valid only when the cited `PLAN-*` or `RM-*` item states the mapped requirement fragment directly in its own text.
+This document is an index surface. It must not extend, reinterpret, or complete the meaning of a cited item through summary, paraphrase, neighboring context, or chained reference.
 While `docs/requirements.md` keeps the final handler-template filename as an open decision, later implementation evidence for that deliverable must be traced generically as a handler template notebook under `nbs/handlers/` rather than as a pre-decided filename.
 
 | Requirement ID | Source | Plan Item | Roadmap Item | Roadmap-Phase Evidence Path | Later Implementation Evidence Path |

@@ -18,6 +18,17 @@
 - Supporting-governance alignment may be scheduled or executed in the same revision stream, but unless those documents are explicitly inside the active fixed audit scope they must not become prerequisite proof for passing a documentary-phase gate.
 - When supporting governance documents are explicitly inside the active fixed audit scope, they are audited as subordinate operationalization surfaces for consistency and completeness only; their inclusion in scope does not authorize them to backfill missing governing-contract rules or to repair semantically invalid downstream mappings by implication.
 - `docs/audit_report.md` may record defects, evidence gaps, and repair rationale, but it is an informative audit surface rather than a co-equal authority source for contract meaning, gate semantics, or audit-status interpretation.
+
+## Directness Rule
+
+A cited document satisfies a requirement only when the relevant requirement fragment is stated directly in that document's own text.
+
+Supporting-governance documents such as `docs/traceability_map.md`, `docs/acceptance_matrix.md`, and `docs/audit_contract.md` may index, summarize, or operationalize evidence, but they must not create surrogate satisfaction through paraphrase, inference, or chained reference.
+
+A requirement is not satisfied when:
+- the cited document relies on a neighboring item to supply the missing fragment
+- the cited document points to another downstream document that supplies the fragment
+- a traceability or matrix row attributes a requirement fragment to a cited item whose own text does not state that fragment directly
 - `docs/plan.md`, `docs/roadmap.md`, `docs/acceptance_matrix.md`, and `docs/traceability_map.md` may summarize readiness, sequencing, or coverage, but such summaries are explanatory only and must not be framed as independent gate criteria or replacement decision logic for documentary phases.
 - Repository-local instruction files and companion documents such as `AGENTS.md`, `PROJECT.md`, `ARCHITECTURE.md`, `DEPENDENCIES.md`, and `CONVENTIONS.md` may be consulted for local authoring, runtime, and UX discipline, but consulting them does not make them co-equal authority sources for documentary-phase contract validity, gate semantics, or audit-status interpretation.
 - `C:\dev\marisco3\marisco_clean\marisco_repo\CONVENTIONS.md` is the companion source for implementation and UX conventions.

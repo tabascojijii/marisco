@@ -44,6 +44,8 @@
 - `REQ-GRAN-CONTRACT-DECIDABLE`: For requirements-, plan-, and roadmap-phase auditing, the governing machine-readable audit status contract must be decidable from `docs/reference_standards.md` and this document alone.
 - `REQ-GRAN-CONTRACT-SUBORD`: `docs/audit_contract.md` may restate or exemplify that contract, but it must not be the only scoped source of authority for those phases.
 - `REQ-GRAN-SUPPORTING-DOCS-ROLE`: `docs/acceptance_matrix.md` and `docs/traceability_map.md` are required supporting governance documents for operationalization and cross-phase consistency, but they do not supersede the two-document governing contract defined by this document and `docs/reference_standards.md`.
+- `REQ-DIRECT-STATEMENT`: If `docs/plan.md` or `docs/roadmap.md` is cited as evidence for a requirement, the cited requirement fragment must be stated directly in that document's own text.
+- `REQ-SUPPORTING-DOC-NON-SURROGATE`: `docs/traceability_map.md`, `docs/acceptance_matrix.md`, and `docs/audit_contract.md` may index or operationalize evidence, but they must not supply missing governing meaning, missing downstream requirement fragments, or substitute gate semantics.
 - `REQ-GRAN-CHECKS`: Operationalized checks and pass thresholds belong in `docs/acceptance_matrix.md`. For every normative `REQ-...` identifier in this document, the matrix must define:
   - acceptance layer
   - criterion
@@ -235,6 +237,8 @@ The items below restate the three stages defined in `REQ-POST-COMMIT-SEQUENCE` f
 - `REQ-AC-NO-REFACTOR`: No requirement in this phase forces immediate refactoring of existing handlers.
 - `REQ-AC-PRESERVE-FLEXIBILITY`: The template contains no section that mandates immediate normalization of all provider differences; each section that varies by provider is explicitly marked as provider-specific rather than as a required refactoring target.
 - `REQ-AC-READABILITY`: The template sections follow the literate-programming style of existing handler notebooks (prose explanation adjacent to code cells; no unexplained generated-code patterns).
+- `REQ-AC-DIRECT-STATEMENT`: Every cited `PLAN-*` or `RM-*` item directly states the requirement fragment attributed to it.
+- `REQ-AC-SUPPORTING-DOC-NON-SURROGATE`: No supporting-governance document is required to invent, extend, or forward missing requirement meaning for a cited `PLAN-*` or `RM-*` item.
 
 Implementation-phase auditability note for the acceptance criteria above:
 - When `REQ-AC-TEMPLATE-EXISTS`, `REQ-AC-TEMPLATE-BASELINE`, `REQ-AC-TEMPLATE-ZONES`, `REQ-AC-TEMPLATE-NBDEV`, `REQ-AC-POST-COMMIT-SEQUENCE`, or `REQ-AC-POST-COMMIT-BOUNDARY` are satisfied by canonical implementation surfaces outside `src/`, `tests/`, or `artifacts/`, implementation-phase pass or fail must still be auditable from `artifacts/acceptance_gate_report.json`, which must name the canonical notebook or hook path being attested.

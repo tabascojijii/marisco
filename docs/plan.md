@@ -14,6 +14,8 @@ The plan is limited to designing how the workstream will satisfy that contract. 
 
 This revision assumes and reflects the repair order now made explicit in the governing contract: structural governance defects are closed in `docs/requirements.md` and `docs/reference_standards.md` first, then propagated into this plan and the subordinate supporting-governance documents in the same change set.
 
+This plan is valid evidence only for requirement fragments stated directly in its own text. It does not rely on `docs/traceability_map.md`, `docs/acceptance_matrix.md`, or neighboring plan items to supply missing requirement meaning.
+
 The workstream deliverables remain:
 
 - an explicit handler template notebook under `nbs/handlers/`
@@ -139,6 +141,7 @@ Required outcomes:
 - heavyweight operations excluded by `REQ-POST-COMMIT-LIGHTWEIGHT-BOUNDARY` remain excluded
 - the verification design stays compatible with Python `>=3.7`
 - this workstream does not require a fabricated `pytest tests/` target when no dedicated `tests/` deliverable is intentionally introduced; if a dedicated `tests/` target is later added, it may supply supplementary evidence rather than replace the required lightweight sequence
+- this item directly states the required post-commit verification stages and directly states the excluded heavyweight categories; downstream trace or matrix documents must not be needed to complete that meaning
 
 ### PLAN-005 — Operationalize Governance Alignment In Supporting Documents
 
@@ -183,6 +186,7 @@ Required outcomes:
 - no plan item treats generated `.py` files as the canonical authoring surface
 - success remains tied to the actual deliverables instead of to speculative framework redesign
 - no plan item requires git commit operations
+- this item directly states the required direct-outcome mapping discipline and does not depend on supporting-governance documents to define requirement thresholds or gate semantics
 
 ## Deliverable Architecture
 

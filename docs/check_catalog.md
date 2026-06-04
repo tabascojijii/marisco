@@ -8,6 +8,10 @@
 - `REQ-GOV-JSON-CONTRACT`: Validate top-level keys and `checks[]` keys in `audit_status.json`.
 - `REQ-REASON-CODE-CONTRACT`: Validate `REJECT_*` and `ESCALATION` states include a prefixed reason code.
 - `REQ-TRACEABILITY`: Ensure each active requirement has at least one evidence path in `docs/traceability_map.md`.
+- `REQ-DIRECT-STATEMENT`: Validate that each cited `PLAN-*` or `RM-*` item directly states the requirement fragment attributed to it.
+- `REQ-TRACE-DIRECTNESS`: Validate that `docs/traceability_map.md` does not over-map requirement fragments beyond the direct text of cited items.
+- `REQ-MATRIX-DIRECTNESS`: Validate that `docs/acceptance_matrix.md` does not attribute thresholds or completion meaning not directly stated by cited items.
+- `REQ-SUPPORTING-DOC-NON-SURROGATE`: Validate that supporting-governance documents do not act as surrogate authority or semantic repair surfaces.
 - `REQ-GRAN-REQS`: Validate `docs/requirements.md` explicitly assigns project-specific acceptance detail to the requirements layer rather than leaving it implicit in downstream documents.
 - `REQ-GRAN-STANDARDS`: Validate `docs/reference_standards.md` defines repository-local audit granularity policy and document ownership boundaries.
 - `REQ-GRAN-PLAN-BOUNDARY`: Validate `docs/plan.md` states that it translates requirements without replacing acceptance thresholds.

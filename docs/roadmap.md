@@ -12,6 +12,8 @@ This roadmap translates `docs/plan.md` into executable PM-phase work for the han
 
 This roadmap remains subordinate to the governing two-document contract formed by `docs/requirements.md` and `docs/reference_standards.md`. It sequences execution and documentary self-check work, but it does not define an independent gate algorithm or replace requirement-level acceptance detail.
 
+If this roadmap is cited as evidence for a requirement, the cited requirement fragment must be stated directly in the relevant `RM-*` item's own text. `docs/traceability_map.md`, `docs/acceptance_matrix.md`, and `docs/audit_contract.md` must not be needed to supply missing roadmap meaning.
+
 ## Execution Principles
 
 - Execute against the current in-scope governing contract, not against hypothetical future rewrites.
@@ -33,6 +35,7 @@ Required execution outcomes:
 - execution work treats `docs/requirements.md` and `docs/reference_standards.md` as the only co-equal authority sources for requirements-, plan-, and roadmap-phase contract validity
 - the machine-readable audit-status contract needed for requirements-, plan-, and roadmap-phase decisions remains decidable from `docs/requirements.md` and `docs/reference_standards.md` alone without requiring `docs/audit_contract.md`, `docs/acceptance_matrix.md`, `docs/traceability_map.md`, or roadmap prose as co-equal authority
 - `docs/audit_contract.md` may restate or exemplify the audit-status contract, but roadmap execution keeps it subordinate and non-exclusive rather than treating it as a required co-equal authority source
+- any requirement fragment later attributed to `RM-001` must be stated directly in this item rather than inferred from neighboring roadmap items, trace rows, or matrix rows
 - execution work uses `docs/plan.md` as upstream design input and keeps `docs/roadmap.md` subordinate to that governing contract
 - roadmap execution does not make Architect-gate validity depend on supporting-governance completion; Architect-phase contract closure remains decidable from `docs/requirements.md`, `docs/reference_standards.md`, and `docs/plan.md`, while same-change-set support-document alignment remains downstream consistency work only
 - roadmap sequencing and self-check text remain execution-facing only and do not become the sole source of acceptance detail that auditors need in order to judge this workstream
@@ -53,7 +56,9 @@ Required execution outcomes:
 - any requirement-to-plan mapping used by supporting governance documents cites only `PLAN-...` items whose stated outcomes directly satisfy the referenced requirement, and no supporting document replaces a requirement threshold with topic-adjacent plan prose
 - every requirement-to-plan and requirement-to-roadmap citation in supporting governance documents points only to `PLAN-...` and `RM-...` items whose stated outcomes directly satisfy the cited requirement
 - every citation for a `REQ-AC-...` identifier points only to `PLAN-...` and `RM-...` items that directly state the cited acceptance outcome itself
+- each cited `RM-*` item in supporting-governance documents must directly state the mapped requirement fragment in its own text
 - supporting-governance text does not use generic governance language, nearby context, or cross-item inference to make an otherwise incomplete mapping appear valid
+- supporting-governance alignment must remove over-broad mappings rather than rely on trace or matrix prose to repair missing direct statements in cited roadmap items
 - supporting-governance documents remain subordinate operationalization surfaces and do not add new authority sources or gate rules
 
 ### RM-003 — Deliver The Template Notebook Definition

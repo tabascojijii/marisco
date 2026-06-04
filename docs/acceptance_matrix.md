@@ -4,6 +4,8 @@ Authority: `docs/requirements.md` defines all normative requirements. This docum
 Repository-local instruction files may be consulted for implementation discipline, but no row in this matrix may rely on them as the deciding authority for documentary-phase contract closure.
 `docs/audit_report.md` may identify defects or evidence gaps, but matrix rows must treat those findings as informative audit input only; closure must be traceable to repaired authority-bearing text in `docs/requirements.md` and `docs/reference_standards.md`.
 Rows for `REQ-AC-...` identifiers are subject to the same semantic-exactness rule as any other normative `REQ-...` identifier; cited plan or roadmap items must state the acceptance outcome itself directly.
+Matrix rows index documentary evidence but do not create requirement satisfaction beyond what the cited text directly states.
+A cited `PLAN-*` or `RM-*` item may appear in a matrix row only when that item's own text directly states the mapped requirement fragment, threshold, or completion condition.
 While `docs/requirements.md` keeps the final handler-template filename as an open decision, later implementation evidence for that deliverable must be recorded generically as a handler template notebook under `nbs/handlers/` rather than as a pre-decided filename.
 
 Layer A = blocking acceptance gate. Layer B = supporting quality check.
