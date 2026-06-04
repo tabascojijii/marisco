@@ -25,7 +25,7 @@
 - `C:\dev\marisco3\marisco_clean\marisco_repo\docs\core_philosophy.md` is informative background only and must not be treated as an independent source of audit or acceptance authority.
 - `C:\dev\marisco3\marisco_clean\marisco_repo\docs\plan.md` defines the Architect’s implementation plan.
 - `C:\dev\marisco3\marisco_clean\marisco_repo\docs\roadmap.md` defines the PM’s executable roadmap.
-- `C:\dev\marisco3\marisco_clean\marisco_repo\src\`, `C:\dev\marisco3\marisco_clean\marisco_repo\tests\`, and `C:\dev\marisco3\marisco_clean\marisco_repo\artifacts\` contain the Implementer’s deliverables.
+- `C:\dev\marisco3\marisco_clean\marisco_repo\src\`, `C:\dev\marisco3\marisco_clean\marisco_repo\tests\`, and `C:\dev\marisco3\marisco_clean\marisco_repo\artifacts\` are the default implementation-audit evidence surfaces. When canonical implementation sources for the active workstream live elsewhere, the governing requirements must define an artifact-backed audit surface under `artifacts\` so implementation acceptance remains decidable within fixed scope.
 - Generated Python files are derived artifacts when produced by `nbdev`; notebook sources remain the canonical edit surface.
 
 ## Workflow State Model
@@ -186,6 +186,7 @@
 - If a trace cites multiple downstream items for one requirement, each cited item must still directly state the requirement fragment it is claimed to satisfy. Multiple partial citations must not be used to mask a missing explicit outcome in the mapped items themselves.
 - When downstream documents mention repository-local instruction files, those mentions must be framed as consulted guidance or implementation discipline only. They must not be written as blocking documentary-phase gate conditions, deciding evidence paths, or replacement authority.
 - When a phase-specific fixed documentation scope includes supporting governance documents such as `docs/acceptance_matrix.md` or `docs/traceability_map.md`, those documents may be audited for consistency and completeness, but they must still be interpreted as subordinate operationalization of the governing two-document contract rather than as replacement authority.
+- For implementation-phase auditing with a fixed scope centered on `src/`, `tests/`, and `artifacts/`, a requirement whose canonical implementation surface lives outside that scope is auditable only when the governing requirements define an artifact-backed evidence surface inside `artifacts/` that names the canonical target path and the observed result.
 - The following two documents are the primary audit evidence surfaces for machine-readable and human-readable audit outcomes:
   - `C:\dev\marisco3\marisco_clean\marisco_repo\docs\audit_report.md`
   - `C:\dev\marisco3\marisco_clean\marisco_repo\artifacts\acceptance_gate_report.json`
@@ -195,8 +196,9 @@
 - During implementation-phase auditing, a missing `artifacts/acceptance_gate_report.json`, an invalid acceptance gate report schema, or a mismatched shared `execution_id` is a contract failure, not a soft warning.
 
 ## Validation And Test Baseline
-- Implementation-phase auditing must include `pytest tests/` unless the requirements document explicitly defines a different local validation baseline.
+- Implementation-phase auditing must include `pytest tests/` unless the requirements document explicitly defines a different local validation baseline for the active workstream.
 - Lightweight validation may be used in earlier documentation-oriented phases, but implementation acceptance requires executable evidence.
+- For notebook-first template workstreams that explicitly define a different implementation-phase baseline in `docs/requirements.md`, artifact-backed evidence of the required export, compile, and import-smoke sequence may be the mandatory executable evidence in place of `pytest tests/`.
 - Earlier documentation-oriented phases must be pass/fail decidable from documentary evidence alone; they may require phase-appropriate implementation planning, but not the runtime presence of future deliverables.
 - For earlier documentation-oriented phases, a downstream claim of `lightweight` validation is auditable only when the cited item expressly states both the allowed stage set and the exclusion of external-network or full-dataset execution from the post-commit path.
 - For those same phases, a downstream claim of validation coverage is auditable only when the cited item expressly states which required verification stage is intended to catch each required failure class.

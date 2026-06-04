@@ -24,6 +24,7 @@
 - A handler notebook template added to the repository.
 - A documented checklist of provider-specific sections versus reusable sections.
 - A lightweight post-commit verification flow.
+- Artifact-backed implementation audit evidence recorded under `artifacts/` for template existence and post-commit verification outcomes when the canonical implementation surfaces live outside the fixed implementation audit scope.
 - Documentation describing how the template should be used before any full commonization effort starts.
 
 ## Requirement Identifier Policy
@@ -194,7 +195,10 @@ The guidance below elaborates how the requirements above are applied in practice
 - For this workstream, the local acceptance baseline is the lightweight validation set defined in this section.
 - For requirements-, plan-, and roadmap-phase auditing, documentary sufficiency is judged from the fixed documentation scope only. Auditors must not require the existence of later implementation artifacts in order to pass those phases.
 - `pytest tests/` is not required for requirements-, plan-, or roadmap-phase acceptance of this workstream.
-- If this workstream later introduces executable implementation artifacts under `src/`, `tests/`, or `artifacts/`, implementation-phase validation rules may apply in addition to this baseline.
+- For this workstream's implementation phase, the canonical implementation surfaces may live in `nbs/handlers/` and `.git/hooks/post-commit`, but the audit-facing later implementation evidence for acceptance must remain readable from `artifacts/` within the fixed implementation audit scope.
+- For this workstream's implementation phase, acceptance criteria that are satisfied by notebook or hook changes outside `src/`, `tests/`, or `artifacts/` must record artifact-backed pass or fail evidence in `artifacts/acceptance_gate_report.json`, including the canonical in-repository target path that was checked.
+- For this workstream, implementation-phase executable validation is the documented lightweight export, compile, and import-smoke sequence. `pytest tests/` is not a required implementation-phase gate unless the same change set intentionally introduces a dedicated test target under `tests/`.
+- If this workstream later introduces additional executable implementation artifacts under `src/`, `tests/`, or `artifacts/`, supplementary implementation-phase validation rules may apply in addition to this baseline.
 
 ### Required Checks
 - `REQ-CHECK-EXPORT`: Notebook/export-related changes must be validated through the export/regeneration stage defined in `REQ-POST-COMMIT-SEQUENCE`.
@@ -204,6 +208,7 @@ The guidance below elaborates how the requirements above are applied in practice
   - syntax errors in generated modules
   - obvious import-time breakage in touched code paths
 - For implementation-phase evidence, the machine-readable acceptance result must be recorded in `artifacts/acceptance_gate_report.json`, and the human-readable audit narrative must be recorded in `docs/audit_report.md`.
+- For this workstream, `artifacts/acceptance_gate_report.json` must be sufficient to audit implementation-phase pass or fail for requirements whose canonical implementation surfaces live outside `src/`, `tests/`, or `artifacts/`; the recorded evidence must name the canonical target path that was checked.
 - When both documents carry an `Execution-ID` or `execution_id` for the same audit run, those values must match.
 - For this workstream's documentary phases, a downstream plan or roadmap item may be cited for `REQ-CHECK-COVERAGE` only if that item directly states which required verification stage is intended to catch each of the three failure classes above.
 
@@ -230,6 +235,9 @@ The items below restate the three stages defined in `REQ-POST-COMMIT-SEQUENCE` f
 - `REQ-AC-NO-REFACTOR`: No requirement in this phase forces immediate refactoring of existing handlers.
 - `REQ-AC-PRESERVE-FLEXIBILITY`: The template contains no section that mandates immediate normalization of all provider differences; each section that varies by provider is explicitly marked as provider-specific rather than as a required refactoring target.
 - `REQ-AC-READABILITY`: The template sections follow the literate-programming style of existing handler notebooks (prose explanation adjacent to code cells; no unexplained generated-code patterns).
+
+Implementation-phase auditability note for the acceptance criteria above:
+- When `REQ-AC-TEMPLATE-EXISTS`, `REQ-AC-TEMPLATE-BASELINE`, `REQ-AC-TEMPLATE-ZONES`, `REQ-AC-TEMPLATE-NBDEV`, `REQ-AC-POST-COMMIT-SEQUENCE`, or `REQ-AC-POST-COMMIT-BOUNDARY` are satisfied by canonical implementation surfaces outside `src/`, `tests/`, or `artifacts/`, implementation-phase pass or fail must still be auditable from `artifacts/acceptance_gate_report.json`, which must name the canonical notebook or hook path being attested.
 
 ## Governance Document Attestation
 The following documents are required by `docs/reference_standards.md` § Required Documents and have been confirmed to exist as of 2026-06-03 (human-verified). This attestation is placed in `docs/requirements.md` so that it is reachable within the fixed requirements-phase audit scope:

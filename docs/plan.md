@@ -19,6 +19,7 @@ The workstream deliverables remain:
 - an explicit handler template notebook under `nbs/handlers/`
 - guidance that distinguishes provider-specific structure from reusable structure
 - a hook-governed lightweight post-commit verification flow
+- artifact-backed implementation audit evidence under `artifacts/acceptance_gate_report.json` for acceptance points whose canonical implementation surfaces live in `nbs/handlers/` or `.git/hooks/post-commit`
 - supporting-governance documents that operationalize, but do not replace, the governing contract
 
 ## Architectural Response To The Audit
@@ -68,6 +69,10 @@ The canonical implementation surface remains `nbs/`. Generated Python remains de
 ### DP-6 — Lightweight Verification Boundary
 
 Post-commit verification in this workstream is limited to export or regeneration, compile, and import-smoke validation. Heavyweight runtime and network-dependent execution stays out of scope for this verification path.
+
+### DP-7 — Implementation Auditability Must Stay In Scope
+
+Canonical implementation surfaces may remain notebook-first and hook-governed, but implementation-phase acceptance must still be auditable from the fixed implementation evidence surface. For this workstream, that means later acceptance evidence for notebook and hook outcomes must be recorded through `artifacts/acceptance_gate_report.json` rather than requiring direct audit-scope expansion into `nbs/handlers/` or `.git/hooks/`.
 
 ## Plan Items
 
@@ -125,8 +130,10 @@ Required outcomes:
 - the documented sequence contains export or regeneration, `python -m py_compile`, and lightweight import smoke checks
 - the documented post-commit path remains practical for normal development by staying limited to those lightweight stages and by excluding external-network and full-dataset execution from the post-commit path
 - the verification design directly states stage-to-failure coverage: export or regeneration catches broken notebook export structure, `python -m py_compile` catches syntax errors in generated modules, and import smoke checks catch obvious import-time breakage in touched code paths
+- the implementation-phase audit surface for hook-governed verification is `artifacts/acceptance_gate_report.json`, which must record the checked canonical hook target and the result of the required lightweight stages
 - heavyweight operations excluded by `REQ-POST-COMMIT-LIGHTWEIGHT-BOUNDARY` remain excluded
 - the verification design stays compatible with Python `>=3.7`
+- this workstream does not require a fabricated `pytest tests/` target when no dedicated `tests/` deliverable is intentionally introduced; if a dedicated `tests/` target is later added, it may supply supplementary evidence rather than replace the required lightweight sequence
 
 ### PLAN-005 — Operationalize Governance Alignment In Supporting Documents
 
@@ -143,6 +150,7 @@ Required outcomes:
 - for every normative `REQ-...` identifier currently defined in `docs/requirements.md`, `docs/acceptance_matrix.md` states acceptance layer, criterion, roadmap-phase documentary evidence path, later implementation evidence path or `not applicable`, roadmap threshold, and later implementation threshold or `not applicable`
 - each acceptance-matrix row carries those required fields in the row text itself and must not rely on section defaults, neighboring rows, or surrounding prose to supply a missing field, evidence path, or threshold
 - any later implementation evidence path for the template deliverable keeps the filename open when the governing requirements still mark that filename as an open decision; supporting documents must reference a handler template notebook under `nbs/handlers/` generically unless and until the governing contract resolves the filename
+- any later implementation evidence path for acceptance points satisfied by notebook or hook changes outside `src/`, `tests/`, or `artifacts/` must be auditable from `artifacts/acceptance_gate_report.json`, which records the canonical target path and observed result without moving canonical authorship away from `nbs/handlers/` or `.git/hooks/post-commit`
 - roadmap text that is cited for `REQ-GRAN-CHECKS` must directly state the full acceptance-matrix completeness obligation rather than only speaking about traceability discipline in general
 - `docs/traceability_map.md` traces each normative `REQ-...` identifier from source through plan and roadmap evidence paths
 - every requirement-to-plan and requirement-to-roadmap citation in supporting documents points only to items whose stated required outcomes directly satisfy the cited requirement
@@ -189,11 +197,13 @@ Required outcomes:
 - hook-governed post-commit sequence definition
 - export/regeneration, compile, and import-smoke stages
 - explicit exclusion of heavyweight runs
+- artifact-backed implementation audit record for the required lightweight sequence
 
 ### Deliverable Group D — Supporting Governance Assets
 
 - acceptance matrix covering every normative requirement
 - traceability map linking each normative requirement to plan, roadmap, and evidence paths
+- implementation-evidence mappings that remain auditable from `artifacts/acceptance_gate_report.json` when canonical sources live outside the fixed implementation scope
 
 ## Requirement-to-Plan Mapping
 
