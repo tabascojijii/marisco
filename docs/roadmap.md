@@ -24,6 +24,8 @@ This roadmap translates `docs/plan.md` into executable PM sequencing for the han
 
 Required outcomes:
 
+- roadmap text directly states that `docs/requirements.md` owns the project-specific acceptance granularity for this workstream and that roadmap sequencing must not replace or redefine that granularity
+- roadmap text directly states that `docs/reference_standards.md` owns repository-wide audit-depth rules, abstract-term handling, and documentary-phase contract semantics for this workstream
 - roadmap text keeps `docs/requirements.md` and `docs/reference_standards.md` as the only governing authority sources for contract validity, gate semantics, and audit-status interpretation
 - roadmap text treats `docs/plan.md`, `docs/roadmap.md`, `docs/acceptance_matrix.md`, and `docs/traceability_map.md` as subordinate execution or operationalization surfaces rather than replacement authority
 - roadmap text keeps documentary-phase acceptance decidable from the current in-scope governing documents rather than from prospective future rewrites
@@ -52,6 +54,7 @@ Required outcomes:
 - the template notebook is current-state descriptive rather than future-state prescriptive
 - satisfying this roadmap item must not depend on direct edits to generated Python files
 - the documented outcome for this roadmap item is that the template can participate in the current `nbdev` export flow without introducing a broken `default_exp`, invalid export cell, or circular import by default
+- for implementation-phase auditing, when this deliverable is satisfied by canonical notebook-first work outside `src/`, `tests/`, or `artifacts/`, the audit-facing evidence path remains `artifacts/acceptance_gate_report.json`, which must record the checked canonical handler-template notebook path and the observed result
 
 ### RM-004 — Mark Variation Zones Without Forcing Commonization
 
@@ -83,6 +86,7 @@ Required outcomes:
 - the documented post-commit path is explicitly limited to those lightweight stages and explicitly excludes full provider dataset downloads, remote API calls, full NetCDF production runs, and full regression suites
 - the documented post-commit path is stated to remain practical for normal development by staying within that lightweight boundary
 - the documented verification coverage explicitly states that export or regeneration catches broken notebook export structure, `python -m py_compile` catches syntax errors in generated modules, and import smoke checks catch obvious import-time breakage in touched code paths
+- for implementation-phase auditing, when the canonical verification implementation lives in `.git/hooks/post-commit` or a subordinate helper outside `src/`, `tests/`, or `artifacts/`, the audit-facing evidence path remains `artifacts/acceptance_gate_report.json`, which must record the checked canonical hook target and the observed result of the required lightweight stages
 - roadmap text preserves the rule that this phase requires a documented sequence, not proof of heavyweight runtime execution
 
 ### RM-007 — Preserve Baseline Compatibility And Phase Guardrails
@@ -117,8 +121,8 @@ Required outcomes:
 ## Deliverable Evidence
 
 - roadmap-phase documentary evidence: `docs/requirements.md`, `docs/reference_standards.md`, `docs/plan.md`, `docs/roadmap.md`, and where scoped, aligned supporting-governance documents
-- later implementation evidence for the template deliverable: handler template notebook under `nbs/handlers/` and derived generated module under `marisco/handlers/`
-- later implementation evidence for verification deliverables: `.git/hooks/post-commit` and any subordinate helper script or run log that the hook invokes
+- later implementation evidence for the template deliverable: `artifacts/acceptance_gate_report.json`, which must name the checked canonical handler-template notebook path under `nbs/handlers/` and the observed result; any generated module under `marisco/handlers/` remains derived output rather than the audit-facing evidence surface
+- later implementation evidence for verification deliverables: `artifacts/acceptance_gate_report.json`, which must name the checked canonical `.git/hooks/post-commit` target and any subordinate helper target that was exercised, together with the observed result of the required lightweight stages
 
 ## Self-Check (Required)
 
@@ -128,5 +132,6 @@ Required outcomes:
 - [x] roadmap keeps `docs/acceptance_matrix.md` and `docs/traceability_map.md` subordinate operationalization documents
 - [x] roadmap keeps handler-template delivery notebook-first and avoids generated-file-only behavior changes
 - [x] roadmap states the full lightweight post-commit sequence and its heavyweight exclusions explicitly
+- [x] roadmap states artifact-backed implementation auditability through `artifacts/acceptance_gate_report.json` for notebook and hook deliverables whose canonical targets live outside `src/`, `tests/`, or `artifacts/`
 - [x] roadmap preserves the open template-filename decision by referring generically to a handler template notebook under `nbs/handlers/`
 - [x] roadmap does not require git commit operations
