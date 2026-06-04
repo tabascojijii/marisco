@@ -1,11 +1,11 @@
 {
-  "timestamp_utc": "2026-06-04T10:17:48Z",
+  "timestamp_utc": "2026-06-04T10:23:39Z",
   "phase": "PM_AUDIT",
-  "final_decision": "REJECT_TO_PM",
+  "final_decision": "AUDIT_PASS_ROADMAP",
   "final_owner": "PM",
-  "final_next_gate": "PM_REWORK",
-  "final_reason_code": "PM_IMPL_EVIDENCE_PATH_OUT_OF_SCOPE",
-  "auditor_decision": "REJECT_TO_PM",
+  "final_next_gate": "FLOW_ADVANCE",
+  "final_reason_code": "NONE",
+  "auditor_decision": "AUDIT_PASS_ROADMAP",
   "escalated_by_hook": false,
   "source_audit_status_file": "audit_status.json"
 }
