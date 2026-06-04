@@ -1,36 +1,62 @@
 {
-  "decision": "REJECT_TO_PM",
-  "reason_codes": [
-    "PM_IMPL_EVIDENCE_PATH_OUT_OF_SCOPE"
-  ],
+  "execution_id": "PM_AUDIT-20260604T101935Z-22e4a5",
+  "timestamp_utc": "2026-06-04T10:21:47Z",
+  "phase": "PM_AUDIT",
+  "decision": "AUDIT_PASS_ROADMAP",
+  "reason_codes": [],
   "owner": "PM",
-  "next_gate": "PM_REWORK",
+  "next_gate": "FLOW_ADVANCE",
   "checks": [
     {
-      "id": "REQ-DOCSET-PRESENCE",
-      "pass": true,
-      "evidence_path": "docs/acceptance_matrix.md,docs/traceability_map.md",
-      "metric_value": "present",
-      "threshold": "present"
-    },
-    {
       "id": "REQ-GRAN-CHECKS",
-      "pass": false,
-      "evidence_path": "docs/acceptance_matrix.md",
-      "metric_value": "8_out_of_scope_later_implementation_evidence_paths",
-      "threshold": "0_out_of_scope_later_implementation_evidence_paths"
+      "pass": true,
+      "evidence_path": "docs/requirements.md;docs/acceptance_matrix.md;docs/traceability_map.md",
+      "metric_value": "43_of_43_requirements_covered_in_matrix_and_traceability",
+      "threshold": "all_normative_requirements_covered"
     },
     {
-      "id": "REQ-ROADMAP-TRACE-ALIGNMENT",
+      "id": "REQ-GRAN-SUPPORTING-DOCS-ROLE",
       "pass": true,
-      "evidence_path": "docs/roadmap.md,docs/traceability_map.md",
-      "metric_value": "artifact_backed_evidence_stated",
-      "threshold": "artifact_backed_evidence_stated"
+      "evidence_path": "docs/reference_standards.md;docs/acceptance_matrix.md;docs/traceability_map.md",
+      "metric_value": "supporting_docs_present_and_subordinate",
+      "threshold": "required_supporting_docs_exist_and_do_not_replace_governing_authority"
+    },
+    {
+      "id": "REQ-GRAN-ROADMAP",
+      "pass": true,
+      "evidence_path": "docs/requirements.md;docs/plan.md;docs/roadmap.md",
+      "metric_value": "roadmap_items_directly_state_mapped_outcomes",
+      "threshold": "roadmap_sequences_work_without_becoming_sole_acceptance_authority"
+    },
+    {
+      "id": "REQ-GRAN-ROADMAP-AC-DIRECT",
+      "pass": true,
+      "evidence_path": "docs/requirements.md;docs/roadmap.md;docs/traceability_map.md",
+      "metric_value": "req_ac_mappings_use_direct_roadmap_outcomes",
+      "threshold": "every_req_ac_to_rm_mapping_is_semantically_exact"
+    },
+    {
+      "id": "REQ-CONTRACT-CLOSURE-EVIDENCE",
+      "pass": true,
+      "evidence_path": "AGENTS.md;docs/requirements.md;docs/reference_standards.md;docs/acceptance_matrix.md;docs/traceability_map.md",
+      "metric_value": "documentary_evidence_paths_stay_in_scope_and_agents_guidance_is_consulted_only",
+      "threshold": "no_repository_local_guidance_as_deciding_contract_evidence"
+    },
+    {
+      "id": "REQ-LOW-FRICTION-VALIDATION",
+      "pass": true,
+      "evidence_path": "docs/requirements.md;docs/plan.md;docs/roadmap.md",
+      "metric_value": "lightweight_boundary_and_exclusions_explicit",
+      "threshold": "post_commit_path_directly_states_allowed_stages_and_heavyweight_exclusions"
+    },
+    {
+      "id": "REQ-CHECK-COVERAGE",
+      "pass": true,
+      "evidence_path": "docs/requirements.md;docs/plan.md;docs/roadmap.md",
+      "metric_value": "stage_to_failure_class_coverage_explicit",
+      "threshold": "export_compile_import_smoke_coverage_directly_stated"
     }
   ],
-  "execution_id": "PM_AUDIT-20260604T101516Z-fbe093",
-  "timestamp_utc": "2026-06-04T10:16:10Z",
-  "phase": "PM_AUDIT",
   "report_alignment": {
     "audit_report_present": true,
     "audit_report_execution_id_present": true,
@@ -38,6 +64,6 @@
   },
   "validation_summary": {
     "schema_valid": true,
-    "failed_check_count": 1
+    "failed_check_count": 0
   }
 }
