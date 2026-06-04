@@ -1,52 +1,35 @@
 {
   "decision": "REJECT_TO_PM",
   "reason_codes": [
-    "PM_IMPL_EVIDENCE_PATH_OUT_OF_SCOPE",
-    "PM_MATRIX_EVIDENCE_PATH_INVALID",
-    "PM_TRACE_MAPPING_NOT_DIRECT",
-    "PM_ROADMAP_ACCEPTANCE_OUTCOME_INCOMPLETE"
+    "PM_IMPL_EVIDENCE_PATH_OUT_OF_SCOPE"
   ],
   "owner": "PM",
   "next_gate": "PM_REWORK",
   "checks": [
     {
-      "id": "REQ-GRAN-SUPPORTING-DOCS-ROLE",
+      "id": "REQ-DOCSET-PRESENCE",
       "pass": true,
-      "evidence_path": "docs/acceptance_matrix.md;docs/traceability_map.md",
-      "metric_value": "present_and_subordinate",
-      "threshold": "required_docs_exist_and_remain_subordinate"
-    },
-    {
-      "id": "REQ-POST-COMMIT-LIGHTWEIGHT-BOUNDARY",
-      "pass": true,
-      "evidence_path": "docs/roadmap.md",
-      "metric_value": "stages_and_exclusions_explicit",
-      "threshold": "explicit_lightweight_boundary"
-    },
-    {
-      "id": "REQ-CONTRACT-CLOSURE-EVIDENCE",
-      "pass": false,
-      "evidence_path": "docs/roadmap.md;docs/acceptance_matrix.md;docs/traceability_map.md",
-      "metric_value": "later_impl_evidence_points_outside_artifacts",
-      "threshold": "artifact_backed_in_scope_evidence_only"
+      "evidence_path": "docs/acceptance_matrix.md,docs/traceability_map.md",
+      "metric_value": "present",
+      "threshold": "present"
     },
     {
       "id": "REQ-GRAN-CHECKS",
       "pass": false,
       "evidence_path": "docs/acceptance_matrix.md",
-      "metric_value": "multiple_rows_use_out_of_scope_later_evidence",
-      "threshold": "every_row_uses_valid_in_scope_later_evidence"
+      "metric_value": "8_out_of_scope_later_implementation_evidence_paths",
+      "threshold": "0_out_of_scope_later_implementation_evidence_paths"
     },
     {
-      "id": "REQ-GRAN-ROADMAP-AC-DIRECT",
-      "pass": false,
-      "evidence_path": "docs/traceability_map.md;docs/roadmap.md",
-      "metric_value": "some_rm_mappings_do_not_directly_state_claimed_outcome",
-      "threshold": "every_mapped_rm_item_directly_states_outcome"
+      "id": "REQ-ROADMAP-TRACE-ALIGNMENT",
+      "pass": true,
+      "evidence_path": "docs/roadmap.md,docs/traceability_map.md",
+      "metric_value": "artifact_backed_evidence_stated",
+      "threshold": "artifact_backed_evidence_stated"
     }
   ],
-  "execution_id": "PM_AUDIT-20260604T100908Z-4d1c78",
-  "timestamp_utc": "2026-06-04T10:11:21Z",
+  "execution_id": "PM_AUDIT-20260604T101516Z-fbe093",
+  "timestamp_utc": "2026-06-04T10:16:10Z",
   "phase": "PM_AUDIT",
   "report_alignment": {
     "audit_report_present": true,
@@ -55,6 +38,6 @@
   },
   "validation_summary": {
     "schema_valid": true,
-    "failed_check_count": 3
+    "failed_check_count": 1
   }
 }
