@@ -10,6 +10,7 @@
 - audit_status.txt
 - audit_status.json
 - docs/audit_report.md
+- artifacts/acceptance_gate_report.json
 
 ## JSON Keys
 - decision
@@ -31,6 +32,9 @@
 - `checks[]` entries must use `REQ-...` ids.
 - `AUDIT_PASS_*` decisions cannot include failed checks.
 - `REJECT_*` decisions must include at least one reason code.
+- `artifacts/acceptance_gate_report.json` is the machine-readable audit artifact intended for durable evidence and automated acceptance-gate consumption.
+- `docs/audit_report.md` is the human-readable audit artifact intended for findings, open items, and remediation guidance.
+- When both artifacts include an execution identifier for the same audit run, the values must match.
 
 ## Phase Usage
 - During requirements-, plan-, and roadmap-phase auditing, this document is supplementary and must remain consistent with the scoped contract defined in `docs/reference_standards.md`.

@@ -203,6 +203,8 @@ The guidance below elaborates how the requirements above are applied in practice
   - broken notebook export structure
   - syntax errors in generated modules
   - obvious import-time breakage in touched code paths
+- For implementation-phase evidence, the machine-readable acceptance result must be recorded in `artifacts/acceptance_gate_report.json`, and the human-readable audit narrative must be recorded in `docs/audit_report.md`.
+- When both documents carry an `Execution-ID` or `execution_id` for the same audit run, those values must match.
 - For this workstream's documentary phases, a downstream plan or roadmap item may be cited for `REQ-CHECK-COVERAGE` only if that item directly states which required verification stage is intended to catch each of the three failure classes above.
 
 ### Recommended Minimum Post-Commit Check Set

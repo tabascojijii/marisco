@@ -162,6 +162,7 @@
 ## Required Markdown Blocks
 - `C:\dev\marisco3\marisco_clean\marisco_repo\docs\roadmap.md` must contain `## Self-Check (Required)`.
 - `C:\dev\marisco3\marisco_clean\marisco_repo\docs\audit_report.md` must contain `## Open-Items`.
+- `C:\dev\marisco3\marisco_clean\marisco_repo\docs\audit_report.md` should include an `Execution-ID: <id>` header when a machine-readable acceptance gate report is emitted for the same audit run.
 - `C:\dev\marisco3\marisco_clean\marisco_repo\docs\escalation_report.md` must contain:
   - `## Summary`
   - `## Required Human Actions`
@@ -182,12 +183,13 @@
 - If a trace cites multiple downstream items for one requirement, each cited item must still directly state the requirement fragment it is claimed to satisfy. Multiple partial citations must not be used to mask a missing explicit outcome in the mapped items themselves.
 - When downstream documents mention repository-local instruction files, those mentions must be framed as consulted guidance or implementation discipline only. They must not be written as blocking documentary-phase gate conditions, deciding evidence paths, or replacement authority.
 - When a phase-specific fixed documentation scope includes supporting governance documents such as `docs/acceptance_matrix.md` or `docs/traceability_map.md`, those documents may be audited for consistency and completeness, but they must still be interpreted as subordinate operationalization of the governing two-document contract rather than as replacement authority.
-- The following artifacts are part of the workflow evidence contract:
+- The following two documents are the primary audit evidence surfaces for machine-readable and human-readable audit outcomes:
+  - `C:\dev\marisco3\marisco_clean\marisco_repo\docs\audit_report.md`
   - `C:\dev\marisco3\marisco_clean\marisco_repo\artifacts\acceptance_gate_report.json`
-  - `C:\dev\marisco3\marisco_clean\marisco_repo\artifacts\md_json_completeness_report.json`
-  - `C:\dev\marisco3\marisco_clean\marisco_repo\artifacts\json_schema_validation_report.json`
-- When those artifacts exist as a set, their `execution_id` values must agree.
-- During implementation-phase auditing, missing required artifacts or mismatched `execution_id` values are contract failures, not soft warnings.
+- `docs/audit_report.md` is the human-readable audit record. It holds the narrative findings, evidence discussion, open items, and fix instructions.
+- `artifacts/acceptance_gate_report.json` is the machine-readable acceptance gate record. It holds the final decision, reason codes, checks, and machine-readable validation summary for one audit run.
+- When both documents carry an `execution_id`, the values must agree.
+- During implementation-phase auditing, a missing `artifacts/acceptance_gate_report.json`, an invalid acceptance gate report schema, or a mismatched shared `execution_id` is a contract failure, not a soft warning.
 
 ## Validation And Test Baseline
 - Implementation-phase auditing must include `pytest tests/` unless the requirements document explicitly defines a different local validation baseline.
