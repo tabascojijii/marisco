@@ -12,6 +12,8 @@ This plan defines the Architect response for the handler-template workstream und
 
 The plan is limited to designing how the workstream will satisfy that contract. It does not create an alternate gate model, it does not depend on prospective upstream rewrites for its own validity, and it does not promote supporting-governance documents or repository-local instruction files into co-equal authority.
 
+This revision assumes and reflects the repair order now made explicit in the governing contract: structural governance defects are closed in `docs/requirements.md` and `docs/reference_standards.md` first, then propagated into this plan and the subordinate supporting-governance documents in the same change set.
+
 The workstream deliverables remain:
 
 - an explicit handler template notebook under `nbs/handlers/`
@@ -29,13 +31,19 @@ This revision is structured to prevent the defect classes that previously made t
 
 The plan responds by:
 
+- consuming the repaired present-tense governing contract from `docs/requirements.md` and `docs/reference_standards.md` first, rather than trying to close contract gaps locally in plan prose
 - treating `docs/requirements.md` and `docs/reference_standards.md` as already-authoritative current-state inputs
 - keeping Architect-gate decidability inside `docs/requirements.md`, `docs/reference_standards.md`, and `docs/plan.md`
 - treating `docs/acceptance_matrix.md` and `docs/traceability_map.md` as required subordinate operationalization documents
 - keeping `AGENTS.md` as consulted local guidance only
-- expressing support-document alignment as consistency work rather than as a plan-validity prerequisite
+- treating `docs/audit_report.md` as informative audit input that can point to structural defects but cannot itself close those defects
+- expressing support-document alignment as same-change-set consistency work rather than as a plan-validity prerequisite or replacement authority source
 
 ## Design Principles
+
+### DP-0 — Repair Order Is Upstream First
+
+When a revision set addresses structural governance defects, the repair sequence is: governing contract first, then plan and roadmap alignment, then supporting-governance alignment. Downstream exactness must inherit repaired upstream semantics rather than substituting for them.
 
 ### DP-1 — Governing Authority Stays Upstream
 
@@ -128,6 +136,7 @@ Required outcomes:
 
 - the project-specific acceptance granularity defined in `docs/requirements.md` remains the upstream source for this workstream, and requirements-level detail remains complete enough to avoid contradictory or non-auditable documentary-phase acceptance
 - repository-wide audit-depth rules, abstract-term handling, and machine-readable documentary-phase audit-contract semantics remain owned by `docs/reference_standards.md`, while `docs/audit_contract.md` remains subordinate
+- any structural governance defect identified in `docs/audit_report.md` is closed by repaired text in `docs/requirements.md` or `docs/reference_standards.md` before downstream plan, roadmap, matrix, or trace text is used as evidence of closure
 - downstream traces preserve the project-specific granularity and contract-closure semantics already defined in `docs/requirements.md` and `docs/reference_standards.md`
 - downstream roadmap items that are cited for governance requirements must restate the mapped governance outcome in their own text rather than relying on generic boundary language or nearby roadmap context
 - every normative `REQ-...` identifier currently defined in `docs/requirements.md` is represented in `docs/acceptance_matrix.md`
@@ -142,6 +151,7 @@ Required outcomes:
 - neither supporting document introduces a new authority source, gate prerequisite, or substitute decision vocabulary
 - roadmap-phase documentary evidence paths remain inside the declared documentation scope
 - repository-local instruction files such as `AGENTS.md` may be consulted for authoring discipline but must not appear as deciding documentary evidence sources for contract closure in supporting-governance rows or traces
+- when `docs/acceptance_matrix.md` and `docs/traceability_map.md` are inside the active fixed audit scope, they are aligned in the same change set to the repaired governing contract and current downstream text, while remaining subordinate operationalization surfaces only
 
 This item is a consistency requirement for the change set, not an alternate Architect-gate algorithm. If a future audit narrows scope so that supporting documents are out of scope, plan validity still remains decidable from the governing contract plus this plan.
 
@@ -198,6 +208,14 @@ Required outcomes:
 
 ## Phase Breakdown
 
+### Phase 0 — Governing Contract Closure
+
+| Step | Action | Plan Item |
+|---|---|---|
+| G1 | close any structural governance defect in `docs/requirements.md` before relying on downstream mappings | PLAN-005 |
+| G2 | close any structural governance defect in `docs/reference_standards.md` before relying on downstream mappings | PLAN-005 |
+| G3 | treat `docs/audit_report.md` as informative input only and carry closure into authority-bearing text | PLAN-005 |
+
 ### Phase 1 — Template Design
 
 | Step | Action | Plan Item |
@@ -247,6 +265,7 @@ This plan does not:
 
 This revision closes the targeted structural risks by:
 
+- repairing governing-contract closure rules upstream before using downstream documents as consistency evidence
 - removing semantically invalid requirement-to-plan mappings
 - aligning support-document traces to the plan items that actually carry the required outcomes
 - keeping support-document completion from becoming a prerequisite for deciding plan validity

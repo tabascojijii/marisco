@@ -2,6 +2,7 @@
 
 Authority: `docs/requirements.md` is the normative source for all `REQ-...` identifiers listed here. This document traces those requirements through `docs/plan.md` and `docs/roadmap.md` while remaining subordinate to the governing two-document contract formed by `docs/requirements.md` and `docs/reference_standards.md`.
 Roadmap-phase evidence paths stay inside the fixed documentation scope for documentary auditing. Repository-local guidance such as `AGENTS.md` may inform execution discipline, but it is intentionally excluded from deciding evidence paths for contract closure.
+`docs/audit_report.md` may identify trace defects or evidence gaps, but trace closure must be readable from repaired authority-bearing text in `docs/requirements.md`, `docs/reference_standards.md`, `docs/plan.md`, and `docs/roadmap.md` rather than from the audit narrative alone.
 Every cited `PLAN-...` and `RM-...` item must itself state the mapped outcome directly. This map must not rely on cross-item inference, neighboring prose, or milestone summaries to repair an otherwise incomplete trace.
 This directness rule applies equally to `REQ-AC-...` identifiers; acceptance-criteria traces must point to downstream items that state the acceptance outcome itself directly.
 While `docs/requirements.md` keeps the final handler-template filename as an open decision, later implementation evidence for that deliverable must be traced generically as a handler template notebook under `nbs/handlers/` rather than as a pre-decided filename.
