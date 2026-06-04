@@ -1,55 +1,53 @@
 {
-  "execution_id": "PLAN_AUDIT-20260604T100435Z-3b5d85",
-  "timestamp_utc": "2026-06-04T10:05:56Z",
-  "phase": "PLAN_AUDIT",
-  "decision": "AUDIT_PASS_PLAN",
-  "reason_codes": [],
-  "owner": "Architect",
-  "next_gate": "FLOW_ADVANCE",
+  "decision": "REJECT_TO_PM",
+  "reason_codes": [
+    "PM_IMPL_EVIDENCE_PATH_OUT_OF_SCOPE",
+    "PM_MATRIX_EVIDENCE_PATH_INVALID",
+    "PM_TRACE_MAPPING_NOT_DIRECT",
+    "PM_ROADMAP_ACCEPTANCE_OUTCOME_INCOMPLETE"
+  ],
+  "owner": "PM",
+  "next_gate": "PM_REWORK",
   "checks": [
     {
-      "id": "REQ-GRAN-PLAN",
+      "id": "REQ-GRAN-SUPPORTING-DOCS-ROLE",
       "pass": true,
-      "evidence_path": "docs/plan.md:170-179",
-      "metric_value": "mapped_outcomes_direct_and_thresholds_not_redefined",
-      "threshold": "plan_subordinate_to_requirements"
+      "evidence_path": "docs/acceptance_matrix.md;docs/traceability_map.md",
+      "metric_value": "present_and_subordinate",
+      "threshold": "required_docs_exist_and_remain_subordinate"
     },
     {
-      "id": "REQ-GRAN-PLAN-AC-DIRECT",
+      "id": "REQ-POST-COMMIT-LIGHTWEIGHT-BOUNDARY",
       "pass": true,
-      "evidence_path": "docs/plan.md:83-157",
-      "metric_value": "acceptance_outcomes_stated_in_cited_plan_items",
-      "threshold": "direct_acceptance_outcome_required"
+      "evidence_path": "docs/roadmap.md",
+      "metric_value": "stages_and_exclusions_explicit",
+      "threshold": "explicit_lightweight_boundary"
     },
     {
-      "id": "REQ-CONTRACT-CLOSURE-PLAN",
-      "pass": true,
-      "evidence_path": "docs/plan.md:138-164",
-      "metric_value": "plan_validity_decidable_without_out_of_scope_prerequisites",
-      "threshold": "governing_contract_plus_plan_only"
+      "id": "REQ-CONTRACT-CLOSURE-EVIDENCE",
+      "pass": false,
+      "evidence_path": "docs/roadmap.md;docs/acceptance_matrix.md;docs/traceability_map.md",
+      "metric_value": "later_impl_evidence_points_outside_artifacts",
+      "threshold": "artifact_backed_in_scope_evidence_only"
     },
     {
-      "id": "REQ-LOW-FRICTION-VALIDATION",
-      "pass": true,
-      "evidence_path": "docs/plan.md:127-136",
-      "metric_value": "lightweight_only_and_external_network_full_dataset_excluded",
-      "threshold": "limited_to_required_lightweight_stages"
+      "id": "REQ-GRAN-CHECKS",
+      "pass": false,
+      "evidence_path": "docs/acceptance_matrix.md",
+      "metric_value": "multiple_rows_use_out_of_scope_later_evidence",
+      "threshold": "every_row_uses_valid_in_scope_later_evidence"
     },
     {
-      "id": "REQ-CHECK-COVERAGE",
-      "pass": true,
-      "evidence_path": "docs/plan.md:132-133",
-      "metric_value": "three_failure_classes_mapped_to_required_stages",
-      "threshold": "stage_to_failure_coverage_stated_directly"
-    },
-    {
-      "id": "REQ-CONTRACT-CLOSURE-PRESENT-STATE",
-      "pass": true,
-      "evidence_path": "docs/plan.md:13-15,35-41,173-175",
-      "metric_value": "present_tense_governing_contract_consumed",
-      "threshold": "no_dependency_on_future_rewrites"
+      "id": "REQ-GRAN-ROADMAP-AC-DIRECT",
+      "pass": false,
+      "evidence_path": "docs/traceability_map.md;docs/roadmap.md",
+      "metric_value": "some_rm_mappings_do_not_directly_state_claimed_outcome",
+      "threshold": "every_mapped_rm_item_directly_states_outcome"
     }
   ],
+  "execution_id": "PM_AUDIT-20260604T100908Z-4d1c78",
+  "timestamp_utc": "2026-06-04T10:11:21Z",
+  "phase": "PM_AUDIT",
   "report_alignment": {
     "audit_report_present": true,
     "audit_report_execution_id_present": true,
@@ -57,6 +55,6 @@
   },
   "validation_summary": {
     "schema_valid": true,
-    "failed_check_count": 0
+    "failed_check_count": 3
   }
 }
