@@ -1,16 +1,16 @@
 # Escalation Report
 
-- Timestamp (UTC): 2026-06-03T08:10:30Z
-- Phase: REQUIREMENTS_AUDIT
+- Timestamp (UTC): 2026-06-04T09:21:14Z
+- Phase: PM_CREATE
 - Final Decision: ESCALATION
-- Auditor Decision: ESCALATION
-- Reason-Code: REQ_CONTRACT_INVALID
+- Auditor Decision: NO_OP_COMMIT_BLOCKED
+- Reason-Code: PM_NO_OP_COMMIT_BLOCKED
 
 ## Summary
-- Workflow was escalated due to requirements-level inconsistency or unresolved loop risk.
-- Automatic downstream rework is paused pending principal/architect review.
+- PM_CREATE produced no staged changes. Escalating.
+- The workflow blocked a role or audit commit because the expected staged changes were missing.
 
 ## Required Human Actions
-1. Clarify/repair requirements contract and acceptance criteria.
-2. Confirm routing policy and restart point.
-3. Resume workflow only after explicit decision.
+1. Confirm the responsible phase produced the expected files.
+2. Fix the no-op or missing-fileset condition before resuming automation.
+3. Resume only after reviewing the updated audit or role outputs.
