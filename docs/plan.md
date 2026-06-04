@@ -87,7 +87,7 @@ Specify the architecture of the first explicit handler template notebook.
 Required outcomes:
 
 - this workstream produces an explicit handler template notebook under `nbs/handlers/`
-- the plan intentionally leaves the final template notebook filename open until the governing `docs/requirements.md` open decision is resolved; downstream governance documents must therefore reference the deliverable generically as a handler template notebook under `nbs/handlers/` rather than pre-deciding a specific filename
+- this workstream requires an explicit handler template notebook under `nbs/handlers/`, and because the governing requirements do not name a canonical filename, downstream governance documents must reference that deliverable generically rather than inventing a filename requirement that is absent from `docs/requirements.md`
 - the template follows repository `nbdev` conventions
 - satisfying this workstream must not depend on direct edits to generated Python files; generated `.py` output remains derived evidence rather than the canonical behavior-change path
 - the template preserves the ordered Handler Template Baseline defined in `docs/requirements.md`
@@ -152,7 +152,10 @@ Required outcomes:
 - the project-specific acceptance granularity defined in `docs/requirements.md` remains the upstream source for this workstream, and requirements-level detail remains complete enough to avoid contradictory or non-auditable documentary-phase acceptance
 - repository-wide audit-depth rules, abstract-term handling, and machine-readable documentary-phase audit-contract semantics remain owned by `docs/reference_standards.md`, while `docs/audit_contract.md` remains subordinate
 - any structural governance defect identified in `docs/audit_report.md` is closed by repaired text in `docs/requirements.md` or `docs/reference_standards.md` before downstream plan, roadmap, matrix, or trace text is used as evidence of closure
+- if `docs/plan.md` is cited for a requirement, the cited plan item directly states the mapped requirement fragment in its own text rather than relying on neighboring prose, design-principle sections, or support-document summaries
+- if `docs/plan.md` is cited for a `REQ-AC-...` identifier, the cited plan item directly states the acceptance outcome itself rather than only a related deliverable class, target path, prerequisite design constraint, or surrounding narrative
 - downstream traces preserve the project-specific granularity and contract-closure semantics already defined in `docs/requirements.md` and `docs/reference_standards.md`
+- supporting-governance documents may index, operationalize, and cross-reference evidence, but they must not invent, extend, or forward missing requirement meaning for a cited `PLAN-...` or `RM-...` item
 - downstream roadmap items that are cited for governance requirements must restate the mapped governance outcome in their own text rather than relying on generic boundary language or nearby roadmap context
 - every normative `REQ-...` identifier currently defined in `docs/requirements.md` is represented in `docs/acceptance_matrix.md`
 - for every normative `REQ-...` identifier currently defined in `docs/requirements.md`, `docs/acceptance_matrix.md` states acceptance layer, criterion, roadmap-phase documentary evidence path, later implementation evidence path or `not applicable`, roadmap threshold, and later implementation threshold or `not applicable`
@@ -226,7 +229,7 @@ Required outcomes:
 | PLAN-002 | `REQ-DIFFERENCE-VISIBILITY`, `REQ-PRESERVE-FLEXIBILITY`, `REQ-AVOID-PREMATURE-COMMONIZATION`, `REQ-AC-TEMPLATE-ZONES`, `REQ-AC-PRESERVE-FLEXIBILITY` |
 | PLAN-003 | `REQ-READABILITY`, `REQ-AC-READABILITY` |
 | PLAN-004 | `REQ-GRAN-HOOK`, `REQ-POST-COMMIT-AUTHORITY`, `REQ-POST-COMMIT-SEQUENCE`, `REQ-POST-COMMIT-LIGHTWEIGHT-BOUNDARY`, `REQ-LOW-FRICTION-VALIDATION`, `REQ-PYTHON-BASELINE`, `REQ-CHECK-EXPORT`, `REQ-CHECK-COMPILE`, `REQ-CHECK-COVERAGE`, `REQ-AC-POST-COMMIT-SEQUENCE`, `REQ-AC-POST-COMMIT-BOUNDARY` |
-| PLAN-005 | `REQ-GRAN-REQS-SCOPE`, `REQ-GRAN-REQS-COMPLETE`, `REQ-GRAN-STANDARDS`, `REQ-GRAN-PLAN-AC-DIRECT`, `REQ-GRAN-ROADMAP`, `REQ-GRAN-ROADMAP-AC-DIRECT`, `REQ-GRAN-CONTRACT-DECIDABLE`, `REQ-GRAN-CONTRACT-SUBORD`, `REQ-GRAN-SUPPORTING-DOCS-ROLE`, `REQ-GRAN-CHECKS`, `REQ-CONTRACT-CLOSURE-AUTHORITY`, `REQ-CONTRACT-CLOSURE-SUPPORT`, `REQ-CONTRACT-CLOSURE-EVIDENCE`, `REQ-CONTRACT-CLOSURE-DOWNSTREAM`, `REQ-CONTRACT-CLOSURE-SUPPORT-SEPARATION` |
+| PLAN-005 | `REQ-GRAN-REQS-SCOPE`, `REQ-GRAN-REQS-COMPLETE`, `REQ-GRAN-STANDARDS`, `REQ-GRAN-PLAN-AC-DIRECT`, `REQ-GRAN-ROADMAP`, `REQ-GRAN-ROADMAP-AC-DIRECT`, `REQ-GRAN-CONTRACT-DECIDABLE`, `REQ-GRAN-CONTRACT-SUBORD`, `REQ-GRAN-SUPPORTING-DOCS-ROLE`, `REQ-DIRECT-STATEMENT`, `REQ-SUPPORTING-DOC-NON-SURROGATE`, `REQ-GRAN-CHECKS`, `REQ-CONTRACT-CLOSURE-AUTHORITY`, `REQ-CONTRACT-CLOSURE-SUPPORT`, `REQ-CONTRACT-CLOSURE-EVIDENCE`, `REQ-CONTRACT-CLOSURE-DOWNSTREAM`, `REQ-CONTRACT-CLOSURE-SUPPORT-SEPARATION`, `REQ-AC-DIRECT-STATEMENT`, `REQ-AC-SUPPORTING-DOC-NON-SURROGATE` |
 | PLAN-006 | `REQ-GRAN-PLAN`, `REQ-CONTRACT-CLOSURE-PLAN`, `REQ-CONTRACT-CLOSURE-PRESENT-STATE`, `REQ-AVOID-PREMATURE-COMMONIZATION`, `REQ-AC-NO-REFACTOR` |
 
 ## Phase Breakdown

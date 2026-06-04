@@ -7,7 +7,7 @@ Every cited `PLAN-...` and `RM-...` item must itself state the mapped outcome di
 This directness rule applies equally to `REQ-AC-...` identifiers; acceptance-criteria traces must point to downstream items that state the acceptance outcome itself directly.
 A trace mapping is valid only when the cited `PLAN-*` or `RM-*` item states the mapped requirement fragment directly in its own text.
 This document is an index surface. It must not extend, reinterpret, or complete the meaning of a cited item through summary, paraphrase, neighboring context, or chained reference.
-While `docs/requirements.md` keeps the final handler-template filename as an open decision, later implementation evidence for that deliverable must be traced generically as a handler template notebook under `nbs/handlers/` rather than as a pre-decided filename.
+Because `docs/requirements.md` requires a handler template notebook under `nbs/handlers/` but does not name a canonical filename, later implementation evidence for that deliverable must be traced generically as a handler template notebook under `nbs/handlers/` rather than as a pre-decided filename.
 
 | Requirement ID | Source | Plan Item | Roadmap Item | Roadmap-Phase Evidence Path | Later Implementation Evidence Path |
 |---|---|---|---|---|---|
@@ -22,6 +22,8 @@ While `docs/requirements.md` keeps the final handler-template filename as an ope
 | REQ-GRAN-CONTRACT-DECIDABLE | `docs/requirements.md` § Granularity Allocation | PLAN-005 | RM-001 | `docs/requirements.md`, `docs/reference_standards.md`, `docs/roadmap.md` | `audit_status.json`, `audit_status.txt` |
 | REQ-GRAN-CONTRACT-SUBORD | `docs/requirements.md` § Granularity Allocation | PLAN-005 | RM-001 | `docs/requirements.md`, `docs/reference_standards.md`, `docs/roadmap.md` | not applicable |
 | REQ-GRAN-SUPPORTING-DOCS-ROLE | `docs/requirements.md` § Granularity Allocation | PLAN-005 | RM-001, RM-002 | `docs/requirements.md`, `docs/reference_standards.md`, `docs/acceptance_matrix.md`, `docs/traceability_map.md`, `docs/roadmap.md` | not applicable |
+| REQ-DIRECT-STATEMENT | `docs/requirements.md` § Granularity Allocation | PLAN-005 | RM-002 | `docs/requirements.md`, `docs/reference_standards.md`, `docs/plan.md`, `docs/roadmap.md`, `docs/traceability_map.md` | not applicable |
+| REQ-SUPPORTING-DOC-NON-SURROGATE | `docs/requirements.md` § Granularity Allocation | PLAN-005 | RM-002 | `docs/requirements.md`, `docs/reference_standards.md`, `docs/plan.md`, `docs/acceptance_matrix.md`, `docs/traceability_map.md`, `docs/roadmap.md` | not applicable |
 | REQ-GRAN-CHECKS | `docs/requirements.md` § Granularity Allocation | PLAN-005 | RM-002 | `docs/acceptance_matrix.md`, `docs/traceability_map.md`, `docs/roadmap.md` | not applicable |
 | REQ-CONTRACT-CLOSURE-AUTHORITY | `docs/requirements.md` § Governing Contract Closure Rules | PLAN-005 | RM-001 | `docs/requirements.md`, `docs/reference_standards.md`, `docs/roadmap.md` | `audit_status.json`, `audit_status.txt` |
 | REQ-CONTRACT-CLOSURE-SUPPORT | `docs/requirements.md` § Governing Contract Closure Rules | PLAN-005 | RM-001, RM-002 | `docs/requirements.md`, `docs/reference_standards.md`, `docs/acceptance_matrix.md`, `docs/traceability_map.md`, `docs/roadmap.md` | not applicable |
@@ -54,3 +56,5 @@ While `docs/requirements.md` keeps the final handler-template filename as an ope
 | REQ-AC-NO-REFACTOR | `docs/requirements.md` § Acceptance Criteria | PLAN-006 | RM-004, RM-005 | `docs/requirements.md`, `docs/plan.md`, `docs/roadmap.md`, `docs/acceptance_matrix.md`, `docs/traceability_map.md` | `artifacts/acceptance_gate_report.json` |
 | REQ-AC-PRESERVE-FLEXIBILITY | `docs/requirements.md` § Acceptance Criteria | PLAN-002 | RM-004 | `docs/requirements.md`, `docs/plan.md`, `docs/roadmap.md`, `docs/acceptance_matrix.md`, `docs/traceability_map.md` | `artifacts/acceptance_gate_report.json` |
 | REQ-AC-READABILITY | `docs/requirements.md` § Acceptance Criteria | PLAN-003 | RM-005 | `docs/requirements.md`, `docs/plan.md`, `docs/roadmap.md`, `docs/acceptance_matrix.md`, `docs/traceability_map.md` | `artifacts/acceptance_gate_report.json` |
+| REQ-AC-DIRECT-STATEMENT | `docs/requirements.md` § Acceptance Criteria | PLAN-005 | RM-002 | `docs/requirements.md`, `docs/reference_standards.md`, `docs/plan.md`, `docs/roadmap.md`, `docs/acceptance_matrix.md`, `docs/traceability_map.md` | not applicable |
+| REQ-AC-SUPPORTING-DOC-NON-SURROGATE | `docs/requirements.md` § Acceptance Criteria | PLAN-005 | RM-002 | `docs/requirements.md`, `docs/reference_standards.md`, `docs/plan.md`, `docs/acceptance_matrix.md`, `docs/traceability_map.md`, `docs/roadmap.md` | not applicable |

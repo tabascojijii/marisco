@@ -85,6 +85,7 @@
 
 ### REQ-NB-TEMPLATE
 - The template must be created as a notebook under `nbs/handlers/`.
+- For documentary phases of this workstream, the governing requirement is the existence of a handler template notebook under `nbs/handlers/`; no specific canonical filename is required unless this document is later revised to name one explicitly.
 - The template must follow the repository’s `nbdev` conventions, including `default_exp` and exported cells where appropriate.
 - The template must not require direct edits to generated Python files.
 
