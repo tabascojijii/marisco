@@ -1,159 +1,132 @@
 # Roadmap — Handler Template Workstream
 
 **Phase:** PM  
-**Date:** 2026-06-03  
+**Date:** 2026-06-04  
 **Governing Authority Sources:** `docs/requirements.md`, `docs/reference_standards.md`  
 **Plan Source:** `docs/plan.md`  
-**Consulted Local Guidance:** `AGENTS.md`
+**Repository-Local Guidance Consulted:** `AGENTS.md`
 
 ## Purpose
 
-This roadmap translates `docs/plan.md` into executable PM-phase work for the handler-template workstream without changing the governing meaning owned by `docs/requirements.md` and `docs/reference_standards.md`.
-
-This roadmap is subordinate to the governing two-document contract. It sequences execution, names documentary evidence paths, and defines self-checks, but it does not introduce an alternate gate algorithm, new authority source, or replacement decision vocabulary.
+This roadmap translates `docs/plan.md` into executable PM sequencing for the handler-template workstream without changing requirement meaning, gate semantics, or authority boundaries. `docs/requirements.md` and `docs/reference_standards.md` remain the governing contract. `AGENTS.md` is consulted guidance only.
 
 ## Execution Rules
 
-- The roadmap must keep roadmap-phase documentary evidence inside the declared documentation scope.
-- `AGENTS.md` is consulted guidance for authoring discipline and notebook-first behavior only; it is not a co-equal authority source and it is not a required evidence source for contract closure.
-- Supporting-governance updates may be executed in the same change set, but their completion does not redefine the governing authority boundary.
-- No roadmap item requires git commit operations.
+- Keep roadmap-phase evidence inside the fixed documentation scope.
+- Keep `docs/acceptance_matrix.md` and `docs/traceability_map.md` subordinate to the governing two-document contract.
+- Do not require repository-wide discovery to judge roadmap completeness.
+- Do not require git commit operations in this phase.
+- Preserve notebook-first execution and treat generated `.py` files as derived artifacts.
 
 ## Roadmap Items
 
-### RM-001 — Preserve Governing Contract Boundaries In Execution
+### RM-001 — Lock Governance Boundaries Before Delivery Detailing
 
 Required outcomes:
 
-- execution remains governed by `docs/requirements.md` and `docs/reference_standards.md`
-- project-specific acceptance granularity for this workstream remains defined by `docs/requirements.md`, and roadmap execution does not relocate that granularity into roadmap prose, supporting-governance documents, or hook implementation
-- roadmap execution assumes the governing two-document contract is already complete enough for scoped auditing and does not paper over contradictory, undefined, or missing requirement boundaries with local roadmap inference
-- repository-wide audit-depth rules, abstract-term handling, and documentary-phase semantic-exactness rules remain owned by `docs/reference_standards.md`
-- the machine-readable audit-status contract for requirements-, plan-, and roadmap-phase auditing remains decidable from `docs/requirements.md` and `docs/reference_standards.md` alone
-- no supporting-governance document, roadmap note, or consulted repository-local guidance becomes an extra authority source for deciding documentary-phase contract validity or audit-status semantics
-- `docs/roadmap.md` does not become the sole source of acceptance detail needed for roadmap-phase auditing
-- roadmap-phase documentary evidence paths stay inside `docs/requirements.md`, `docs/reference_standards.md`, `docs/plan.md`, `docs/roadmap.md`, `docs/acceptance_matrix.md`, and `docs/traceability_map.md` as applicable
-- supporting-governance documents remain subordinate operationalization surfaces and do not add new authority, new gate prerequisites, or replacement decision logic
-- supporting-governance alignment may be executed in the same change set, but roadmap-phase gate validity does not depend on proving supporting-document completion first unless those documents are explicitly inside the active fixed audit scope
-- roadmap execution is judged against the current in-scope governing documents and current `docs/plan.md`, not against hypothetical future rewrites
-- `docs/plan.md` remains subordinate to requirement thresholds and this roadmap does not reinterpret those thresholds
+- roadmap text keeps `docs/requirements.md` and `docs/reference_standards.md` as the only governing authority sources for contract validity, gate semantics, and audit-status interpretation
+- roadmap text treats `docs/plan.md`, `docs/roadmap.md`, `docs/acceptance_matrix.md`, and `docs/traceability_map.md` as subordinate execution or operationalization surfaces rather than replacement authority
+- roadmap text keeps documentary-phase acceptance decidable from the current in-scope governing documents rather than from prospective future rewrites
+- roadmap text preserves the rule that supporting-governance alignment may happen in the same change set without becoming prerequisite replacement authority
+- roadmap text preserves the rule that roadmap sequencing must not become the sole source of acceptance detail auditors need to judge this workstream
+- roadmap text preserves the rule that no roadmap item may rely on topic adjacency or neighboring prose to satisfy a traced requirement
 
-### RM-002 — Align Supporting Governance Documents To Exact Downstream Outcomes
+### RM-002 — Align Supporting Governance Documents To Direct-Mapping Rules
 
 Required outcomes:
 
-- `docs/traceability_map.md` traces every normative `REQ-...` identifier to `PLAN-...` and `RM-...` items whose text directly states the mapped outcome
-- `docs/traceability_map.md` keeps roadmap-phase evidence paths inside the fixed documentation scope
-- `docs/traceability_map.md` does not rely on milestone summaries, neighboring prose, or cross-item inference to make a mapping appear valid
-- `docs/traceability_map.md` treats `REQ-AC-...` identifiers as normative and maps them only to roadmap items that state the acceptance outcome itself directly
-- `docs/acceptance_matrix.md` contains one row for every normative `REQ-...` identifier currently defined in `docs/requirements.md`
-- each `docs/acceptance_matrix.md` row carries its own acceptance layer, criterion, roadmap-phase documentary evidence path, later implementation evidence path or `not applicable`, roadmap threshold, and later implementation threshold or `not applicable`
-- any roadmap item cited for matrix or traceability governance states the mapped completeness or directness outcome explicitly in that roadmap item itself
-- `docs/acceptance_matrix.md` remains a subordinate operationalization surface rather than a replacement authority source
-- neither supporting-governance document introduces a new gate prerequisite, new authority source, or substitute decision vocabulary
+- `docs/acceptance_matrix.md` remains the operational source for acceptance layer, criterion, documentary evidence path, later implementation evidence path, roadmap threshold, and later implementation threshold for every normative `REQ-...` identifier
+- each supporting-governance row or trace entry cited by this workstream must carry its own required fields rather than borrowing missing content from neighboring rows, defaults, or surrounding prose
+- `docs/traceability_map.md` traces every normative `REQ-...` identifier to plan and roadmap items whose own text directly states the mapped outcome
+- when a traced identifier is a `REQ-AC-...` requirement, the cited roadmap item directly states the acceptance outcome itself rather than only a related deliverable class, location, or preparatory step
+- repository-local instruction files such as `AGENTS.md` may be cited only as consulted guidance and must not appear as deciding evidence paths for contract closure
 
-### RM-003 — Deliver The Explicit Notebook Template Baseline
+### RM-003 — Deliver The Explicit Handler Template Notebook
 
 Required outcomes:
 
-- an explicit handler template notebook exists under `nbs/handlers/`
-- the template follows repository `nbdev` conventions, including `default_exp` and exported cells where appropriate
-- the template preserves the Handler Template Baseline in the required order: title and purpose, configuration and input source notes, `load_data`, transformation pipeline, metadata construction via `get_attrs` or equivalent metadata section, `encode`, verification or smoke-check cells, and notes marking provider-specific logic, reusable logic, and known pain points
-- the template is current-state descriptive rather than future-state prescriptive
-- the template is designed to export through the current `nbdev` flow and to remain importable after generation
-- the template avoids introducing a broken `default_exp`, invalid export cell, or circular import by default
+- an explicit handler template notebook is created under `nbs/handlers/`
+- the roadmap keeps the final template filename open until `docs/requirements.md` resolves that open decision, so roadmap and trace text refer generically to a handler template notebook under `nbs/handlers/`
+- the template notebook follows repository `nbdev` conventions, including `default_exp` and exported cells where appropriate
+- the template notebook preserves the ordered Handler Template Baseline defined in `docs/requirements.md`: title and purpose, configuration and input source notes, `load_data`, transformation pipeline, metadata construction via `get_attrs` or equivalent metadata section, `encode`, verification or smoke-check cells, and notes marking provider-specific logic, reusable logic, and known pain points
+- the template notebook is current-state descriptive rather than future-state prescriptive
+- satisfying this roadmap item must not depend on direct edits to generated Python files
+- the documented outcome for this roadmap item is that the template can participate in the current `nbdev` export flow without introducing a broken `default_exp`, invalid export cell, or circular import by default
 
-### RM-004 — Mark Variation Zones Without Forcing Refactor
-
-Required outcomes:
-
-- the template clearly distinguishes provider-specific logic, reusable callback-based logic, and likely future commonization candidates
-- each section that varies by provider is explicitly marked as provider-specific rather than as a mandatory refactoring target
-- the template preserves the project’s need to absorb imperfect external data
-- the template does not imply that all provider differences must be normalized away immediately
-- commonization discussion remains enabled without requiring immediate migration of existing handlers into a shared pipeline
-
-### RM-005 — Preserve Notebook-First Readability And Non-Refactor Guardrails
+### RM-004 — Mark Variation Zones Without Forcing Commonization
 
 Required outcomes:
 
-- template usage guidance explains how maintainers start a new handler notebook from the template
-- template usage guidance keeps prose explanation adjacent to code across the baseline sections in literate-programming style
-- template usage guidance reinforces notebook-first authoring and forbids generated-file-only behavior changes
-- no roadmap step requires immediate refactoring of existing handlers
-- no roadmap step treats generated `.py` files as the canonical authoring surface
+- the template notebook clearly marks provider-specific logic, reusable callback-oriented logic, and likely future commonization candidates
+- every section expected to vary by provider is explicitly marked as provider-specific rather than as a mandatory refactoring target
+- roadmap guidance preserves the current need to absorb imperfect external data and does not require immediate normalization of provider differences
+- roadmap execution for this phase does not require refactoring existing handlers into a shared pipeline
+- commonization notes produced in this phase are discussion inputs only and do not become migration mandates
 
-### RM-006 — Define The Hook-Governed Lightweight Verification Sequence
+### RM-005 — Add Author Guidance That Preserves Literate Readability
+
+Required outcomes:
+
+- roadmap deliverables include usage guidance explaining how maintainers start a new handler notebook from the template
+- the guidance explains how to keep prose explanation adjacent to code across the baseline sections so the literate-programming style remains readable
+- the guidance reinforces notebook-first authoring and forbids generated-file-only behavior changes
+- roadmap execution in this phase does not require broad migration of existing handlers to the new template
+- the readability guidance is explicit enough to support `REQ-AC-READABILITY` without requiring inference from surrounding roadmap prose
+
+### RM-006 — Define The Hook-Governed Lightweight Verification Path
 
 Required outcomes:
 
 - the documented post-commit verification flow for this workstream is the sequence invoked by `.git/hooks/post-commit`
-- the documented minimum sequence contains notebook export or equivalent regeneration, `python -m py_compile` on touched generated modules or relevant generated module set, and lightweight import smoke checks for affected modules
-- the documented post-commit path is limited to those lightweight stages and excludes full provider dataset downloads, remote API calls, full NetCDF production runs, and full regression suites
-- the documented post-commit path remains practical for normal development by staying limited to the lightweight stages above
-- the documented verification design states failure-stage coverage directly: export or regeneration catches broken notebook export structure, `python -m py_compile` catches syntax errors in generated modules, and import smoke checks catch obvious import-time breakage in touched code paths
-- the documented verification flow remains hook-governed even when helper scripts are used as subordinate implementation details
+- any helper script called by the hook is described as a subordinate implementation detail rather than an alternative workflow authority source
+- the documented minimum post-commit sequence explicitly contains notebook export or equivalent regeneration, `python -m py_compile` on touched generated modules or the relevant generated module set, and lightweight import smoke checks for affected modules
+- the documented post-commit path is explicitly limited to those lightweight stages and explicitly excludes full provider dataset downloads, remote API calls, full NetCDF production runs, and full regression suites
+- the documented post-commit path is stated to remain practical for normal development by staying within that lightweight boundary
+- the documented verification coverage explicitly states that export or regeneration catches broken notebook export structure, `python -m py_compile` catches syntax errors in generated modules, and import smoke checks catch obvious import-time breakage in touched code paths
+- roadmap text preserves the rule that this phase requires a documented sequence, not proof of heavyweight runtime execution
 
-### RM-007 — Preserve Python Baseline Compatibility
+### RM-007 — Preserve Baseline Compatibility And Phase Guardrails
 
 Required outcomes:
 
-- any verification step or supporting code introduced by this workstream targets Python `>=3.7`
-- roadmap execution does not assume a stricter Python baseline unless that baseline is changed by an upstream authority document
+- any verification helper or supporting code introduced by this workstream is specified to target Python `>=3.7`
+- roadmap execution preserves notebook-first authoring, derived generated files, and minimal-scope edits
+- roadmap execution does not add a phase-local PASS or REJECT algorithm beyond the governing contract
+- roadmap execution does not require git commit operations
 
 ## Execution Sequence
 
 ### Phase 1 — Governance Alignment
 
-1. confirm the roadmap text stays subordinate to `docs/requirements.md` and `docs/reference_standards.md`
-2. align `docs/traceability_map.md` so every `REQ-...` trace points only to `PLAN-...` and `RM-...` items that directly state the mapped outcome
-3. confirm supporting-governance evidence paths remain inside the documentation scope used for roadmap-phase auditing
+1. confirm roadmap wording stays subordinate to `docs/requirements.md` and `docs/reference_standards.md`
+2. align `docs/traceability_map.md` so every `RM-...` citation points to a roadmap item whose text directly states the mapped outcome
+3. leave supporting-governance documents operational and subordinate rather than authority-bearing
 
-### Phase 2 — Template Delivery Definition
+### Phase 2 — Template And Guidance Definition
 
-1. define the explicit template deliverable under `nbs/handlers/`
-2. capture the ordered Handler Template Baseline in roadmap terms
-3. capture `nbdev` exportability and importability expectations in roadmap terms
+1. define the explicit handler template notebook deliverable under `nbs/handlers/` without pre-deciding the filename
+2. define baseline sections, provider-variance markers, reusable zones, and commonization-candidate notes
+3. define author guidance that preserves literate readability and notebook-first authoring
 
-### Phase 3 — Authoring And Variation Guidance
+### Phase 3 — Verification Definition
 
-1. define how the template marks provider-specific, reusable, and future-commonization zones
-2. define notebook-first authoring guidance and literate readability expectations
-3. confirm that no step requires immediate refactoring of existing handlers
+1. define the hook-governed post-commit sequence with export or regeneration, compile, and import-smoke stages
+2. document heavyweight exclusions and low-friction expectations
+3. keep the Python baseline and no-git-operation guardrails explicit
 
-### Phase 4 — Verification Definition
+## Deliverable Evidence
 
-1. define the hook-governed post-commit sequence
-2. define the lightweight boundary and explicit exclusions
-3. define failure-stage coverage and Python compatibility expectations
-
-## Evidence Paths
-
-| Roadmap Item | Roadmap-Phase Evidence Path |
-|---|---|
-| RM-001 | `docs/requirements.md`, `docs/reference_standards.md`, `docs/plan.md`, `docs/roadmap.md` |
-| RM-002 | `docs/requirements.md`, `docs/plan.md`, `docs/roadmap.md`, `docs/traceability_map.md` |
-| RM-003 | `docs/requirements.md`, `docs/plan.md`, `docs/roadmap.md` |
-| RM-004 | `docs/requirements.md`, `docs/plan.md`, `docs/roadmap.md` |
-| RM-005 | `docs/requirements.md`, `docs/plan.md`, `docs/roadmap.md` |
-| RM-006 | `docs/requirements.md`, `docs/reference_standards.md`, `docs/plan.md`, `docs/roadmap.md` |
-| RM-007 | `docs/requirements.md`, `docs/plan.md`, `docs/roadmap.md` |
+- roadmap-phase documentary evidence: `docs/requirements.md`, `docs/reference_standards.md`, `docs/plan.md`, `docs/roadmap.md`, and where scoped, aligned supporting-governance documents
+- later implementation evidence for the template deliverable: handler template notebook under `nbs/handlers/` and derived generated module under `marisco/handlers/`
+- later implementation evidence for verification deliverables: `.git/hooks/post-commit` and any subordinate helper script or run log that the hook invokes
 
 ## Self-Check (Required)
 
-- [x] `docs/roadmap.md` is explicitly aligned with `docs/requirements.md` and does not tighten, relax, or replace requirement meanings or thresholds.
-- [x] `docs/roadmap.md` is explicitly aligned with `docs/reference_standards.md` and preserves the governing authority boundary, audit semantics, and required markdown-block expectations defined there.
-- [x] `docs/roadmap.md` is explicitly aligned with `docs/plan.md` and preserves plan intent without introducing alternate execution criteria or downstream semantic drift.
-- [x] `docs/roadmap.md` treats `docs/requirements.md` and `docs/reference_standards.md` as the governing authority sources and does not promote `AGENTS.md` into co-equal authority.
-- [x] Every `RM-...` item states its mapped outcome directly enough to support semantic-exact traceability from `docs/traceability_map.md`.
-- [x] The roadmap keeps roadmap-phase documentary evidence inside the declared documentation scope.
-- [x] The roadmap includes the explicit template deliverable, variation-zone guidance, readability guidance, lightweight post-commit sequence, and Python baseline compatibility required by `docs/requirements.md`.
-- [x] The roadmap states that no roadmap step requires git commit operations.
-
-## Non-Goals
-
-- This roadmap does not claim that the template notebook already exists.
-- This roadmap does not claim that `.git/hooks/post-commit` is already implemented.
-- This roadmap does not require immediate migration of existing handlers into a shared pipeline.
-- This roadmap does not authorize generated `.py` files as the canonical behavior-change surface.
-- This roadmap does not require git commit operations.
+- [x] roadmap text treats `docs/requirements.md` and `docs/reference_standards.md` as the only governing authority sources
+- [x] roadmap items restate mapped outcomes directly instead of relying on neighboring prose or milestone summaries
+- [x] roadmap preserves alignment with `docs/plan.md` without replacing plan or requirements semantics
+- [x] roadmap keeps `docs/acceptance_matrix.md` and `docs/traceability_map.md` subordinate operationalization documents
+- [x] roadmap keeps handler-template delivery notebook-first and avoids generated-file-only behavior changes
+- [x] roadmap states the full lightweight post-commit sequence and its heavyweight exclusions explicitly
+- [x] roadmap preserves the open template-filename decision by referring generically to a handler template notebook under `nbs/handlers/`
+- [x] roadmap does not require git commit operations
