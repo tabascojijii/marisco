@@ -1,37 +1,55 @@
 {
-  "decision": "REJECT_TO_ARCHITECT",
-  "reason_codes": [
-    "ARCH_IMPLEMENT_AUDIT_SCOPE_MISMATCH",
-    "IMPLEMENT_TESTS_DIR_MISSING"
-  ],
+  "execution_id": "PLAN_AUDIT-20260604T100435Z-3b5d85",
+  "timestamp_utc": "2026-06-04T10:05:56Z",
+  "phase": "PLAN_AUDIT",
+  "decision": "AUDIT_PASS_PLAN",
+  "reason_codes": [],
   "owner": "Architect",
-  "next_gate": "ARCHITECT_REWORK",
+  "next_gate": "FLOW_ADVANCE",
   "checks": [
     {
-      "id": "REQ-AC-TEMPLATE-EXISTS",
-      "pass": false,
-      "evidence_path": "docs/acceptance_matrix.md;docs/traceability_map.md",
-      "metric_value": "later_implementation_evidence_path_out_of_scope:nbs/handlers/",
-      "threshold": "implementation_evidence_path_auditable_within_active_scope"
+      "id": "REQ-GRAN-PLAN",
+      "pass": true,
+      "evidence_path": "docs/plan.md:170-179",
+      "metric_value": "mapped_outcomes_direct_and_thresholds_not_redefined",
+      "threshold": "plan_subordinate_to_requirements"
     },
     {
-      "id": "REQ-AC-POST-COMMIT-SEQUENCE",
-      "pass": false,
-      "evidence_path": "docs/acceptance_matrix.md;docs/traceability_map.md",
-      "metric_value": "later_implementation_evidence_path_out_of_scope:.git/hooks/post-commit",
-      "threshold": "implementation_evidence_path_auditable_within_active_scope"
+      "id": "REQ-GRAN-PLAN-AC-DIRECT",
+      "pass": true,
+      "evidence_path": "docs/plan.md:83-157",
+      "metric_value": "acceptance_outcomes_stated_in_cited_plan_items",
+      "threshold": "direct_acceptance_outcome_required"
+    },
+    {
+      "id": "REQ-CONTRACT-CLOSURE-PLAN",
+      "pass": true,
+      "evidence_path": "docs/plan.md:138-164",
+      "metric_value": "plan_validity_decidable_without_out_of_scope_prerequisites",
+      "threshold": "governing_contract_plus_plan_only"
+    },
+    {
+      "id": "REQ-LOW-FRICTION-VALIDATION",
+      "pass": true,
+      "evidence_path": "docs/plan.md:127-136",
+      "metric_value": "lightweight_only_and_external_network_full_dataset_excluded",
+      "threshold": "limited_to_required_lightweight_stages"
     },
     {
       "id": "REQ-CHECK-COVERAGE",
-      "pass": false,
-      "evidence_path": "tests/;pytest tests/",
-      "metric_value": "pytest_target_missing",
-      "threshold": "implementation_phase_executable_validation_runs"
+      "pass": true,
+      "evidence_path": "docs/plan.md:132-133",
+      "metric_value": "three_failure_classes_mapped_to_required_stages",
+      "threshold": "stage_to_failure_coverage_stated_directly"
+    },
+    {
+      "id": "REQ-CONTRACT-CLOSURE-PRESENT-STATE",
+      "pass": true,
+      "evidence_path": "docs/plan.md:13-15,35-41,173-175",
+      "metric_value": "present_tense_governing_contract_consumed",
+      "threshold": "no_dependency_on_future_rewrites"
     }
   ],
-  "execution_id": "IMPLEMENT_AUDIT-20260604T095339Z-18626d",
-  "timestamp_utc": "2026-06-04T09:55:09Z",
-  "phase": "IMPLEMENT_AUDIT",
   "report_alignment": {
     "audit_report_present": true,
     "audit_report_execution_id_present": true,
@@ -39,6 +57,6 @@
   },
   "validation_summary": {
     "schema_valid": true,
-    "failed_check_count": 3
+    "failed_check_count": 0
   }
 }
