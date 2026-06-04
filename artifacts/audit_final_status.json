@@ -1,11 +1,11 @@
 {
-  "timestamp_utc": "2026-06-04T13:56:38Z",
-  "phase": "IMPLEMENT_AUDIT",
-  "final_decision": "REJECT_TO_ARCHITECT",
+  "timestamp_utc": "2026-06-04T14:05:20Z",
+  "phase": "PLAN_AUDIT",
+  "final_decision": "AUDIT_PASS_PLAN",
   "final_owner": "Architect",
-  "final_next_gate": "ARCHITECT_REWORK",
-  "final_reason_code": "IMPLEMENT_TEMPLATE_BASELINE_EVIDENCE_MISSING",
-  "auditor_decision": "REJECT_TO_IMPLEMENT",
-  "escalated_by_hook": true,
+  "final_next_gate": "FLOW_ADVANCE",
+  "final_reason_code": "NONE",
+  "auditor_decision": "AUDIT_PASS_PLAN",
+  "escalated_by_hook": false,
   "source_audit_status_file": "audit_status.json"
 }
