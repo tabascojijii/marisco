@@ -1,67 +1,48 @@
 # Audit Report
 
-Execution-ID: PM_AUDIT-20260604T143204Z-29abf0
+Execution-ID: PM_AUDIT-20260604T143816Z-4e0806
 Phase: PM_AUDIT
 Decision: REJECT_TO_PM
 Next-Gate: PM_REWORK
 
 ## Summary
 
-Fixed-scope roadmap audit completed against `AGENTS.md`, `docs/requirements.md`, `docs/plan.md`, `docs/roadmap.md`, `docs/reference_standards.md`, `docs/acceptance_matrix.md`, and `docs/traceability_map.md`.
+固定スコープ監査を `AGENTS.md`、`docs/requirements.md`、`docs/plan.md`、`docs/roadmap.md`、`docs/reference_standards.md`、`docs/acceptance_matrix.md`、`docs/traceability_map.md` に対して完了した。
 
-The required docset exists, and all scoped files were read before judgment. The blocking defect is not document absence; it is semantic inexactness in roadmap-item citations carried by the supporting governance documents.
+必須 docset である `docs/acceptance_matrix.md` と `docs/traceability_map.md` は存在する。`docs/requirements.md` にある全 `REQ-...` は両文書に現れている。
 
-## Scope Result
-
-- `docs/acceptance_matrix.md` exists.
-- `docs/traceability_map.md` exists.
-- `docs/roadmap.md` contains the required `## Self-Check (Required)` block.
-- The roadmap remains subordinate at the framing level, but several supporting-governance citations overclaim what `RM-001` directly states.
+否決理由は文書欠落ではない。`docs/traceability_map.md` における `RM-001` 引用の一部が、`docs/roadmap.md` の `RM-001` 本文だけでは直接充足されない要求まで含んでおり、`docs/requirements.md` と `docs/reference_standards.md` の direct-mapping 規則に反している。
 
 ## Findings
 
 ### F-001
 
-`docs/traceability_map.md` cites `RM-001` for multiple requirements whose mapped outcomes are not directly stated in `RM-001`. This violates the direct-mapping rule in `docs/requirements.md`.
+`docs/traceability_map.md` の `RM-001` 引用に過剰マッピングが残っている。
 
-Evidence:
+根拠:
 
-- `REQ-GRAN-REQS-SCOPE` requires project-specific acceptance granularity to be defined in `docs/requirements.md` ([docs/requirements.md](C:/dev/marisco3/marisco_clean/marisco_repo/docs/requirements.md:36)).
-- `REQ-GRAN-STANDARDS` requires repository-wide audit-depth and abstract-term ownership to belong to `docs/reference_standards.md` ([docs/requirements.md](C:/dev/marisco3/marisco_clean/marisco_repo/docs/requirements.md:39)).
-- `REQ-GRAN-PLAN` requires semantically exact plan mappings and forbids threshold replacement ([docs/requirements.md](C:/dev/marisco3/marisco_clean/marisco_repo/docs/requirements.md:40)).
-- `docs/traceability_map.md` maps all of those requirements to `RM-001` ([docs/traceability_map.md](C:/dev/marisco3/marisco_clean/marisco_repo/docs/traceability_map.md:12), [docs/traceability_map.md](C:/dev/marisco3/marisco_clean/marisco_repo/docs/traceability_map.md:15), [docs/traceability_map.md](C:/dev/marisco3/marisco_clean/marisco_repo/docs/traceability_map.md:16)).
-- `RM-001` only states authority-boundary, evidence-scope, no-new-gate, and present-tense execution outcomes; it does not directly restate granularity ownership in requirements, standards ownership of abstract-term handling, or the requirement-to-plan semantic-exactness rule ([docs/roadmap.md](C:/dev/marisco3/marisco_clean/marisco_repo/docs/roadmap.md:29), [docs/roadmap.md](C:/dev/marisco3/marisco_clean/marisco_repo/docs/roadmap.md:35)).
+- `REQ-GRAN-REQS-COMPLETE` は、要求文書側で監査可能性を塞ぐ欠落を閉じることに加え、構造的欠陥修復時は upstream 修復を先に閉じることを求めるが、`RM-001` が直接述べているのは後者だけである。`docs/requirements.md:37` と `docs/traceability_map.md:13` に対し、`docs/roadmap.md:30` は要求全体を直接再記述していない。
+- `REQ-GRAN-CONTRACT-DECIDABLE` は、requirements-phase から roadmap-phase までの machine-readable audit-status contract が `docs/requirements.md` と `docs/reference_standards.md` だけから可判定であることを求めるが、`RM-001` は authority boundary と in-scope 決定性は述べる一方、machine-readable contract そのものの可判定性を直接述べていない。`docs/requirements.md:44`、`docs/traceability_map.md:20`、`docs/roadmap.md:32-39` を参照。
+- `REQ-GRAN-CONTRACT-SUBORD` は `docs/audit_contract.md` の subordinate 性を直接要件化しているが、`RM-001` には `docs/audit_contract.md` への直接言及がない。`docs/requirements.md:45`、`docs/traceability_map.md:21`、`docs/roadmap.md:29-39` を参照。
+- `REQ-CONTRACT-CLOSURE-PLAN` は Architect gate の可判定性を governing contract と `docs/plan.md` 自体から保つことを求めるが、`RM-001` が直接述べているのは roadmap completion の present-tense decidability であり、Architect gate の可判定性そのものではない。`docs/requirements.md:63`、`docs/traceability_map.md:27`、`docs/roadmap.md:33-39` を参照。
 
-Impact:
+影響:
 
-- `REQ-GRAN-ROADMAP` and `REQ-CONTRACT-CLOSURE-SUPPORT` are not satisfied inside the active roadmap audit scope because the cited roadmap item does not directly carry all claimed outcomes.
+- `docs/traceability_map.md` は `docs/reference_standards.md:115-121` および `docs/reference_standards.md:185-186` の semantic-exactness 規則を満たしていない。
 
 ### F-002
 
-`docs/acceptance_matrix.md` and `docs/traceability_map.md` are not in same-change-set semantic alignment. The matrix says roadmap citations are semantically exact, but the trace map still contains inexact `RM-001` citations.
+`docs/acceptance_matrix.md` と `docs/traceability_map.md` の supporting-governance 直結性主張が、上記の過剰マッピング解消前提のまま食い違っている。
 
-Evidence:
+根拠:
 
-- The matrix row for `REQ-GRAN-ROADMAP` requires roadmap mappings to remain semantically exact to roadmap items that directly state the required outcomes ([docs/acceptance_matrix.md](C:/dev/marisco3/marisco_clean/marisco_repo/docs/acceptance_matrix.md:19)).
-- The matrix row for `REQ-GRAN-CHECKS` requires every normative `REQ-...` row and cited downstream item to be directly satisfied by the cited text ([docs/acceptance_matrix.md](C:/dev/marisco3/marisco_clean/marisco_repo/docs/acceptance_matrix.md:24)).
-- The trace map still assigns `RM-001` to requirements whose specific mapped outcomes are absent from `RM-001` ([docs/traceability_map.md](C:/dev/marisco3/marisco_clean/marisco_repo/docs/traceability_map.md:12), [docs/traceability_map.md](C:/dev/marisco3/marisco_clean/marisco_repo/docs/traceability_map.md:15), [docs/traceability_map.md](C:/dev/marisco3/marisco_clean/marisco_repo/docs/traceability_map.md:16), [docs/traceability_map.md](C:/dev/marisco3/marisco_clean/marisco_repo/docs/traceability_map.md:21)).
+- `docs/acceptance_matrix.md:19` は roadmap citation が semantically exact であることを閾値にしている。
+- `docs/acceptance_matrix.md:24` は downstream citation が referenced requirement を直接満たすことを要求している。
+- しかし `docs/traceability_map.md:13`、`docs/traceability_map.md:20-21`、`docs/traceability_map.md:27` は、`RM-001` 本文に直接ない要件断片まで同一 roadmap item に載せている。
 
-Impact:
+影響:
 
-- The required supporting docset exists, but it is not yet internally consistent enough to pass the fixed-scope roadmap audit.
-
-### F-003
-
-The roadmap self-check currently overstates compliance.
-
-Evidence:
-
-- `docs/roadmap.md` asserts that every `RM-...` item directly states the outcome it is meant to satisfy ([docs/roadmap.md](C:/dev/marisco3/marisco_clean/marisco_repo/docs/roadmap.md:141)).
-- The inexact `RM-001` citations listed in `docs/traceability_map.md` contradict that statement ([docs/traceability_map.md](C:/dev/marisco3/marisco_clean/marisco_repo/docs/traceability_map.md:12), [docs/traceability_map.md](C:/dev/marisco3/marisco_clean/marisco_repo/docs/traceability_map.md:15), [docs/traceability_map.md](C:/dev/marisco3/marisco_clean/marisco_repo/docs/traceability_map.md:16)).
-
-Impact:
-
-- The self-check cannot be accepted as a reliable closure signal until the roadmap/supporting-doc citations are repaired.
+- active scope に入っている supporting-governance 文書同士が same-change-set consistency に達しておらず、`REQ-GRAN-CHECKS` と `REQ-CONTRACT-CLOSURE-SUPPORT` を満たせない。
 
 ## 不足証跡
 
@@ -69,13 +50,11 @@ Impact:
 
 ## Decision Basis
 
-- `REJECT_TO_PM` is required because the governing two-document contract is auditable, but the PM-owned roadmap/supporting-governance operationalization remains semantically inexact within the active scope.
-- `PM_REWORK` is the correct next gate because the defects are repairable by revising `docs/roadmap.md`, `docs/acceptance_matrix.md`, and `docs/traceability_map.md` without changing upstream requirements meaning.
+`docs/requirements.md` と `docs/reference_standards.md` の governing contract 自体は監査可能であり、required docset も存在するため `ESCALATION` ではない。問題は PM 管轄の roadmap / supporting-governance 運用化に限定されているため、判定は `REJECT_TO_PM`、owner は `PM`、next gate は `PM_REWORK` とする。
 
 ## Open-Items
 
 | ID | Severity | Requirement-Ref | Reason-Code | Evidence | Fix-Instruction | Owner |
 |---|---|---|---|---|---|---|
-| OI-001 | Major | `REQ-GRAN-REQS-SCOPE`, `REQ-GRAN-REQS-COMPLETE`, `REQ-GRAN-STANDARDS`, `REQ-GRAN-PLAN`, `REQ-GRAN-CONTRACT-SUBORD` | `PM_TRACE_RM001_OVERMAPPED` | `docs/traceability_map.md:12-16,21` cites `RM-001`, but `docs/roadmap.md:29-35` does not directly state all of those mapped outcomes | Narrow the `RM-001` citations to only the outcomes it directly states, or add dedicated `RM-...` text that directly states each claimed outcome; then realign the trace rows | PM |
-| OI-002 | Major | `REQ-GRAN-ROADMAP`, `REQ-GRAN-CHECKS`, `REQ-CONTRACT-CLOSURE-SUPPORT` | `PM_SUPPORTING_DOC_DIRECTNESS_MISMATCH` | `docs/acceptance_matrix.md:19,24,26` claims semantically exact roadmap citation behavior, but `docs/traceability_map.md:12-16,21` still contains inexact roadmap mappings | Update `docs/acceptance_matrix.md` and `docs/traceability_map.md` in the same change set so every cited `RM-...` item directly states the requirement fragment it is claimed to satisfy | PM |
-| OI-003 | Minor | `REQ-GRAN-ROADMAP` | `PM_SELF_CHECK_FALSE_POSITIVE` | `docs/roadmap.md:141` claims all `RM-...` items directly state their satisfied outcomes, contradicted by the inexact trace rows | Revise the self-check after repairing the roadmap/supporting-doc mappings so the checked items are true in the current revision | PM |
+| OI-001 | Major | `REQ-GRAN-REQS-COMPLETE`, `REQ-GRAN-CONTRACT-DECIDABLE`, `REQ-GRAN-CONTRACT-SUBORD`, `REQ-CONTRACT-CLOSURE-PLAN` | `PM_TRACE_RM001_OVERMAPPED` | `docs/traceability_map.md:13`, `docs/traceability_map.md:20-21`, `docs/traceability_map.md:27`, `docs/roadmap.md:29-39` | `RM-001` をその本文が直接述べる要件断片にだけ絞って trace を狭めるか、欠けている要件断片を直接述べる新規または改訂 `RM-...` 項目を追加し、trace row を再対応させること | PM |
+| OI-002 | Major | `REQ-GRAN-CHECKS`, `REQ-CONTRACT-CLOSURE-SUPPORT`, `REQ-GRAN-ROADMAP` | `PM_SUPPORTING_DOC_DIRECTNESS_MISMATCH` | `docs/acceptance_matrix.md:19`, `docs/acceptance_matrix.md:24`, `docs/traceability_map.md:13`, `docs/traceability_map.md:20-21`, `docs/traceability_map.md:27` | `docs/acceptance_matrix.md` と `docs/traceability_map.md` を同一 change set で再整合し、各 `RM-...` citation が requirement fragment を直接満たす状態に直すこと | PM |
