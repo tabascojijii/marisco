@@ -95,7 +95,7 @@ def load_data(src_url: str,
 
     def load_and_merge(file_prefix: str) -> pd.DataFrame:
                 
-        dir = cache_path if use_cache else src_url
+        dir = cache_path() if use_cache else src_url
         file_smp_path = f'{dir}/{file_prefix}01.csv'
         file_meas_path = f'{dir}/{file_prefix}02.csv'
 
