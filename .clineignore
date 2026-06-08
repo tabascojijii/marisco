@@ -1,0 +1,59 @@
+# Keep Cline focused on implementation and test files.
+# This file is intentionally narrower than .gitignore:
+# it ignores areas that are expensive or low-signal for TDD work,
+# while keeping runtime fixtures and required lookup/template assets visible.
+
+# VCS metadata
+.git/
+
+# Python build and cache artifacts
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+.coverage.*
+htmlcov/
+build/
+dist/
+site/
+.eggs/
+*.egg-info/
+
+# Local environments
+.venv/
+venv/
+ENV/
+env/
+
+# Node / frontend artifacts
+node_modules/
+
+# IDE / OS noise
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Project-specific generated or low-value areas
+_data_stress/
+marisco.egg-info/
+nbs/.jupyter/
+nbs/files/pkl/
+nbs/files/exploded/
+install_configure_guide/README_files/
+
+# Notebook sources are useful for library development,
+# but usually not needed when focusing on tests against generated Python modules.
+nbs/api/
+nbs/cli/
+nbs/handlers/
+nbs/metadata/
+nbs/assets/
+
+# Optional candidates: leave commented unless you confirm
+# the current task does not need them.
+# _data/
+# install_configure_guide/
+# .github/
