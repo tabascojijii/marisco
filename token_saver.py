@@ -1,6 +1,7 @@
 import argparse
 import json
 from pathlib import Path, PurePosixPath, PureWindowsPath
+import re
 import sys
 
 
@@ -135,6 +136,25 @@ def module_paths_for(relative_module):
     return notebook_path, python_path
 
 
+def get_nbdev_default_exp(notebook_path: Path) -> str:
+    """Parse .ipynb JSON to find the nbdev '#| default_exp' directive."""
+    if not notebook_path.exists():
+        return ""
+    try:
+        with open(notebook_path, "r", encoding="utf-8") as f:
+            nb = json.load(f)
+        for cell in nb.get("cells", []):
+            if cell.get("cell_type") == "code":
+                source = cell.get("source", [])
+                source_str = "".join(source) if isinstance(source, list) else source
+                match = re.search(r"#\|\s*default_exp\s+([\w\.]+)", source_str)
+                if match:
+                    return match.group(1).strip()
+    except Exception:
+        pass
+    return ""
+
+
 def attempt_handlers_recovery(raw_module):
     lowered = str(raw_module).casefold()
     marker = "handlers"
@@ -178,6 +198,10 @@ def resolve_module_paths(module_spec):
     if len(direct_existing) == 1:
         relative_module = direct_existing[0]
         notebook_path, python_path = module_paths_for(relative_module)
+        default_exp = get_nbdev_default_exp(notebook_path)
+        if default_exp:
+            exp_path = default_exp.replace(".", "/")
+            python_path = PROJECT_ROOT / "marisco" / f"{exp_path}.py"
         return notebook_path, python_path, relative_module.as_posix(), notes, None
 
     if len(direct_existing) > 1:
@@ -201,6 +225,10 @@ def resolve_module_paths(module_spec):
         if len(matches) == 1:
             relative_module = PurePosixPath(matches[0].as_posix())
             notebook_path, python_path = module_paths_for(relative_module)
+            default_exp = get_nbdev_default_exp(notebook_path)
+            if default_exp:
+                exp_path = default_exp.replace(".", "/")
+                python_path = PROJECT_ROOT / "marisco" / f"{exp_path}.py"
             notes.append(
                 "Resolved bare module name to `%s` by unique filename match." % relative_module.as_posix()
             )
@@ -213,6 +241,10 @@ def resolve_module_paths(module_spec):
     if len(direct_candidates) == 1:
         relative_module = direct_candidates[0]
         notebook_path, python_path = module_paths_for(relative_module)
+        default_exp = get_nbdev_default_exp(notebook_path)
+        if default_exp:
+            exp_path = default_exp.replace(".", "/")
+            python_path = PROJECT_ROOT / "marisco" / f"{exp_path}.py"
         return notebook_path, python_path, relative_module.as_posix(), notes, None
 
     if len(direct_candidates) > 1:
@@ -222,6 +254,10 @@ def resolve_module_paths(module_spec):
 
     relative_module = bare_candidates[0]
     notebook_path, python_path = module_paths_for(relative_module)
+    default_exp = get_nbdev_default_exp(notebook_path)
+    if default_exp:
+        exp_path = default_exp.replace(".", "/")
+        python_path = PROJECT_ROOT / "marisco" / f"{exp_path}.py"
     return notebook_path, python_path, relative_module.as_posix(), notes, None
 
 
