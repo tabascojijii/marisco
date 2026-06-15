@@ -1,5 +1,13 @@
 # CLAUDE.md — marisco
 
+## AI startup trigger
+
+Before any exploration or autonomous work, read `AGENTS.md` first and follow it as the top-priority operating policy.
+
+- `AGENTS.md` is the permanent AI behavior baseline for this repository.
+- For any handler investigation, run `python token_saver.py handlers/<handler_name>` first and use that emitted Markdown as the primary context.
+- Do not ingest raw `.ipynb` notebook JSON wholesale.
+
 ## What this project is
 
 **marisco** is a data curation tool developed at the IAEA Marine Environmental Laboratories (Monaco) for [MARIS](https://maris.iaea.org), the IAEA's open-access marine radioactivity repository.
@@ -17,7 +25,7 @@
 
 ## Critical rule — reading notebooks
 
-**Never use `Read` on `.ipynb` files.** Use this tiered approach instead:
+**Never use `Read` on `.ipynb` files.** For handler work, prefer `python token_saver.py handlers/<handler_name>` first. If notebook inspection is still required, use this tiered approach instead:
 
 ```bash
 # 1. Locate a cell by symbol (Bash tool)
@@ -34,6 +42,22 @@ uv run python -c "from toolslm.xml import nb2xml; print(nb2xml('nbs/foo.ipynb', 
 ```
 
 Prefer scoped paths (`nbs/api`, `nbs/cli`) over full `nbs/` — handlers alone is 200KB, full tree is 387KB. Use full `nbs/` only when explicitly asked for a broad survey. See `nbs/CLAUDE.md` for full parameter reference.
+
+## token_saver protocol
+
+`token_saver.py` is the default notebook-safe context extraction tool for handler work.
+
+```bash
+python token_saver.py handlers/geotraces
+python token_saver.py handlers/helcom
+```
+
+Use it to combine:
+
+1. Notebook Markdown cells from `nbs/...`
+2. Clean exported Python from `marisco/...`
+
+This is the preferred context for AI-assisted development because it strips notebook outputs while preserving design intent and production logic.
 
 ## Critical rule — nbdev
 
@@ -81,6 +105,7 @@ maris_init   # downloads template, lookup tables, creates ~/.marisco/
 
 ## Go deeper
 
+- `AGENTS.md` — permanent AI operating rules and notebook-safety policy
 - `nbs/handlers/CLAUDE.md` — handler pattern, column naming, how to add a new handler
 - `nbs/api/CLAUDE.md` — core abstractions: Callback/Transformer, Remapper, configs, encoders
 - `nbs/CLAUDE.md` — nbdev workflow, editing and building
