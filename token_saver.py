@@ -2,6 +2,7 @@ import argparse
 import json
 from pathlib import Path, PurePosixPath, PureWindowsPath
 import re
+import subprocess
 import sys
 
 
@@ -295,6 +296,26 @@ def parse_notebook(path):
     return json.loads(raw_text)
 
 
+def export_notebook_with_nbdev(notebook_path):
+    command = [
+        sys.executable,
+        "-c",
+        (
+            "import nbdev.cli, sys; "
+            "nbdev.cli.nb_export(sys.argv[1])"
+        ),
+        str(notebook_path),
+    ]
+    return subprocess.run(
+        command,
+        cwd=str(PROJECT_ROOT),
+        capture_output=True,
+        text=True,
+        encoding="utf-8",
+        errors="replace",
+    )
+
+
 def extract_notebook_markdown(notebook):
     cells = notebook.get("cells", [])
     markdown_cells = []
@@ -445,6 +466,18 @@ def main(argv=None):
 
     if notebook_path is not None:
         if notebook_path.exists():
+            export_result = export_notebook_with_nbdev(notebook_path)
+            if export_result.returncode != 0:
+                sys.stderr.write("nbdev export failed for %s\n" % notebook_path.as_posix())
+                if export_result.stdout.strip():
+                    sys.stderr.write(export_result.stdout)
+                    if not export_result.stdout.endswith("\n"):
+                        sys.stderr.write("\n")
+                if export_result.stderr.strip():
+                    sys.stderr.write(export_result.stderr)
+                    if not export_result.stderr.endswith("\n"):
+                        sys.stderr.write("\n")
+                return 1
             try:
                 notebook = parse_notebook(notebook_path)
                 notebook_text = extract_notebook_markdown(notebook)
