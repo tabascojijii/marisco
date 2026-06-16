@@ -202,3 +202,29 @@ maris_init   # downloads template, lookup tables, creates ~/.marisco/
 - `nbs/handlers/CLAUDE.md` — handler pattern, column naming, how to add a new handler
 - `nbs/api/CLAUDE.md` — core abstractions: Callback/Transformer, Remapper, configs, encoders
 - `nbs/CLAUDE.md` — nbdev workflow, editing and building
+
+## Strict Commit & TDD Orchestration Discipline For MARISCO
+
+### Core Principles
+- `nbs/` is the single source of truth (SSOT). Never hand-edit `marisco/*.py` or `_modidx.py`.
+- Do not make noisy fix-up commits on HEAD just to correct trial-and-error failures.
+- If a change touches logic already represented by existing callbacks, configs, encoders, or metadata helpers, prefer promoting or parameterizing the shared abstraction instead of creating a handler-local one-off implementation.
+
+### Autonomous TDD Runner Protocol
+When implementing features or modifications requested via specification files under `docs/`, use the in-memory orchestration loop rather than standard incremental manual commits.
+
+1. **Locate the Specification**: Confirm the target requirements file exists (e.g., `docs/features/target_spec.md`).
+2. **Execute the Loop**: Run the orchestrator from terminal:
+   ```bash
+   python tools/orchestrator/tdd_runner.py docs/features/target_spec.md
+   ```
+
+Execution Behavior:
+
+The runner automatically pipes the internal Architect/Implementer logs.
+
+It captures pytest and compileall stderr outputs directly into the next prompt context on failure (Red).
+
+It will only fire a single, pure, high-fidelity commit once a complete GREEN state is achieved.
+
+The .githooks/pre-commit acts as a final deterministic gate to reject mismatched notebook exports or trailing output noise.
