@@ -4,6 +4,24 @@
 
 Read this file before doing any repository exploration. These rules are the permanent operating baseline for AI agents working in `marisco`.
 
+Before any `rg`, `find`, directory listing, or broad repository exploration, read `docs/architecture.md` in full and bind your work to its layer model first.
+
+Mandatory startup sequence:
+
+1. Read `AGENTS.md`.
+2. Read `CLAUDE.md`.
+3. Read `docs/architecture.md`.
+4. Only then inspect files within the specific layer named by the architecture document.
+
+If you are looking for "where something lives", do not begin with blind search. Use `docs/architecture.md` to identify the layer first:
+
+- ingestion / facade work -> `nbs/handlers/*` plus notebook-safe handler context via `token_saver.py`
+- transformation / parser work -> `nbs/api/callbacks.ipynb`, `nbs/api/utils.ipynb`, and related exported views
+- metadata overlay work -> `nbs/api/metadata.ipynb` and `marisco/metadata.py`
+- encoding / projection work -> `nbs/api/encoders.ipynb`, `nbs/api/decoders.ipynb`, `nbs/api/netcdf2csv.ipynb`
+
+Blind repository-wide search before reading `docs/architecture.md` is a workflow violation because it breaks architectural orientation and encourages editing the wrong surface.
+
 ## Absolute notebook safety rules
 
 - Never `cat`, dump, or otherwise ingest a raw `.ipynb` file wholesale. Treat raw notebook JSON as a token hazard.
@@ -69,6 +87,8 @@ python -c "import nbdev.cli; nbdev.cli.nb_export('nbs/api/metadata.ipynb', lib_p
 - [See docs/development_knowledge_base.md for full architectural context](docs/development_knowledge_base.md)
 
 ## Architecture index
+
+`docs/architecture.md` is the architecture sourcebook for repository orientation. Treat the summary below as a quick index, not a substitute for reading that file before exploration.
 
 ### Macro flow
 

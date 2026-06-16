@@ -5,8 +5,22 @@
 Before any exploration or autonomous work, read `AGENTS.md` first and follow it as the top-priority operating policy.
 
 - `AGENTS.md` is the permanent AI behavior baseline for this repository.
+- Read `docs/architecture.md` in full before any broad search, path hunting, or file discovery commands.
 - For any handler investigation, run `python token_saver.py handlers/<handler_name>` first and use that emitted Markdown as the primary context.
 - Do not ingest raw `.ipynb` notebook JSON wholesale.
+
+Mandatory orientation rule:
+
+1. Read `AGENTS.md`.
+2. Read this file.
+3. Read `docs/architecture.md`.
+4. Name the target layer you are working in before exploring:
+   - ingestion / facade
+   - transformation / parser
+   - metadata overlay
+   - encoding / projection
+
+If the task is about metadata retrieval, callback contracts, Zotero-shaped global attributes, INIS, Zenodo, or TITANICA, start from the metadata overlay layer in `docs/architecture.md` and then inspect `nbs/api/metadata.ipynb` through notebook-safe tooling. Do not begin with repository-wide search.
 
 ## What this project is
 
@@ -137,6 +151,8 @@ Each data provider has a **handler** (`nbs/handlers/*.ipynb`). Every handler exp
 4. Writes output via `NetCDFEncoder`
 
 ## Architecture index
+
+This section is a compact reminder only. The authoritative orientation document is [`docs/architecture.md`](docs/architecture.md), which must be read before repository exploration.
 
 ### Macro flow
 
