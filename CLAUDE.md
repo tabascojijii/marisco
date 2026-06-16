@@ -61,7 +61,51 @@ This is the preferred context for AI-assisted development because it strips note
 
 ## Critical rule — nbdev
 
-**Never edit `.py` files in `marisco/`. They are auto-generated from notebooks.** All code lives in `nbs/`. After editing a notebook, run `nbdev-export` to regenerate modules.
+**Never edit `.py` files in `marisco/`. They are auto-generated from notebooks.** All code lives in `nbs/`.
+
+### Windows nbdev safeguards
+
+On Windows, do not casually run:
+
+- `nbdev_export`
+- `python -m nbdev.cli export`
+
+These forms are banned for AI agents because Windows path resolution and local module shadowing can send execution through the wrong entry point. The required export pattern is:
+
+```bash
+python -c "import nbdev.cli; nbdev.cli.nb_export('nbs/api/metadata.ipynb', lib_path='marisco')"
+```
+
+Adapt the notebook path as needed, but preserve the `import nbdev.cli` form. Prefer this import-driven invocation even when exporting a different notebook.
+
+[See docs/development_knowledge_base.md for full architectural context](docs/development_knowledge_base.md)
+
+### Build / export command contract
+
+Use the import-first form below as the only valid Windows notebook export command:
+
+```bash
+python -c "import nbdev.cli; nbdev.cli.nb_export('nbs/api/metadata.ipynb', lib_path='marisco')"
+```
+
+Rules:
+
+- Replace only the notebook path; keep the `python -c "import nbdev.cli; nbdev.cli.nb_export(...)"` shape intact.
+- Do not substitute `nbdev_export` or `python -m nbdev.cli export`.
+- If a notebook change affects generated code or `_modidx.py`, fix the notebook first, then re-export with this command form.
+- [See docs/architecture.md for implementation details](docs/architecture.md)
+
+### Index integrity rule
+
+`_modidx.py` is part of the generated nbdev surface. Do not hand-edit generated `.py` files to resolve merge conflicts, unblock imports, or patch symbol exposure. That is a red-card workflow because it can desynchronize the notebook SSOT from the exported API and pollute the symbol index.
+
+If `_modidx.py` or exported modules look wrong:
+
+1. Fix the notebook first.
+2. Re-export through the import-driven nbdev path.
+3. Regenerate or overwrite the index through a controlled generation path if Windows file-locking interferes.
+
+[See docs/development_knowledge_base.md for full architectural context](docs/development_knowledge_base.md)
 
 Documentation follows the [`fastcore.docments`](https://fastcore.fast.ai/docments.html) convention: parameter documentation lives inline with the argument, not in a docstring body. nbdev picks these up automatically and renders them into the Quarto-based documentation site.
 
@@ -92,9 +136,40 @@ Each data provider has a **handler** (`nbs/handlers/*.ipynb`). Every handler exp
 3. Feeds transformed data to `GlobAttrsFeeder` for NetCDF global attributes (bbox, time range, Zotero bibliographic metadata)
 4. Writes output via `NetCDFEncoder`
 
+## Architecture index
+
+### Macro flow
+
+- Source data enters through handlers, is normalized by callback pipelines, enriched by metadata callbacks, encoded to MARIS NetCDF, then optionally decoded to OpenRefine-compatible CSV.
+- The main CLI path is `maris_init` -> `maris_to_nc` -> handler `encode()` -> `Transformer` -> `GlobAttrsFeeder` -> `NetCDFEncoder`.
+- NetCDF is the canonical artifact; CSV exists as a compatibility bridge for MARIS legacy ingestion.
+- [See docs/architecture.md for implementation details](docs/architecture.md)
+
+### Layer responsibilities
+
+- SSOT / generation layer: notebooks in `nbs/` are the source of truth, while `marisco/` and `_modidx.py` are generated projections.
+- Ingestion / transformation layer: handlers, `Transformer`, `PerGroupCB`, `Remapper`, and provider-specific callbacks normalize heterogeneous source data.
+- Metadata / projection layer: `GlobAttrsFeeder` assembles `obj.attrs`, `NetCDFEncoder` writes the canonical file, and decoder modules project back to CSV when needed.
+- [See docs/architecture.md for implementation details](docs/architecture.md)
+
+### Windows adaptation
+
+- Windows-safe nbdev work must use import-driven `nb_export(...)`, not shell entry points.
+- File-locking, `_modidx.py` regeneration issues, and TLS EOF behavior are expected environment constraints and should be handled structurally.
+- For live external API work on Windows, keep real retrieval semantics and add `curl.exe` fallback instead of silently degrading to mocks.
+- [See docs/architecture.md for implementation details](docs/architecture.md)
+
 ## CLI tools
 
 The CLI commands (`maris_init`, `maris_to_nc`, etc.) are defined in `nbs/cli/` and built with [`fastcore.script`](https://fastcore.fast.ai/script.html). The `@call_parse` decorator on a function generates the CLI entry point — arguments are inferred from the function signature. Entry points are declared in `settings.ini` under `console_scripts`.
+
+## Architecture and coding guidelines
+
+When implementing external API retrieval on Windows, assume Python `urlopen()` may fail with TLS EOF or connection reset even when the remote endpoint itself is healthy. For live retrieval code, build a system-native `curl.exe` fallback through `subprocess.run(...)` unless a stronger repository-standard transport layer already exists.
+
+Do not silently swap to mock data during live verification unless fallback is explicitly enabled in configuration. Live tests should prove real retrieval rather than accidentally validating only the parser against a local mock.
+
+[See docs/development_knowledge_base.md for full architectural context](docs/development_knowledge_base.md)
 
 ## Setup
 
@@ -106,6 +181,8 @@ maris_init   # downloads template, lookup tables, creates ~/.marisco/
 ## Go deeper
 
 - `AGENTS.md` — permanent AI operating rules and notebook-safety policy
+- `docs/architecture.md` — system architecture reference: macro flow, layer boundaries, SSOT model, and Windows safeguards
+- `docs/development_knowledge_base.md` — architecture safeguards, Windows/Anaconda failure modes, and nbdev recovery patterns
 - `nbs/handlers/CLAUDE.md` — handler pattern, column naming, how to add a new handler
 - `nbs/api/CLAUDE.md` — core abstractions: Callback/Transformer, Remapper, configs, encoders
 - `nbs/CLAUDE.md` — nbdev workflow, editing and building
