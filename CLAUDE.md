@@ -14,11 +14,16 @@ Mandatory orientation rule:
 1. Read `AGENTS.md`.
 2. Read this file.
 3. Read `docs/architecture.md`.
-4. Name the target layer you are working in before exploring:
+4. Read `nbs/reference/README.md` if the task type is not already obvious.
+5. Name the target layer you are working in before exploring:
    - ingestion / facade
    - transformation / parser
    - metadata overlay
    - encoding / projection
+   - config / registry
+   - utils / infrastructure
+
+Treat this as MARISCO-wide engineering policy, not as a stylistic preference: identify the target layer, preserve or intentionally change the public contract, and prefer the canonical NetCDF artifact over local implementation convenience. If a style rule seems handler-specific, confirm that scope with `nbs/reference/layer-application-guide.md` before applying it repository-wide.
 
 If the task is about metadata retrieval, callback contracts, Zotero-shaped global attributes, INIS, Zenodo, or TITANICA, start from the metadata overlay layer in `docs/architecture.md` and then inspect `nbs/api/metadata.ipynb` through notebook-safe tooling. Do not begin with repository-wide search.
 
@@ -175,6 +180,15 @@ This section is a compact reminder only. The authoritative orientation document 
 - For live external API work on Windows, keep real retrieval semantics and add `curl.exe` fallback instead of silently degrading to mocks.
 - [See docs/architecture.md for implementation details](docs/architecture.md)
 
+### Minimal completion check
+
+- Handler work: notebook-local usage evidence stays near the flow being changed.
+- Shared transformation work: normalized output or parser behavior is verified on the smallest natural surface for that layer; this may be notebook-local, but it need not mimic handler presentation.
+- Metadata work: `obj.attrs` changes are checked as an explicit contract, not inferred indirectly.
+- Encoding work: validate the canonical NetCDF surface, and validate CSV only when the compatibility bridge is part of the change.
+- Config work: validate lookup, schema, or naming integrity on the reference surface that owns the registry.
+- Utils work: validate the helper boundary or extracted responsibility on the smallest natural verification surface for that utility.
+
 ## CLI tools
 
 The CLI commands (`maris_init`, `maris_to_nc`, etc.) are defined in `nbs/cli/` and built with [`fastcore.script`](https://fastcore.fast.ai/script.html). The `@call_parse` decorator on a function generates the CLI entry point — arguments are inferred from the function signature. Entry points are declared in `settings.ini` under `console_scripts`.
@@ -199,6 +213,9 @@ maris_init   # downloads template, lookup tables, creates ~/.marisco/
 - `AGENTS.md` — permanent AI operating rules and notebook-safety policy
 - `docs/architecture.md` — system architecture reference: macro flow, layer boundaries, SSOT model, and Windows safeguards
 - `docs/development_knowledge_base.md` — architecture safeguards, Windows/Anaconda failure modes, and nbdev recovery patterns
+- `nbs/reference/README.md` — thin reference dispatch table for task-to-document routing
+- `nbs/reference/layer-application-guide.md` — repository-wide design kernel versus layer-specific expression rules
+- `nbs/reference/diataxis-memento.md` — artifact classifier for Tutorial / How-to / Reference / Explanation
 - `nbs/handlers/CLAUDE.md` — handler pattern, column naming, how to add a new handler
 - `nbs/api/CLAUDE.md` — core abstractions: Callback/Transformer, Remapper, configs, encoders
 - `nbs/CLAUDE.md` — nbdev workflow, editing and building

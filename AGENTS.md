@@ -4,6 +4,20 @@
 
 Read this file before doing any repository exploration. These rules are the permanent operating baseline for AI agents working in `marisco`.
 
+## Architecture-first execution protocol
+
+Before any non-trivial implementation, debugging, or test design, load the architecture map first and then the smallest relevant reference note.
+
+- Start with `nbs/reference/README.md` if you need help routing from task type to the correct reference note.
+- Always read `docs/architecture.md` before design work so you know the target layer, the SSOT projection model, and the canonical data flow.
+- Read `nbs/reference/layer-application-guide.md` when you need to decide whether a rule is repository-wide or specific to a notebook-driven layer.
+- For abstraction barriers, single responsibility, and "what over how", read `nbs/reference/sicp-design-memento.md`.
+- For handler notebook structure, callback presentation, and tests-as-usage-examples style, read `nbs/reference/handler-doc-guide.md`.
+- For callback factoring and when to extract a shared abstraction versus keep a cross-group callback, read `nbs/reference/callback-group-dispatch.md`.
+- For handler anatomy, completion criteria, and verification mindset, read `nbs/reference/guide.ipynb`.
+
+Do not start broad repository searching until these references are loaded. Use them to choose the target layer and likely file family first.
+
 Before any `rg`, `find`, directory listing, or broad repository exploration, read `docs/architecture.md` in full and bind your work to its layer model first.
 
 Mandatory startup sequence:
@@ -21,6 +35,42 @@ If you are looking for "where something lives", do not begin with blind search. 
 - encoding / projection work -> `nbs/api/encoders.ipynb`, `nbs/api/decoders.ipynb`, `nbs/api/netcdf2csv.ipynb`
 
 Blind repository-wide search before reading `docs/architecture.md` is a workflow violation because it breaks architectural orientation and encourages editing the wrong surface.
+
+## Mandatory pre-implementation declaration
+
+Before writing code, editing notebooks, designing tests, or proposing a refactor, emit one short paragraph that states:
+
+- the target layer you are changing: `Ingestion/Facade`, `Transformation/Parser`, `Metadata/Overlay`, `Encoding/Projection`, `Config/Registry`, or `Utils/Infrastructure`
+- the public contract you are preserving or intentionally changing
+- the exact references you loaded from `docs/architecture.md` and `nbs/reference/`
+- a 1-sentence architectural extraction or core constraint from the loaded reference that applies directly to this task
+- the concrete evidence you expect to produce before calling the task done, such as a notebook-local usage test, an export check, a projection verification, a registry integrity check, or a helper-level verification
+
+If you cannot name all five, stop and read the missing references before proceeding.
+
+## Thin-agent design pointers
+
+- `SICP Guardrails`: name the user-visible `what`, not the procedural `how`; preserve abstraction barriers; keep small interfaces that can hide representation changes. Express this as a contract, not a personal preference. See `nbs/reference/sicp-design-memento.md`.
+- `Defensive Limits`: keep robustness at boundary surfaces such as file/network ingress, serialization, and final public contract checks; avoid speculative recovery branches inside core transformations unless a loaded reference explicitly justifies them. Tie each defense to a boundary or contract. See `docs/architecture.md`, `docs/development_knowledge_base.md`, and `nbs/reference/callback-group-dispatch.md`.
+- `Repository-wide kernel`: apply abstraction barriers, small public surfaces, explicit contracts, and boundary-scoped defenses across all layers. See `nbs/reference/layer-application-guide.md`.
+- `Literate Programming`: treat handler-style notebook narration, callback-near-evidence layout, and tests-as-usage-examples as strong rules for notebook-driven pipeline layers, not as a universal formatting mandate. See `nbs/reference/handler-doc-guide.md` and `nbs/reference/layer-application-guide.md`.
+- `Diataxis`: classify the artifact before writing it. Read `nbs/reference/diataxis-memento.md`, then route to the corresponding reference material so facts, procedures, and explanations do not bleed together.
+- Generated modules and `_modidx.py` are projections, not authoring surfaces. Boundary-heavy external retrieval logic should stay small, isolated, and contract-driven.
+
+## Minimal done criteria by layer
+
+- `Ingestion/Facade`: preserve or intentionally change the handler entry contract, keep source loading notebook-authored, and leave usage evidence near the handler flow when the notebook is the authoring surface.
+- `Transformation/Parser`: prove the normalized columns, group behavior, or parser boundary through the smallest natural evidence surface for that layer, which may be notebook-local usage cells or shared API-level verification.
+- `Metadata/Overlay`: verify the `obj.attrs` contract explicitly, including any Zotero-shaped or overlay-specific fields affected by the change.
+- `Encoding/Projection`: verify the canonical NetCDF projection or the compatibility CSV bridge, depending on which surface you changed.
+- `Config/Registry`: verify lookup, schema, naming, or reference-surface integrity without forcing handler notebook presentation rules onto a registry artifact.
+- `Utils/Infrastructure`: verify the helper boundary, call surface, or extracted responsibility on the smallest natural surface for that utility.
+
+## Scope rule for expression style
+
+- Repository-wide rules govern abstraction, contracts, SSOT discipline, and boundary handling.
+- Handler-style `How-to` narration, provider-facing prose, and tests-as-usage-examples are mandatory for notebook-driven pipeline layers, not for every config, utility, or projection artifact.
+- If unsure whether a style rule is global or layer-specific, read `nbs/reference/layer-application-guide.md` before proceeding.
 
 ## Absolute notebook safety rules
 
