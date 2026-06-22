@@ -1,0 +1,171 @@
+#!/usr/bin/env python3
+from __future__ import annotations
+
+import hashlib
+import os
+import subprocess
+import sys
+from pathlib import Path
+
+
+REASON_PREFIX = "[pre-commit]"
+GENERATED_ROOT_NAME = "marisco"
+NOTEBOOK_ROOT_NAME = "nbs"
+
+
+def eprint(message: str) -> None:
+    print(message, file=sys.stderr)
+
+
+def fail(code: str, message: str) -> int:
+    eprint(f"{REASON_PREFIX} {code}: {message}")
+    return 1
+
+
+def run(args: list[str], cwd: Path, *, capture: bool = False, check: bool = False) -> subprocess.CompletedProcess[str]:
+    return subprocess.run(args, cwd=str(cwd), text=True, capture_output=capture, check=check)
+
+
+def git_output(repo_root: Path, *args: str) -> str:
+    proc = run(["git", *args], repo_root, capture=True, check=True)
+    return proc.stdout
+
+
+def staged_paths(repo_root: Path) -> list[Path]:
+    raw = git_output(repo_root, "diff", "--cached", "--name-only", "--diff-filter=ACMR", "-z")
+    items = [item for item in raw.split("\0") if item]
+    return [Path(item) for item in items]
+
+
+def is_notebook(rel_path: Path) -> bool:
+    return len(rel_path.parts) >= 2 and rel_path.parts[0] == NOTEBOOK_ROOT_NAME and rel_path.suffix == ".ipynb"
+
+
+def is_generated_python(rel_path: Path) -> bool:
+    return len(rel_path.parts) >= 2 and rel_path.parts[0] == GENERATED_ROOT_NAME and rel_path.suffix == ".py"
+
+
+def file_digest(path: Path) -> str:
+    h = hashlib.sha256()
+    with path.open("rb") as fh:
+        for chunk in iter(lambda: fh.read(1024 * 1024), b""):
+            h.update(chunk)
+    return h.hexdigest()
+
+
+def snapshot_generated(repo_root: Path) -> dict[Path, str]:
+    generated_root = repo_root / GENERATED_ROOT_NAME
+    if not generated_root.exists():
+        return {}
+    snapshot: dict[Path, str] = {}
+    for path in generated_root.rglob("*.py"):
+        if path.is_file():
+            snapshot[path.relative_to(repo_root)] = file_digest(path)
+    return snapshot
+
+
+def changed_generated_paths(before: dict[Path, str], after: dict[Path, str]) -> list[Path]:
+    changed: list[Path] = []
+    for rel_path in sorted(set(before) | set(after)):
+        if before.get(rel_path) != after.get(rel_path):
+            changed.append(rel_path)
+    return changed
+
+
+def python_affecting_change(rel_path: Path) -> bool:
+    if not rel_path.parts:
+        return False
+    if rel_path.parts[0] in {NOTEBOOK_ROOT_NAME, GENERATED_ROOT_NAME, "tests"}:
+        return True
+    if rel_path.suffix in {".py", ".ipynb"}:
+        return True
+    if rel_path.name in {"pyproject.toml", "uv.lock"}:
+        return True
+    return False
+
+
+def stage_files(repo_root: Path, rel_paths: list[Path]) -> None:
+    if not rel_paths:
+        return
+    run(["git", "add", "--", *[str(p) for p in rel_paths]], repo_root, check=True)
+
+
+def strip_notebook_outputs(repo_root: Path, notebooks: list[Path]) -> int:
+    helper = repo_root / "tools" / "git_hooks" / "strip_notebook_outputs.py"
+    if not helper.exists():
+        return fail("HOOK_STRIPPER_MISSING", f"missing helper: {helper}")
+    proc = run([sys.executable, str(helper), *[str(p) for p in notebooks]], repo_root)
+    if proc.returncode != 0:
+        return fail("HOOK_NOTEBOOK_DIRTY", "failed to strip notebook outputs")
+    return 0
+
+
+def export_notebooks(repo_root: Path, notebooks: list[Path]) -> int:
+    export_code = "import nbdev.cli, sys; nbdev.cli.nb_export(sys.argv[1], lib_path='marisco')"
+    for notebook in notebooks:
+        proc = run([sys.executable, "-c", export_code, str(notebook)], repo_root)
+        if proc.returncode != 0:
+            return fail("HOOK_EXPORT_FAILED", f"nbdev export failed for {notebook}")
+    return 0
+
+
+def run_compileall(repo_root: Path) -> int:
+    proc = run([sys.executable, "-m", "compileall", GENERATED_ROOT_NAME], repo_root)
+    if proc.returncode != 0:
+        return fail("HOOK_COMPILE_FAILED", f"compileall failed for {GENERATED_ROOT_NAME}/")
+    return 0
+
+
+def run_pytest_if_present(repo_root: Path) -> int:
+    tests_dir = repo_root / "tests"
+    if not tests_dir.is_dir():
+        return 0
+    proc = run([sys.executable, "-m", "pytest", "-q"], repo_root)
+    if proc.returncode != 0:
+        return fail("HOOK_TEST_FAILED", "pytest -q failed")
+    return 0
+
+
+def main() -> int:
+    try:
+        repo_root = Path(git_output(Path.cwd(), "rev-parse", "--show-toplevel").strip()).resolve()
+    except subprocess.CalledProcessError:
+        return fail("HOOK_GIT_ROOT_FAILED", "could not resolve repository root")
+
+    os.chdir(repo_root)
+    staged = staged_paths(repo_root)
+    if not staged:
+        return 0
+
+    notebooks = [p for p in staged if is_notebook(p)]
+    generated = [p for p in staged if is_generated_python(p)]
+    python_touched = any(python_affecting_change(p) for p in staged)
+
+    if generated and not notebooks:
+        return fail("HOOK_GENERATED_ONLY", "generated files under marisco/ are staged without source notebooks under nbs/")
+
+    if notebooks:
+        rc = strip_notebook_outputs(repo_root, notebooks)
+        if rc != 0:
+            return rc
+        before = snapshot_generated(repo_root)
+        rc = export_notebooks(repo_root, notebooks)
+        if rc != 0:
+            return rc
+        after = snapshot_generated(repo_root)
+        generated_changed = changed_generated_paths(before, after)
+        stage_files(repo_root, notebooks)
+        stage_files(repo_root, generated_changed)
+
+    if python_touched:
+        rc = run_compileall(repo_root)
+        if rc != 0:
+            return rc
+        rc = run_pytest_if_present(repo_root)
+        if rc != 0:
+            return rc
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
