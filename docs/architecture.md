@@ -48,7 +48,7 @@ This gives MARISCO three useful properties at once: composability, inspectabilit
                     |------------------------------|
                     | CSV / XLSX / TXT / PDF / API |
                     | Zotero library               |
-                    | future INIS-style adapters   |
+                    | INIS API                     |
                     +--------------+---------------+
                                    |
                                    v
@@ -77,8 +77,8 @@ This gives MARISCO three useful properties at once: composability, inspectabilit
                     | GlobAttrsFeeder              |
                     | BboxCB / DepthRangeCB        |
                     | TimeRangeCB                  |
-                    | ZoteroCB / KeyValuePairCB    |
-                    | InisCB placeholder           |
+                    | ZoteroCB / InisCB            |
+                    | KeyValuePairCB               |
                     +--------------+---------------+
                                    |
                                    v
@@ -137,7 +137,8 @@ This layer is the architectural foundation, not just tooling.
 - `NC_GROUPS` maps logical groups to NetCDF group names.
 - `NC_DTYPES` defines the enum-backed categorical universe.
 - `CSV_VARS` and `CSV_DTYPES` define the legacy CSV projection surface.
-- `CONFIGS`, `cfg()`, `base_path()`, `lut_path()`, `cache_path()`, and `nc_tpl_path()` locate runtime resources in `~/.marisco/`.
+- `NC_GLOBAL_ATTRS` defines the allowed NetCDF global attribute names.
+- `lut_path()`, `lut_fname()`, `cache_path()`, `nc_tpl_path()`, and `get_time_units()` locate packaged resources and template semantics.
 
 This layer is what lets heterogeneous handlers converge on one stable encoding contract.
 
@@ -211,31 +212,24 @@ Current live metadata components:
 - `BboxCB` computes geospatial bounds from coordinates
 - `DepthRangeCB` computes vertical coverage
 - `TimeRangeCB` computes temporal coverage from encoded time
-- `ZoteroItem` retrieves bibliography from the MARIS Zotero group library
-- `ZoteroCB` injects `id`, `title`, `summary`, and `creator_name`
+- `ZoteroClient` retrieves bibliography from the MARIS Zotero group library
+- `ZoteroCB` injects `id`, `title`, `summary`, and `creator_name` from Zotero
+- `INISClient` retrieves bibliography from the INIS API
+- `InisCB` injects the same core fields and, when present, `references` and `metadata_link`
 - `KeyValuePairCB` injects static overlays such as `keywords` and `publisher_postprocess_logs`
+- `GlobAttrsFeeder` rejects attribute names not listed in `NC_GLOBAL_ATTRS`
 
 This layer is where technical hospitality becomes explicit: messy provenance and bibliographic state are normalized into a stable global attribute surface rather than leaking into downstream encoding code.
 
-#### Important current-truth note on INIS
+#### Important current-truth note on bibliographic sources
 
-The repository knowledge base documents a richer target architecture for INIS integration:
+The current exported metadata layer already supports more than one bibliographic source, but only part of the overall pipeline is source-neutral:
 
-- an ingestion facade such as `INISClient`
-- pure parser helpers such as `parse_inis_creator` and `parse_inis_url`
-- Zotero-shaped normalization of external records
-- Windows-resilient retrieval with `curl.exe` fallback and explicit `used_mock` semantics
+- `ZoteroCB` uses the Zotero item key as `id`.
+- `InisCB` uses the INIS record identifier as `id` and may also emit `references` and `metadata_link`.
+- Both callbacks normalize their output onto the same `GlobAttrsFeeder` surface: `id`, `title`, `summary`, and `creator_name`, with `creator_name` serialized as a JSON string.
 
-However, the current exported implementation truth is narrower:
-
-- `docs/development_knowledge_base.md` describes the intended pattern in detail
-- `nbs/api/metadata.ipynb`, `marisco/metadata.py`, and `marisco/_modidx.py` currently expose only a placeholder `InisCB`
-- no exported `INISClient`, `parse_inis_creator`, or `parse_inis_url` symbols were found in the scanned code/index surface
-
-So the correct architectural reading today is:
-
-- INIS is a documented and strongly specified extension direction
-- Zotero is still the active bibliographic facade in the live exported code
+This means the canonical NetCDF metadata contract is broader than "every dataset has a Zotero key", but it does not yet mean every downstream compatibility path is metadata-source-agnostic.
 
 ### 3.6 Encoding / Projection Layer
 
@@ -265,8 +259,10 @@ MARISCO's NetCDF artifact is canonical, but not the end of the institutional wor
 - `NetCDFDecoder` remaps NetCDF variables back into human-readable tables.
 - `netcdf2csv.decode()` applies additional compatibility callbacks for the MARIS master database path.
 - `ValidateEnumsCB` checks whether a file's enum mappings still match current MARIS lookup tables.
-- `AddZoteroArchiveLocationCB` injects the legacy `ref_id` bridge.
+- `AddZoteroArchiveLocationCB` injects the legacy `ref_id` bridge through a Zotero-specific archive lookup.
 - `SampleIDConversionCB` handles the distinction between provider IDs and MARISCO-generated sample IDs.
+
+The important asymmetry here is that NetCDF metadata accepts source-specific record identifiers, but the legacy CSV compatibility path still assumes a Zotero-resolvable record when it tries to populate `REF_ID`.
 
 This layer exists because MARISCO modernizes the curation pipeline without severing compatibility with the legacy OpenRefine and central database ingestion path.
 
@@ -284,7 +280,7 @@ The repository explicitly treats Windows behavior as an architectural concern, n
 The same applies to network retrieval design:
 
 - `AGENTS.md`, `CLAUDE.md`, and the knowledge base require `curl.exe` fallback for Windows TLS EOF or connection-reset scenarios when implementing external API access
-- this is currently a repository-level architectural rule and documented integration pattern, even though the present exported metadata layer does not yet include a live INIS client implementation
+- the current exported INIS retrieval path is already curl-based, while the broader repository rule still frames this as a boundary concern rather than a decoder or encoder concern
 
 ### AI-Driven Development Guardrails
 
@@ -318,4 +314,4 @@ At its strongest, MARISCO is a four-part machine:
 3. metadata overlay that makes outputs self-describing and citation-ready
 4. template-based NetCDF projection with a backward-compatibility bridge to legacy CSV ingestion
 
-The most important nuance from the current scan is that the repository already has a mature architectural language for future metadata adapters such as INIS, but the live exported code still centers the operational metadata contract on Zotero. Any future metadata work should therefore extend the existing Zotero-shaped `GlobAttrsFeeder` contract rather than inventing a parallel downstream path.
+The most important nuance from the current scan is that the canonical NetCDF metadata contract is already broader than Zotero alone: INIS-backed callbacks can emit the same core fields plus `references` / `metadata_link`. The remaining structural mismatch lives in the legacy CSV bridge, which still assumes a Zotero-oriented archive lookup for `REF_ID`.

@@ -61,7 +61,7 @@ If you cannot name all five, stop and read the missing references before proceed
 
 - `Ingestion/Facade`: preserve or intentionally change the handler entry contract, keep source loading notebook-authored, and leave usage evidence near the handler flow when the notebook is the authoring surface.
 - `Transformation/Parser`: prove the normalized columns, group behavior, or parser boundary through the smallest natural evidence surface for that layer, which may be notebook-local usage cells or shared API-level verification.
-- `Metadata/Overlay`: verify the `obj.attrs` contract explicitly, including any Zotero-shaped or overlay-specific fields affected by the change.
+- `Metadata/Overlay`: verify the `obj.attrs` contract explicitly, including any source-specific or overlay-specific fields affected by the change such as `id`, `references`, or `metadata_link`.
 - `Encoding/Projection`: verify the canonical NetCDF projection or the compatibility CSV bridge, depending on which surface you changed.
 - `Config/Registry`: verify lookup, schema, naming, or reference-surface integrity without forcing handler notebook presentation rules onto a registry artifact.
 - `Utils/Infrastructure`: verify the helper boundary, call surface, or extracted responsibility on the smallest natural surface for that utility.

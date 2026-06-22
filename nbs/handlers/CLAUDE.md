@@ -6,9 +6,10 @@ A handler is a notebook (`nbs/handlers/*.ipynb`) that encodes one provider's dat
 
 ```python
 # 1. Constants
-src_dir = '...'          # URL or path to raw provider data
-fname_out = '...'        # default output NetCDF filename
-zotero_key = 'XXXXXXXX' # 8-char Zotero record key for this dataset
+src_dir = '...'                               # URL or path to raw provider data
+fname_out = '...'                             # default output NetCDF filename
+metadata_cb = ZoteroCB('XXXXXXXX')            # common case
+# metadata_cb = InisCB('vq0ha-86k24')         # INIS-backed alternative
 
 # 2. Data loader — returns dict keyed by sample type group
 def load_data(...) -> Dict[str, pd.DataFrame]: ...
@@ -33,10 +34,10 @@ class ParseTimeCB(Callback):
     ...
 
 # 5. Global attributes builder
-def get_attrs(tfm, zotero_key, kw) -> dict:
+def get_attrs(tfm, metadata_cbs, kw) -> dict:
     return GlobAttrsFeeder(tfm.dfs, cbs=[
         BboxCB(), DepthRangeCB(), TimeRangeCB(),
-        ZoteroCB(zotero_key, cfg=cfg()),
+        *metadata_cbs,
         KeyValuePairCB('keywords', ', '.join(kw)),
         KeyValuePairCB('publisher_postprocess_logs', ', '.join(tfm.logs))
     ])()
@@ -48,10 +49,12 @@ def encode(fname_out, **kwargs):
     tfm()
     NetCDFEncoder(
         tfm.dfs, dest_fname=fname_out,
-        global_attrs=get_attrs(tfm, zotero_key, kw),
+        global_attrs=get_attrs(tfm, metadata_cbs=[metadata_cb], kw=kw),
         verbose=kwargs.get('verbose', False)
     ).encode()
 ```
+
+Many current handler notebooks still use Zotero-backed metadata, but the handler contract is "provide metadata callbacks that emit valid `obj.attrs`", not "every dataset must have a Zotero key". At the metadata layer, `id` is whatever record identifier the callback injects; the legacy CSV bridge is the piece that still carries a Zotero-specific `REF_ID` enrichment step.
 
 ## MARIS column naming convention
 
@@ -106,7 +109,7 @@ get_unique_across_dfs(dfs, col_name='NUCLIDE', as_df=True)
 Also inspect the target MARIS LUT to understand what names and IDs are available:
 
 ```python
-pd.read_excel(nuc_lut_path())   # or species_lut_path(), sediments_lut_path(), …
+pd.read_excel(lut_fname('NUCLIDE'))   # or lut_fname('SPECIES'), lut_fname('SED_TYPE'), …
 ```
 
 ### Step 2 — Match
@@ -116,7 +119,7 @@ Instantiate `Remapper` and run fuzzy matching (uses `jellyfish` under the hood) 
 ```python
 remapper = Remapper(
     provider_lut_df=df,              # provider's distinct nomenclature as DataFrame
-    maris_lut_fn=nuc_lut_path,      # path function → MARIS LUT Excel file
+    maris_lut_fn=lambda: lut_fname('NUCLIDE'),  # path function → MARIS LUT Excel file
     maris_col_id='nuclide_id',      # ID column in MARIS LUT
     maris_col_name='nc_name',       # name column in MARIS LUT
     provider_col_to_match='value',  # provider column to fuzzy-match against
@@ -159,7 +162,7 @@ Freeze the mapping into a `lut_*` factory lambda. Pass `overwrite=False` to use 
 #| exports
 lut_nuclides = lambda df: Remapper(
     provider_lut_df=df,
-    maris_lut_fn=nuc_lut_path,
+    maris_lut_fn=lambda: lut_fname('NUCLIDE'),
     maris_col_id='nuclide_id',
     maris_col_name='nc_name',
     provider_col_to_match='value',

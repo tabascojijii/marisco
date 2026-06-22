@@ -34,10 +34,11 @@ Key exports:
 - `NC_GROUPS` — sample type group names → NetCDF4 group names
 - `NC_VARS` — MARIS variable names → NetCDF variable names
 - `NC_DTYPES` — all enumeration type definitions (NUCLIDE, UNIT, SPECIES, etc.)
-- `cfg()` — reads `~/.marisco/configs.toml`
+- `CSV_VARS`, `CSV_DTYPES` — legacy CSV projection mappings
+- `NC_GLOBAL_ATTRS` — allowed NetCDF global attribute names
 - `get_lut(src_dir, fname, key, value)` — load a LUT Excel file → `{key: value}` dict
-- `*_lut_path()` — path helpers per LUT (e.g. `nuc_lut_path()`, `species_lut_path()`)
-- `cache_path()`, `base_path()` — helpers for `~/.marisco/`
+- `lut_path()`, `lut_fname(key)`, `cache_path()`, `nc_tpl_path()` — runtime resource helpers
+- `get_time_units()` — read the canonical NetCDF time-unit string from the template
 
 ## Metadata (`metadata.py`)
 
@@ -48,12 +49,13 @@ GlobAttrsFeeder(dfs, cbs=[
     BboxCB(),                           # geographical bounding box
     DepthRangeCB(),                     # min/max depth
     TimeRangeCB(),                      # time_coverage_start/end
-    ZoteroCB(zotero_key, cfg=cfg()),    # title, summary, creators from Zotero
+    ZoteroCB(zotero_key),               # common MARIS case
+    # or InisCB(inis_id),               # INIS-backed metadata
     KeyValuePairCB('keywords', '...'),  # arbitrary key-value pairs
 ])()
 ```
 
-Every MARIS dataset has a Zotero record. `zotero_key` is the 8-character alphanumeric key. Requires `ZOTERO_API_KEY` env var.
+`GlobAttrsFeeder` validates emitted keys against `NC_GLOBAL_ATTRS`. The shared core metadata fields are `id`, `title`, `summary`, and `creator_name`; `references` and `metadata_link` are also canonical global attributes when a callback provides them. `creator_name` is stored as a JSON string. Many current datasets still use a Zotero record, but the metadata callback contract is not limited to Zotero.
 
 ## Encoding (`encoders.py`)
 

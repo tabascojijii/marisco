@@ -16,17 +16,18 @@ The material below combines two viewpoints:
 
 ## 2. Human Learnings: Design and Domain Principles
 
-### 2.1 Mirror the Zotero Contract Instead of Inventing a Parallel Path
+### 2.1 Mirror the `GlobAttrsFeeder` Contract Instead of Inventing a Parallel Path
 
-The correct way to add a new metadata source to MARISCO is to conform that source to the existing `GlobAttrsFeeder` callback contract. The system already has a stable bibliographic path through `ZoteroItem` and `ZoteroCB`, and that path defines the real downstream contract.
+The correct way to add a new metadata source to MARISCO is to conform that source to the existing `GlobAttrsFeeder` callback contract. The real downstream contract is the global-attribute surface, not any single upstream provider.
 
 The practical implication is:
 
 - `id`, `title`, `summary`, and `creator_name` are the canonical core fields.
+- `references` and `metadata_link` are also canonical when the metadata source can provide them.
 - The output shape and types are more important than the shape of the upstream API.
 - `creator_name` is not a Python list in the final contract; it is a JSON string.
 
-This means INIS should be adapted into Zotero-compatible semantics instead of teaching the rest of the pipeline about INIS-specific structures.
+This means INIS should be adapted into the shared `obj.attrs` semantics instead of teaching the rest of the pipeline about INIS-specific payload structures.
 
 ### 2.2 Put a Defensive Parser Wall at the External API Boundary
 
@@ -40,11 +41,11 @@ InvenioRDM payloads are structurally unstable from the point of view of a downst
 
 The correct engineering response is not to trust the payload and not to let its irregularity leak into the rest of the codebase.
 
-The parser layer must therefore:
+The parser layer should therefore:
 
-- validate and normalize each creator entry independently
-- skip malformed records instead of crashing the callback
-- prefer canonical fields but include safe fallbacks
+- normalize multilingual title and description fields at the boundary
+- prefer canonical fields but include safe fallbacks for DOI and URL extraction
+- keep creator serialization stable for NetCDF storage
 - emit stable strings for all final attribute values
 
 This is technical hospitality: the boundary layer absorbs external ugliness so downstream code can remain simple.
@@ -95,9 +96,9 @@ Direct edits to generated modules create two kinds of risk:
 
 The `_modidx.py` index is not incidental metadata. It is a concrete signal that nbdev successfully discovered and indexed the exported API surface.
 
-When new symbols were added for INIS integration, the expected indexed entries included:
+When symbols are added for INIS integration, the expected indexed entries should match the actual exported API surface. In the current implementation that includes:
 
-- parser functions such as `parse_inis_creator` and `parse_inis_url`
+- retrieval helpers such as `fetch_inis` and `find_curl`
 - the facade `INISClient`
 - callback methods such as `InisCB.__call__`
 
@@ -153,25 +154,17 @@ The lesson is precise:
 - a failing `urlopen()` does not imply a failing API
 - transport fallback can be the correct fix, not a hack
 
-### 3.6 `curl.exe` via `subprocess.run` Is a Valid Defensive Network Fallback on Windows
+### 3.6 `curl.exe` via `subprocess.run` Is the Current INIS Retrieval Path on Windows
 
-The final retrieval strategy for live INIS validation used a layered approach:
-
-1. Try Python's `urlopen()`.
-2. If the local TLS stack fails, retry with system `curl.exe` through `subprocess.run(...)`.
-3. Only use mock payloads when configuration explicitly allows fallback.
+The current exported INIS retrieval path is `fetch_inis()`, which shells out to system `curl.exe` through `subprocess.run(...)`.
 
 This pattern has several advantages:
 
 - it decouples business logic from local TLS instability
 - it preserves real integration testing against the actual endpoint
-- it prevents silent degradation into mock behavior when the goal is live verification
+- it keeps network adaptation at the retrieval boundary rather than leaking it into encoders or decoders
 
-The key design rule established by this work is:
-
-- if `fallback_to_mock=False`, transport failures must not be hidden by a silent mock substitution
-
-That rule is what makes a live test meaningful.
+The broader repository rule about Python TLS failures and `curl.exe` fallback still applies, but richer retry or mock semantics should not be described as current exported behavior unless they are actually present in the client.
 
 ### 3.7 Test Design Must Prove Real Retrieval, Not Merely Local Parsing
 
@@ -181,16 +174,15 @@ A meaningful live integration test must prove all of the following:
 
 - multiple real record IDs are fetched
 - the parser tolerates structural variation across those records
-- the final callback output preserves the same type contract as Zotero-derived metadata
-- mock fallback was not used
+- the final callback output preserves the same type contract as other `GlobAttrsFeeder` metadata callbacks
+- optional fields such as `references` and `metadata_link` are well-typed when present
 
 The INIS live bulk validation therefore asserted:
 
 - the existence of the four canonical keys
 - strict `str` typing for injected values
 - JSON-array validity for `creator_name`
-- semantic plausibility of each creator entry
-- `client.used_mock is False`
+- semantic plausibility of the retrieved metadata payload
 
 This pattern should be reused whenever a new source is integrated behind an existing pipeline contract.
 

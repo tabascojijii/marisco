@@ -25,7 +25,7 @@ Mandatory orientation rule:
 
 Treat this as MARISCO-wide engineering policy, not as a stylistic preference: identify the target layer, preserve or intentionally change the public contract, and prefer the canonical NetCDF artifact over local implementation convenience. If a style rule seems handler-specific, confirm that scope with `nbs/reference/layer-application-guide.md` before applying it repository-wide.
 
-If the task is about metadata retrieval, callback contracts, Zotero-shaped global attributes, INIS, Zenodo, or TITANICA, start from the metadata overlay layer in `docs/architecture.md` and then inspect `nbs/api/metadata.ipynb` through notebook-safe tooling. Do not begin with repository-wide search.
+If the task is about metadata retrieval, callback contracts, NetCDF global attributes, INIS, Zenodo, or TITANICA, start from the metadata overlay layer in `docs/architecture.md` and then inspect `nbs/api/metadata.ipynb` through notebook-safe tooling. Do not begin with repository-wide search.
 
 ## What this project is
 
@@ -152,8 +152,10 @@ Each data provider has a **handler** (`nbs/handlers/*.ipynb`). Every handler exp
 
 1. Loads raw provider data → `Dict[str, pd.DataFrame]` (one per sample type group)
 2. Runs a `Transformer` with an ordered list of `Callback` objects that standardise the data
-3. Feeds transformed data to `GlobAttrsFeeder` for NetCDF global attributes (bbox, time range, Zotero bibliographic metadata)
+3. Feeds transformed data to `GlobAttrsFeeder` for NetCDF global attributes (bbox, time range, and source-specific bibliographic metadata such as Zotero or INIS)
 4. Writes output via `NetCDFEncoder`
+
+The shared metadata surface is `obj.attrs`: core fields such as `id`, `title`, `summary`, and `creator_name` may be populated by different callbacks, and `references` / `metadata_link` are also valid global attributes when provided by the source callback. The legacy CSV bridge still adds `REF_ID` through a Zotero-specific archive lookup.
 
 ## Architecture index
 
@@ -202,6 +204,8 @@ Do not silently swap to mock data during live verification unless fallback is ex
 [See docs/development_knowledge_base.md for full architectural context](docs/development_knowledge_base.md)
 
 ## Setup
+
+If a workflow uses Zotero-backed metadata:
 
 ```bash
 export ZOTERO_API_KEY=your_key_here
