@@ -1,5 +1,65 @@
 # Changelog
 
+## [1.5.0] - 2026-06-29
+
+### Added
+- `jois` handler: ingests four years (2021–2024) of JOIS seawater radionuclide measurements (I-129, U-236, U-238, U-236/U-238) from the Beaufort Sea (CCGS Louis St. Laurent expeditions)
+  - `load_data`: fetches ZIP archives from Zenodo, normalises column names, applies scale factors, and concatenates all years into a single `SEAWATER` DataFrame
+  - `norm_cols` / `extract_scales` / `apply_scales`: scale-factor helpers handling inconsistent `( x 10^N)` suffixes across years
+  - `RenameNucColsCB`: aligns `U238_ppb` and `U236_U238` column names to `{Nuclide}_{Unit}` pattern before melting
+  - `RenameColsCB`: maps provider CTD columns to MARIS standard names (`LAT`, `LON`, `SMP_DEPTH`, `TEMP`, `SAL`, etc.)
+  - `ParseDateTimeCB`: combines separate `Date` and `Time` columns into a single `TIME` column
+  - `MeltJOISCB`: reshapes wide nuclide columns to long format with `NUCLIDE`, `UNIT`, `VALUE`, `UNC`
+  - `ConvertU238CB`: converts U-238 from ppb to atoms/kg using Avogadro's number and U-238 molar mass
+  - `encode`: full pipeline entry point writing standardised data to NetCDF4
+
+## [1.4.3] - 2026-06-26
+
+### Added
+- `DataLoader`: loads the MARIS global dump CSV, filters by `ref_id`, and returns one DataFrame per sample type (`BIOTA`, `SEAWATER`, `SEDIMENT`, `SUSPENDED_MATTER`)
+- `CastStationToStringCB`: coerces the `STATION` column to VLEN string and fills missing values with empty string
+- `DropNAColumnsCB`: removes columns that are entirely `NaN` or all-zero (MARIS "Not Available" sentinel)
+- `AddSampleIDCB`: casts `SMP_ID` to `int` and `SMP_ID_PROVIDER` to variable-length string
+
+### Changed
+- `maris_legacy` handler fully migrated to the current callback API (`RenameColumnsCB`, `RemapCB`, `PerGroupCB`, `SanitizeLonLatCB`, `ParseTimeCB`, `EncodeTimeCB`)
+- Handler notebook restructured as a step-by-step documentation guide (column selection → type casting → NA dropping → DL remapping → time encoding → coordinate sanitization → NetCDF encoding)
+- MARIS Legacy handler status updated to ✅ Active in README
+
+## [1.4.2] - 2026-06-24
+
+### Fixed
+- `BboxCB`: correct Shapely `bounds` unpacking order (`lon_min, lat_min, lon_max, lat_max`); previously `lat_min`/`lon_max` were swapped, producing wrong bounding-box attributes in generated NetCDF files (reported by @tabascojijii in PR #42)
+
+## [1.4.1] - 2026-06-24
+
+### Changed
+- Improved "Write a new handler" how-to: getting-started guidance and column naming conventions
+- Fixed missing/mistyped nbdev directives
+- Removed leftover code and stale documentation
+- General README and how-to refinements
+
+## [1.4.0] - 2026-06-23
+
+  ### Added
+  - `fuzzy_merge`: brute-force Levenshtein (or custom) matching between provider and MARIS reference
+  DataFrames
+  - `fix_lut`: apply expert overrides on top of fuzzy matches, with a stderr warning for unknown
+  targets
+  - `lut_from` / `uniq_across_dfs`: build source LUTs from unique column values across group
+  DataFrames
+  - `make_lut` / `make_lut_from`: lazy factory functions that defer the full match-and-fix pipeline
+  until runtime; integrate directly with `RemapCB`
+
+  ### Changed
+  - HELCOM handler fully refactored to the new matching API (`make_lut`, `make_lut_from`, `RemapCB`)
+  - OSPAR, TEPCO, and MARIS Legacy handlers temporarily muted (`#| eval: false`) pending migration
+  to the new API
+
+  ### Removed
+  - `Remapper` class: replaced by the `fuzzy_merge` / `fix_lut` / `make_lut` / `make_lut_from`
+  workflow
+
 ## [1.3.0] - 2026-06-18
 
 ### Changed

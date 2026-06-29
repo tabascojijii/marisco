@@ -18,8 +18,8 @@ from .configs import get_lut, get_time_units, NC_GROUPS, SMP_TYPE_LUT
 
 # %% auto #0
 __all__ = ['Callback', 'PerGroupCB', 'run_cbs', 'Transformer', 'SanitizeLonLatCB', 'RemapCB', 'LowerStripNameCB',
-           'AddSampleTypeIdColumnCB', 'RenameColumnsCB', 'RemoveAllNAValuesCB', 'CompareDfsAndTfmCB', 'UniqueIndexCB',
-           'ParseTimeCB', 'EncodeTimeCB', 'DecodeTimeCB']
+           'AddSampleTypeIdColumnCB', 'RenameColumnsCB', 'RemoveAllNAValuesCB', 'MeltWideNuclidesCB', 'AddSampleIDCB',
+           'CompareDfsAndTfmCB', 'UniqueIndexCB', 'ParseTimeCB', 'EncodeTimeCB', 'DecodeTimeCB']
 
 # %% ../nbs/api/callbacks.ipynb #4e58c73c
 class Callback(): 
@@ -139,31 +139,6 @@ class RemapCB(PerGroupCB):
             spec = spec(dfs)
         return spec
 
-    def each_grp(self, grp, df, tfm):
-        lut = self._resolve_lut(tfm)
-        df[self.col_remap] = df[self.col_src].map(lut).fillna(self.default_val).astype(int)
-
-class RemapCB(PerGroupCB):
-    "Remap source values to MARIS standard identifiers using a lookup table."
-    def __init__(self,
-                 lut: dict|Callable,  # Lookup: dict, or callable(dfs)->dict
-                 col_remap: str,            # Destination column to create
-                 col_src: str,              # Source column with provider values
-                 default_val: int=0,        # Value assigned to unmapped source values
-                 grps: list[str]=None,      # Groups to process (None = all)
-                ):
-        store_attr()
-        grp_str = ', '.join(str(g) for g in grps) if grps else 'all'
-        self.__doc__ = f"Remap values from '{col_src}' to '{col_remap}' for groups: {grp_str}."
-
-    def _resolve_lut(self, tfm):
-        "Resolve the LUT: if a callable, call it with tfm's dfs to produce a dict."
-        spec = self.lut
-        if callable(spec):
-            dfs = tfm.dfs if not tfm.is_single_df else {'_': tfm.df}
-            spec = spec(dfs)
-        return spec
-
     def __call__(self, tfm):
         self._resolved_lut = self._resolve_lut(tfm)
         super().__call__(tfm)
@@ -233,6 +208,44 @@ class RemoveAllNAValuesCB(Callback):
                 inplace=True
             )
 
+# %% ../nbs/api/callbacks.ipynb #d7982397
+class MeltWideNuclidesCB(Callback):
+    "Reshape wide nuclide columns to long format using a named-dict spec."
+    def __init__(self,
+                 spec: list,           # List of dicts with keys: val, unc, nuclide, unit, lab
+                 grp:  str='SEAWATER', # Group in tfm.dfs to reshape
+                 ):
+        store_attr()
+
+    def __call__(self, tfm):
+        if self.grp not in tfm.dfs: return
+        df = tfm.dfs[self.grp]
+        frames = []
+        for s in self.spec:
+            sub = df.dropna(subset=[s['val']]).copy()
+            sub['NUCLIDE'] = s['nuclide']
+            sub['VALUE']   = sub[s['val']]
+            sub['UNC']     = sub[s['unc']]
+            sub['UNIT']    = s['unit']
+            sub['LAB']     = s['lab']
+            frames.append(sub)
+        if frames:
+            tfm.dfs[self.grp] = pd.concat(frames, ignore_index=True)
+
+# %% ../nbs/api/callbacks.ipynb #7bb09e18
+class AddSampleIDCB(PerGroupCB):
+    "Assign 1-based sequential SMP_ID; optionally cast a provider ID column to str for NetCDF VLEN compatibility."
+    def __init__(self,
+                 col_provider: str=None,  # Provider ID column to cast to str; None = skip
+                 ):
+        store_attr()
+
+    def each_grp(self, grp, df, tfm):
+        tfm.dfs[grp] = df.reset_index(drop=True)
+        tfm.dfs[grp]['SMP_ID'] = tfm.dfs[grp].index + 1
+        if self.col_provider and self.col_provider in tfm.dfs[grp].columns:
+            tfm.dfs[grp][self.col_provider] = tfm.dfs[grp][self.col_provider].astype(str).astype(object)
+
 # %% ../nbs/api/callbacks.ipynb #8cf07327
 class CompareDfsAndTfmCB(Callback):
     "Create a dataframe of removed data and track changes in row counts due to transformations."  # TODO: refactor - too long
@@ -292,15 +305,16 @@ class ParseTimeCB(PerGroupCB):
 class EncodeTimeCB(PerGroupCB):
     "Encode time as seconds since epoch."    
     def __init__(self, 
-                 col_time: str='TIME',
-                 fn_units: Callable=get_time_units # Function returning the time units
+                   col_time: str='TIME',  # Time column name
+                   verbose: bool=False,  # Print warning about missing time values
+                   fn_units: Callable=get_time_units # Function returning the time units
                  ): 
         store_attr()
         self.units = fn_units()
 
-    def each_grp(self, grp, df, tfm):
+    def each_grp(self, grp: str, df: pd.DataFrame, tfm):
         n_missing = df[self.col_time].isna().sum()
-        if n_missing: print(f"Warning: {n_missing} missing time value(s) in {grp}")
+        if self.verbose and n_missing: print(f"Warning: {n_missing} missing time value(s) in {grp}")
         tfm.dfs[grp] = df[df[self.col_time].notna()]
         tfm.dfs[grp][self.col_time] = tfm.dfs[grp][self.col_time].apply(lambda x: date2num(x, units=self.units))
 
