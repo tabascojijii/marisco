@@ -15,11 +15,14 @@ import pandas as pd
 from typing import List, Dict, Callable, Any, Optional, Union
 from collections import defaultdict
 from .configs import get_lut, get_time_units, NC_GROUPS, SMP_TYPE_LUT
+from pydantic import BaseModel, Field
 
 # %% auto #0
-__all__ = ['Callback', 'PerGroupCB', 'run_cbs', 'Transformer', 'SanitizeLonLatCB', 'RemapCB', 'LowerStripNameCB',
-           'AddSampleTypeIdColumnCB', 'RenameColumnsCB', 'RemoveAllNAValuesCB', 'MeltWideNuclidesCB', 'AddSampleIDCB',
-           'CompareDfsAndTfmCB', 'UniqueIndexCB', 'ParseTimeCB', 'EncodeTimeCB', 'DecodeTimeCB']
+__all__ = ['Callback', 'PerGroupCB', 'run_cbs', 'Transformer', 'SanitizeLonLatCB', 'RemapCB', 'SoftRemapCB', 'LowerStripNameCB',
+           'AddSampleTypeIdColumnCB', 'RenameColumnsCB', 'RenameColsCB', 'RemoveAllNAValuesCB', 'MeltWideNuclidesCB',
+           'SoftMeltWideNuclidesCB', 'AddSampleIDCB', 'CompareDfsAndTfmCB', 'UniqueIndexCB', 'ParseTimeCB',
+           'EncodeTimeCB', 'DecodeTimeCB', 'SoftParseDateTimeCB', 'SoftConvertUnitCB', 'SoftRelToAbsUncCB',
+           'SoftExtractUnitFromColCB', 'SoftShiftLonCB', 'SoftDMStoDecimalCB']
 
 # %% ../nbs/api/callbacks.ipynb #4e58c73c
 class Callback(): 
@@ -147,6 +150,30 @@ class RemapCB(PerGroupCB):
         df[self.col_remap] = (df[self.col_src]
             .map(self._resolved_lut).fillna(self.default_val).astype(int))
 
+# %% ../nbs/api/callbacks.ipynb #30153e7b
+class SoftRemapCB(PerGroupCB):
+    "Remap source tokens to MARIS IDs; lut=None/empty maps all tokens to default_val (Null-Object no-op)."
+    class Schema(BaseModel):
+        col_src:    str
+        col_remap:  str
+        lut:        dict[str, Any] = Field(default_factory=dict)
+        default_val: Any           = 0
+
+    def __init__(self,
+                 col_src:     str,
+                 col_remap:   str,
+                 lut:         dict=None,
+                 default_val: Any=0,
+                 grps: list[str]=None,
+                ):
+        self.cfg  = self.Schema(col_src=col_src, col_remap=col_remap,
+                                lut=lut or {}, default_val=default_val)
+        self.grps = [None] if not self.cfg.lut else grps
+
+    def each_grp(self, grp, df, tfm):
+        df[self.cfg.col_remap] = (df[self.cfg.col_src]
+            .map(self.cfg.lut).fillna(self.cfg.default_val).astype(int))
+
 # %% ../nbs/api/callbacks.ipynb #bd1917a0
 class LowerStripNameCB(PerGroupCB):
     "Convert values to lowercase and strip any trailing spaces."
@@ -186,6 +213,19 @@ class RenameColumnsCB(PerGroupCB):
         
     def each_grp(self, grp, df, tfm): tfm.dfs[grp] = df[self.renaming_rules.keys()].rename(columns=self.renaming_rules)
 
+
+# %% ../nbs/api/callbacks.ipynb #2f76c626
+class RenameColsCB(PerGroupCB):
+    "Rename provider columns to MARIS standard names; optionally cast specified columns to str."
+    class Schema(BaseModel):
+        mapping:     dict[str, str] = Field(default_factory=dict)
+        string_cast: list[str]      = Field(default_factory=list)
+    def __init__(self, mapping: dict=None, string_cast: list=None):
+        self.cfg = self.Schema(mapping=mapping or {}, string_cast=string_cast or [])
+    def each_grp(self, grp, df, tfm):          # ZERO ast.If
+        df.rename(columns=self.cfg.mapping, inplace=True)
+        for col in self.cfg.string_cast:
+            df[col] = df[col].astype(str)
 
 # %% ../nbs/api/callbacks.ipynb #1ea2cc64
 class RemoveAllNAValuesCB(Callback):
@@ -232,6 +272,28 @@ class MeltWideNuclidesCB(Callback):
         if frames:
             tfm.dfs[self.grp] = pd.concat(frames, ignore_index=True)
 
+# %% ../nbs/api/callbacks.ipynb #38a49c42
+class SoftMeltWideNuclidesCB(PerGroupCB):
+    "Reshape wide nuclide columns to long format; spec=None/[] is a safe Null-Object no-op."
+    class Schema(BaseModel):
+        spec: list = Field(default_factory=list)
+
+    def __init__(self, spec: list=None, grp: str='SEAWATER'):
+        self.cfg  = self.Schema(spec=spec or [])
+        self.grps = [grp]
+
+    def each_grp(self, grp, df, tfm):
+        frames = []
+        for s in self.cfg.spec:
+            sub = df.dropna(subset=[s['val']]).copy()
+            sub['NUCLIDE'] = s['nuclide']
+            sub['VALUE']   = sub[s['val']]
+            sub['UNC']     = sub[s['unc']]
+            sub['UNIT']    = s['unit']
+            sub['LAB']     = s['lab']
+            frames.append(sub)
+        tfm.dfs[grp] = pd.concat(frames or [df], ignore_index=True)
+
 # %% ../nbs/api/callbacks.ipynb #7bb09e18
 class AddSampleIDCB(PerGroupCB):
     "Assign 1-based sequential SMP_ID; optionally cast a provider ID column to str for NetCDF VLEN compatibility."
@@ -243,7 +305,7 @@ class AddSampleIDCB(PerGroupCB):
     def each_grp(self, grp, df, tfm):
         tfm.dfs[grp] = df.reset_index(drop=True)
         tfm.dfs[grp]['SMP_ID'] = tfm.dfs[grp].index + 1
-        if self.col_provider and self.col_provider in tfm.dfs[grp].columns:
+        if self.col_provider:
             tfm.dfs[grp][self.col_provider] = tfm.dfs[grp][self.col_provider].astype(str).astype(object)
 
 # %% ../nbs/api/callbacks.ipynb #8cf07327
@@ -335,3 +397,95 @@ class DecodeTimeCB(PerGroupCB):
         tfm.dfs[grp][self.col_time] = tfm.dfs[grp][self.col_time].apply(
             lambda x: num2date(x, units=self.units, only_use_cftime_datetimes=False)
         )
+
+# %% ../nbs/api/callbacks.ipynb #b57fe596
+class SoftParseDateTimeCB(PerGroupCB):
+    "Parse date and time columns into a UTC-aware TIME column; col_date=None is a safe Null-Object no-op."
+    class Schema(BaseModel):
+        col_date: Optional[str] = None
+        col_time: Optional[str] = None
+        fmt: str = "%Y-%m-%d"
+    def __init__(self, col_date=None, col_time=None, fmt="%Y-%m-%d"):
+        self.cfg  = self.Schema(col_date=col_date, col_time=col_time, fmt=fmt)
+        self.grps = None if col_date else [None]
+    def each_grp(self, grp, df, tfm):          # ZERO ast.If
+        date_str = df[self.cfg.col_date].astype(str)
+        time_str = df.get(self.cfg.col_time, pd.Series("", index=df.index)).astype(str)
+        df['TIME'] = pd.to_datetime((date_str + " " + time_str).str.strip(),
+                                    format=self.cfg.fmt, utc=True)
+
+# %% ../nbs/api/callbacks.ipynb #62bb0577
+class SoftConvertUnitCB(PerGroupCB):
+    "Apply a scalar unit conversion to rows matching a specific nuclide; rule=None is a safe Null-Object no-op."
+    class UnitConversionRule(BaseModel):
+        nuclide:  str
+        src_unit: str
+        dst_unit: str
+        factor:   float
+    def __init__(self, rule: dict = None):
+        self.grps = [None] if rule is None else None
+        if rule: self.cfg = self.UnitConversionRule(**rule)
+    def each_grp(self, grp, df, tfm):          # ZERO ast.If
+        mask = df['NUCLIDE'] == self.cfg.nuclide
+        df.loc[mask, 'VALUE'] *= self.cfg.factor
+        df.loc[mask, 'UNC']   *= self.cfg.factor
+        df.loc[mask, 'UNIT']   = self.cfg.dst_unit
+
+# %% ../nbs/api/callbacks.ipynb #ac4d6baa
+class SoftRelToAbsUncCB(PerGroupCB):
+    "Convert relative uncertainty (%) to absolute; col_value=None is a safe Null-Object no-op."
+    class Schema(BaseModel):
+        col_value:   Optional[str] = None
+        col_unc_rel: str           = "UNC_REL"
+        factor:      float         = 100.0
+    def __init__(self, col_value=None, col_unc_rel="UNC_REL", factor=100.0):
+        self.cfg  = self.Schema(col_value=col_value, col_unc_rel=col_unc_rel, factor=factor)
+        self.grps = [None] if col_value is None else None
+    def each_grp(self, grp, df, tfm):                       # ZERO ast.If
+        df["UNC"] = df[self.cfg.col_unc_rel] * df[self.cfg.col_value] / self.cfg.factor
+
+
+class SoftExtractUnitFromColCB(PerGroupCB):
+    "Extract unit string from a column via regex; src_col=None is a safe Null-Object no-op."
+    class Schema(BaseModel):
+        src_col: Optional[str] = None
+        dst_col: str           = "UNIT"
+        pattern: str           = r"\((.*?)\)"             # default: parentheses
+    def __init__(self, src_col=None, dst_col="UNIT", pattern=r"\((.*?)\)"):
+        self.cfg  = self.Schema(src_col=src_col, dst_col=dst_col, pattern=pattern)
+        self.grps = [None] if src_col is None else None
+    def each_grp(self, grp, df, tfm):                       # ZERO ast.If
+        df[self.cfg.dst_col] = df[self.cfg.src_col].str.extract(self.cfg.pattern, expand=False)
+
+
+class SoftShiftLonCB(PerGroupCB):
+    "Shift longitude convention; shift=None is a safe Null-Object no-op."
+    class Schema(BaseModel):
+        col:   str            = "LON"
+        shift: Optional[float] = None
+    def __init__(self, col="LON", shift=None):
+        self.cfg  = self.Schema(col=col, shift=shift)
+        self.grps = [None] if shift is None else None
+    def each_grp(self, grp, df, tfm):                       # ZERO ast.If
+        df[self.cfg.col] = df[self.cfg.col] - self.cfg.shift
+
+
+class SoftDMStoDecimalCB(PerGroupCB):
+    "Convert degree-minute-second columns to decimal degrees; col_deg=None is a safe Null-Object no-op."
+    class Schema(BaseModel):
+        col_deg: Optional[str] = None
+        col_min: str           = "MIN"
+        col_sec: str           = "SEC"
+        col_dir: Optional[str] = None
+        dst_col: str           = "LAT"
+        neg_dir: list          = Field(default_factory=lambda: ["S", "W"])
+    def __init__(self, col_deg=None, col_min="MIN", col_sec="SEC",
+                 col_dir=None, dst_col="LAT", neg_dir=None):
+        self.cfg  = self.Schema(col_deg=col_deg, col_min=col_min, col_sec=col_sec,
+                                col_dir=col_dir, dst_col=dst_col,
+                                neg_dir=neg_dir or ["S", "W"])
+        self.grps = [None] if col_deg is None else None
+    def each_grp(self, grp, df, tfm):                       # ZERO ast.If
+        decimal = df[self.cfg.col_deg] + df[self.cfg.col_min] / 60 + df[self.cfg.col_sec] / 3600
+        df[self.cfg.dst_col] = np.where(df[self.cfg.col_dir].isin(self.cfg.neg_dir),
+                                        -decimal, decimal)

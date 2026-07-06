@@ -1,0 +1,112 @@
+# HELCOM MORS 2024 — GeneralHandler 2.0 YAML data contract (S-7c最終調和版)
+# Drives marisco.handlers.general.encode("config/handlers/helcom.yaml")
+#
+# 設計思想: 「ドメイン国境が美しく直立した名詞のシート」
+#   ① 標準コアパイプライン（11本レイル）はインフラが自動結合 → YAML に CB 名を書かない
+#   ② ケース正規化は normalize_case で宣言 → インフラが encode() 冒頭で自動配備
+#   ③ HELCOM 固有の 2 大カオス CB + ドメインロジック群のみが pre_cbs に正当配置（隔離）
+
+handler:
+  module_name: handlers.helcom
+  title: "HELCOM MORS 2024"
+  description: >
+    HELCOM (Helsinki Commission) Monitoring of Radioactive Substances (MORS)
+    in the Baltic Sea. Encoded via GeneralHandler 2.0 plugin rail.
+
+data_source:
+  url: "https://raw.githubusercontent.com/franckalbinet/maris-crawlers/refs/heads/main/data/processed/HELCOM%20MORS"
+  fname_out: "_data/output/100-HELCOM-MORS-2024-general.nc"
+
+# ── ケース正規化：インフラが pre_cbs より先に自動配備 ──────────────────────────
+# LowerStripNameCB を pre_cbs に手書きする必要なし。
+# nuclide 列値を lowercase+strip して NUCLIDE 列へ格納。
+# HelcomNuclideRemapCB が NUCLIDE を参照するより前に実行されることをインフラが保証。
+normalize_case:
+  nuclide: NUCLIDE
+
+# Custom loader: 6-file HELCOM data (BIO01/BIO02, SEA01/SEA02, SED01/SED02)
+loader:
+  path: "marisco.handlers.helcom.load_data_helcom"
+  args: {}
+
+# ── Plugin pre-chain: HELCOM 固有パイプライン ─────────────────────────────────
+# 標準コアパイプライン（11本レイル）は build_core_pipeline(cfg) が自動結合し
+# pre_cbs と post_cbs の間に自動サンドイッチ結合される。
+# ここに残るのは「HELCOM ドメイン国境」の固有ロジックのみ。
+pre_cbs:
+  # Nuclide remapping (normalize_case が先行して NUCLIDE 列を生成済み)
+  - path: "marisco.handlers.helcom.HelcomNuclideRemapCB"
+    args: {}
+
+  # ── CHAOS CB 1: ZeroMonthDayClampCB ──────────────────────────────────────
+  - path: "marisco.handlers.helcom.ZeroMonthDayClampCB"
+    args: {day_col: "day", month_col: "month"}
+
+  # 2-stage date parsing: date 列 → NaT なら year/month/day fallback
+  # (Brake Rule 6: errors='coerce' は却下 → ローカルプラグインとして正当配置)
+  - path: "marisco.handlers.helcom.ParseTimeCB"
+    args: {}
+
+  # Sediment melt + value standardisation
+  - path: "marisco.handlers.helcom.MeltSedimentValuesCB"
+    args: {}
+  - path: "marisco.handlers.helcom.SanitizeValueCB"
+    args: {}
+  - path: "marisco.handlers.helcom.NormalizeUncCB"
+    args: {}
+
+  # Per-group multi-logic UNIT assignment (group 別異種ロジック → SoftRemapCB で代替不可)
+  - path: "marisco.handlers.helcom.RemapUnitCB"
+    args: {}
+  - path: "marisco.handlers.helcom.RemapDetectionLimitCB"
+    args: {}
+
+  # BIOTA lookups
+  - path: "marisco.handlers.helcom.HelcomSpeciesRemapCB"
+    args: {}
+  - path: "marisco.handlers.helcom.HelcomTissueRemapCB"
+    args: {}
+  - path: "marisco.handlers.helcom.HelcomBioGroupRemapCB"
+    args: {}
+
+  # ── CHAOS CB 2: CleanSedimentCodesCB ─────────────────────────────────────
+  - path: "marisco.handlers.helcom.CleanSedimentCodesCB"
+    args:
+      replace_lut:
+        56: -99
+        73: -99
+
+  # Sediment type and filtering status
+  - path: "marisco.handlers.helcom.HelcomSedTypeRemapCB"
+    args: {}
+  - path: "marisco.handlers.helcom.HelcomFilterRemapCB"
+    args: {}
+
+  # Sample metadata
+  - path: "marisco.handlers.helcom.AddSampleIDCB"
+    args: {}
+  - path: "marisco.handlers.helcom.AddDepthCB"
+    args: {}
+  - path: "marisco.handlers.helcom.AddSalinityCB"
+    args: {}
+  - path: "marisco.handlers.helcom.AddTemperatureCB"
+    args: {}
+  - path: "marisco.handlers.helcom.RemapSedSliceTopBottomCB"
+    args: {}
+
+  # Weights (BIOTA + SEDIMENT)
+  - path: "marisco.handlers.helcom.CleanBasisCB"
+    args: {}
+  - path: "marisco.handlers.helcom.PercentWeightCB"
+    args: {}
+  - path: "marisco.handlers.helcom.WeightCB"
+    args: {}
+
+  # Coordinate parsing → LON/LAT 生成 (SanitizeLonLatCB はコアパイプラインが後続処理)
+  - path: "marisco.handlers.helcom.HelcomParseCoordinatesCB"
+    args: {}
+
+# ── Plugin post-chain ─────────────────────────────────────────────────────────
+post_cbs:
+  - path: "marisco.handlers.helcom.AddStationCB"
+    args: {}

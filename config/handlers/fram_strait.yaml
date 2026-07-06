@@ -1,0 +1,89 @@
+# config/handlers/fram_strait.yaml
+# Pure data layer — zero Python logic.  All values are scalars, lists, or dicts.
+# ────────────────────────────────────────────────────────────────────────────────
+
+handler:
+  module_name: handlers.fram_strait
+  title: "Fram Strait 2020/2021"
+  description: >
+    I-129, U-236, and U-238 data collected during the Fram Strait expeditions in 2020
+    and 2021 on the RV Kronprins Haakon, coordinated by the Norwegian Polar Institute
+    (NPI). U-236 and U-238 columns prefixed with `ETH_` are newly generated data from
+    ETH Zurich (Casacuberta group, LIP); the remaining I-129, U-236, and U-238 columns
+    are from NPI (Lin et al. 2023). The raw data are published as a single CSV on Zenodo
+    (record 19387002).
+  summary_table:
+    Shape: "238 rows × 37 columns"
+    Date range: "27/08/2020 – 09/08/2021 (DD/MM/YYYY)"
+    Depth range: "4 – 2506 m"
+    Stations: "32"
+    Labs: "NPI (Norwegian Polar Institute) · ETH Zurich / LIP"
+
+data_source:
+  url: "https://zenodo.org/records/19387002/files/FramStrait_2020_2021_radionuclides.csv?download=1"
+  fname_out: "FramStrait_2020_2021.nc"
+  zenodo_id: "19387002"
+  format: csv
+
+feedback_to_provider: |
+  The uncertainty column naming is inconsistent between labs: NPI uses `unc_{nuclide}` (e.g. `unc_I129_at_l`)
+  while ETH uses `{lab}_unc_{nuclide}` (e.g. `ETH_unc_U236_at_l`). A uniform `unc_{nuclide}` or
+  `{nuclide}_unc` convention across all columns would simplify ingestion.
+
+rename_cols:
+  mapping:
+    Latitude_degN: LAT
+    Longitude_degE: LON
+    Depth_m: SMP_DEPTH
+    Temperature_degC_ctd: TEMP
+    Salinity_ctd: SAL
+    Station: STATION
+    Sample_ID: SMP_ID_PROVIDER
+  string_cast: [STATION, SMP_ID_PROVIDER]
+
+parse_datetime:
+  col_date: Date
+  col_time: Time
+  format: "%d/%m/%Y %H:%M:%S"
+
+melt:
+  meta_cols: [Cruise, STATION, SMP_ID_PROVIDER, LAT, LON, TIME, SMP_DEPTH, TEMP, SAL]
+  spec:
+    - {val: I129_at_l,      unc: unc_I129_at_l,      nuclide: I129, unit: at_l,   lab: NPI}
+    - {val: I129_at_kg,     unc: unc_I129_at_kg,     nuclide: I129, unit: at_kg,  lab: NPI}
+    - {val: U236_at_l,      unc: unc_U236_at_l,      nuclide: U236, unit: at_l,   lab: NPI}
+    - {val: U236_at_kg,     unc: unc_U236_at_kg,     nuclide: U236, unit: at_kg,  lab: NPI}
+    - {val: U238_ppb,       unc: unc_U238_ppb,        nuclide: U238, unit: at_ppb, lab: NPI}
+    - {val: ETH_U236_at_l,  unc: ETH_unc_U236_at_l,  nuclide: U236, unit: at_l,   lab: ETH}
+    - {val: ETH_U236_at_kg, unc: ETH_unc_U236_at_kg, nuclide: U236, unit: at_kg,  lab: ETH}
+
+unit_conversions:
+  - nuclide: U238
+    src_unit: at_ppb
+    dst_unit: at_kg
+    factor: 2.529697e12
+    factor_name: U238_PPB_TO_AT_KG
+    comment: "ppb * 1e-9 * (1/238.05) * 6.02214076e23"
+
+nomenclatures:
+  nuclide_lut: {I129: 28, U236: 108, U238: 64}
+  unit_lut:    {at_kg: 9, at_l: 12}
+  lab_lut:
+    NPI: 281   # Norwegian Polar Institute — confirmed via dbo_lab.xlsx
+    ETH: 345   # ETH Zurich / LIP (Casacuberta group) — confirmed via JOIS handler
+  lab_constants:
+    NPI: LAB_NPI
+    ETH: LAB_ETH_LIP
+  area_default: 2356   # Greenland Sea — confirmed via dbo_area.xlsx
+
+output:
+  keywords:
+    - Fram Strait
+    - I-129
+    - U-236
+    - U-238
+    - radionuclides
+    - seawater
+    - Arctic Ocean
+    - Norwegian Polar Institute
+    - ETH Zurich
