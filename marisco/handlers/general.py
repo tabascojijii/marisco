@@ -30,22 +30,9 @@ def build_core_pipeline(cfg: HandlerConfig) -> list:
     from marisco.callbacks import (
         RenameColsCB, SoftParseDateTimeCB, SoftMeltWideNuclidesCB,
         SoftConvertUnitCB, SoftRemapCB, EncodeTimeCB, SanitizeLonLatCB, AddSampleIDCB,
+        _GuardedEncodeTimeCB, _GuardedSanitizeLonLatCB,
     )
 
-    class _GuardedEncodeTimeCB(EncodeTimeCB):
-        "Topology-guarded EncodeTimeCB: auto-degrades to Null-Object (grps=[None]) when TIME absent."
-        def __call__(self, tfm):
-            self.grps = ([None] if any('TIME' not in df.columns for df in tfm.dfs.values())
-                         else None)
-            super().__call__(tfm)
-
-    class _GuardedSanitizeLonLatCB(SanitizeLonLatCB):
-        "Topology-guarded SanitizeLonLatCB: auto-degrades to Null-Object when LON or LAT absent."
-        def __call__(self, tfm):
-            self.grps = ([None] if any('LON' not in df.columns or 'LAT' not in df.columns
-                                       for df in tfm.dfs.values())
-                         else None)
-            super().__call__(tfm)
 
     # Merge columns shorthand (S-7c) with legacy rename; time_format hint wins over dt_format
     merged = cfg.model_copy(update={

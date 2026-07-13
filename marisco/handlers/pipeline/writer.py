@@ -4,8 +4,9 @@
 
 # %% ../../../nbs/handlers/pipeline/writer.ipynb #21a89f69
 from __future__ import annotations
-from ...callbacks import Transformer, RenameColumnsCB
-from ...metadata import (GlobAttrsFeeder, BboxCB, DepthRangeCB,
+import pandas as pd
+from ...callbacks import Transformer, RenameColumnsCB, Callback
+from ...metadata import (GlobAttrsFeeder, DepthRangeCB,
                                TimeRangeCB, KeyValuePairCB)
 from ...encoders import NetCDFEncoder
 from ...configs import NC_VARS
@@ -15,22 +16,35 @@ from .loader import HandlerConfig, _MARIS_REQUIRED
 __all__ = ['write_netcdf']
 
 # %% ../../../nbs/handlers/pipeline/writer.ipynb #04ca11cb
+class _SimpleBboxCB(Callback):
+    """Compute geospatial bounding box from LAT/LON via pure pandas min/max.
+    Replaces BboxCB (Shapely-free). WKT polygon delegated to DB server."""
+    def __call__(self, obj):
+        all_df = pd.concat(obj.dfs.values())
+        obj.attrs.update({
+        'geospatial_lat_min': str(all_df['LAT'].min()),
+        'geospatial_lat_max': str(all_df['LAT'].max()),
+        'geospatial_lon_min': str(all_df['LON'].min()),
+        'geospatial_lon_max': str(all_df['LON'].max()),
+        })
+
+
 def write_netcdf(tfm: Transformer, cfg: HandlerConfig) -> None:
     "Encode transformed DataFrames to MARIS NetCDF4; KeyError on missing required MARIS columns."
-    # Phase 1 — Fail-Fast: required MARIS columns must be present in every group
+    # Phase 1 - Fail-Fast: required MARIS columns must be present in every group
     for grp, df in tfm.dfs.items():
         missing = _MARIS_REQUIRED - set(df.columns)
         if missing:
             raise KeyError(f"Group '{grp}' missing required MARIS columns: {sorted(missing)}")
 
-    # Phase 2 — per-group RenameColumnsCB: drop non-NC_VARS noise columns in-place
+    # Phase 2 - per-group RenameColumnsCB: drop non-NC_VARS noise columns in-place
     for grp in list(tfm.dfs):
         grp_guard = {k: k for k in NC_VARS if k in tfm.dfs[grp].columns}
         Transformer({grp: tfm.dfs[grp]}, cbs=[RenameColumnsCB(grp_guard)], inplace=True)()
 
-    # GlobAttrsFeeder: spatial / temporal extents + provenance
+    # GlobAttrsFeeder: spatial / temporal extents + provenance (Shapely-free)
     global_attrs = GlobAttrsFeeder(tfm.dfs, cbs=[
-        BboxCB(),
+        _SimpleBboxCB(),
         DepthRangeCB(),
         TimeRangeCB(),
         KeyValuePairCB('keywords',                  ', '.join(cfg.keywords)),

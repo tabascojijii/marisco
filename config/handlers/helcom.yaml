@@ -1,10 +1,11 @@
-# HELCOM MORS 2024 — GeneralHandler 2.0 YAML data contract (S-7c最終調和版)
+# HELCOM MORS 2024 — GeneralHandler 2.0 YAML data contract (S-7d完成版)
 # Drives marisco.handlers.general.encode("config/handlers/helcom.yaml")
 #
 # 設計思想: 「ドメイン国境が美しく直立した名詞のシート」
 #   ① 標準コアパイプライン（11本レイル）はインフラが自動結合 → YAML に CB 名を書かない
 #   ② ケース正規化は normalize_case で宣言 → インフラが encode() 冒頭で自動配備
 #   ③ HELCOM 固有の 2 大カオス CB + ドメインロジック群のみが pre_cbs に正当配置（隔離）
+#   ④ ハリボテ Helcom*RemapCB は全廃 → SoftAssetRemapCB + pre-resolved CSV で代替
 
 handler:
   module_name: handlers.helcom
@@ -18,9 +19,6 @@ data_source:
   fname_out: "_data/output/100-HELCOM-MORS-2024-general.nc"
 
 # ── ケース正規化：インフラが pre_cbs より先に自動配備 ──────────────────────────
-# LowerStripNameCB を pre_cbs に手書きする必要なし。
-# nuclide 列値を lowercase+strip して NUCLIDE 列へ格納。
-# HelcomNuclideRemapCB が NUCLIDE を参照するより前に実行されることをインフラが保証。
 normalize_case:
   nuclide: NUCLIDE
 
@@ -30,20 +28,21 @@ loader:
   args: {}
 
 # ── Plugin pre-chain: HELCOM 固有パイプライン ─────────────────────────────────
-# 標準コアパイプライン（11本レイル）は build_core_pipeline(cfg) が自動結合し
-# pre_cbs と post_cbs の間に自動サンドイッチ結合される。
-# ここに残るのは「HELCOM ドメイン国境」の固有ロジックのみ。
 pre_cbs:
-  # Nuclide remapping (normalize_case が先行して NUCLIDE 列を生成済み)
-  - path: "marisco.handlers.helcom.HelcomNuclideRemapCB"
-    args: {}
+  # ── Nuclide remapping (pre-resolved LUT, no fuzzy matching at runtime) ─────
+  - path: "marisco.callbacks.SoftAssetRemapCB"
+    args:
+      asset_path: helcom_nuclide.csv
+      key_col: name
+      val_col: nuclide_id
+      col_src: NUCLIDE
+      col_remap: NUCLIDE
 
   # ── CHAOS CB 1: ZeroMonthDayClampCB ──────────────────────────────────────
   - path: "marisco.handlers.helcom.ZeroMonthDayClampCB"
     args: {day_col: "day", month_col: "month"}
 
   # 2-stage date parsing: date 列 → NaT なら year/month/day fallback
-  # (Brake Rule 6: errors='coerce' は却下 → ローカルプラグインとして正当配置)
   - path: "marisco.handlers.helcom.ParseTimeCB"
     args: {}
 
@@ -55,19 +54,39 @@ pre_cbs:
   - path: "marisco.handlers.helcom.NormalizeUncCB"
     args: {}
 
-  # Per-group multi-logic UNIT assignment (group 別異種ロジック → SoftRemapCB で代替不可)
+  # Per-group multi-logic UNIT assignment
   - path: "marisco.handlers.helcom.RemapUnitCB"
     args: {}
   - path: "marisco.handlers.helcom.RemapDetectionLimitCB"
     args: {}
 
-  # BIOTA lookups
-  - path: "marisco.handlers.helcom.HelcomSpeciesRemapCB"
-    args: {}
-  - path: "marisco.handlers.helcom.HelcomTissueRemapCB"
-    args: {}
-  - path: "marisco.handlers.helcom.HelcomBioGroupRemapCB"
-    args: {}
+  # ── BIOTA lookups (pre-resolved CSVs) ────────────────────────────────────
+  - path: "marisco.callbacks.SoftAssetRemapCB"
+    args:
+      asset_path: helcom_species.csv
+      key_col: rubin
+      val_col: species_id
+      col_src: rubin
+      col_remap: SPECIES
+      grps: [BIOTA]
+
+  - path: "marisco.callbacks.SoftAssetRemapCB"
+    args:
+      asset_path: helcom_tissue.csv
+      key_col: tissue
+      val_col: bodypar_id
+      col_src: tissue
+      col_remap: BODY_PART
+      grps: [BIOTA]
+
+  - path: "marisco.callbacks.SoftAssetRemapCB"
+    args:
+      lut_key: SPECIES
+      key_col: species_id
+      val_col: biogroup_id
+      col_src: SPECIES
+      col_remap: BIO_GROUP
+      grps: [BIOTA]
 
   # ── CHAOS CB 2: CleanSedimentCodesCB ─────────────────────────────────────
   - path: "marisco.handlers.helcom.CleanSedimentCodesCB"
@@ -76,11 +95,23 @@ pre_cbs:
         56: -99
         73: -99
 
-  # Sediment type and filtering status
-  - path: "marisco.handlers.helcom.HelcomSedTypeRemapCB"
-    args: {}
-  - path: "marisco.handlers.helcom.HelcomFilterRemapCB"
-    args: {}
+  # ── Sediment type (pre-resolved CSV) ─────────────────────────────────────
+  - path: "marisco.callbacks.SoftAssetRemapCB"
+    args:
+      asset_path: helcom_sedtype.csv
+      key_col: sedi
+      val_col: sedtype_id
+      col_src: sedi
+      col_remap: SED_TYPE
+      grps: [SEDIMENT]
+
+  # ── Filter status (literal dict) ─────────────────────────────────────────
+  - path: "marisco.callbacks.SoftAssetRemapCB"
+    args:
+      lut: {N: 2, n: 2, F: 1}
+      col_src: filt
+      col_remap: FILT
+      grps: [SEAWATER]
 
   # Sample metadata
   - path: "marisco.handlers.helcom.AddSampleIDCB"
@@ -102,8 +133,8 @@ pre_cbs:
   - path: "marisco.handlers.helcom.WeightCB"
     args: {}
 
-  # Coordinate parsing → LON/LAT 生成 (SanitizeLonLatCB はコアパイプラインが後続処理)
-  - path: "marisco.handlers.helcom.HelcomParseCoordinatesCB"
+  # Coordinate parsing (default fn_convert_cor=ddmm_to_dd)
+  - path: "marisco.handlers.helcom.ParseCoordinatesCB"
     args: {}
 
 # ── Plugin post-chain ─────────────────────────────────────────────────────────

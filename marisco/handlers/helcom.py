@@ -11,7 +11,7 @@ import numpy as np
 import re
 
 from ..configs import NA, NC_DTYPES, get_lut, lut_path, cache_path
-from ..match import uniq_across_dfs, lut_from, fuzzy_merge, fix_lut, make_lut, make_lut_from
+from ..match import uniq_across_dfs
 from ..geo import ddmm_to_dd
 from ..utils import ExtractNetcdfContents
 from ..callbacks import (
@@ -23,19 +23,15 @@ from ..encoders import NetCDFEncoder
 from ..netcdf2csv import decode
 
 import warnings
-warnings.filterwarnings('ignore')
+warnings.filterwarnings("ignore")
 
 # %% auto #0
-__all__ = ['src_dir', 'fname_out', 'zotero_key', 'default_smp_types', 'fixes_nuclide_names', 'nuclide_lut', 'coi_sediment',
-           'coi_val', 'coi_units_unc', 'lut_units', 'coi_dl', 'provider_lut_species', 'fixes_species', 'species_lut',
-           'provider_lut_tissues', 'fixes_biota_tissues', 'lut_tissues', 'lut_biogroup', 'provider_lut_sed',
-           'fixes_sediments', 'sed_replace_lut', 'sediment_lut', 'lut_filtered', 'basis_fix', 'kw', 'load_data',
-           'ParseTimeCB', 'MeltSedimentValuesCB', 'SanitizeValueCB', 'NormalizeUncCB', 'RemapUnitCB',
-           'RemapDetectionLimitCB', 'CleanSedimentCodesCB', 'AddSampleIDCB', 'AddDepthCB', 'AddSalinityCB',
-           'AddStationCB', 'AddTemperatureCB', 'RemapSedSliceTopBottomCB', 'CleanBasisCB', 'PercentWeightCB',
-           'WeightCB', 'ParseCoordinatesCB', 'get_attrs', 'ZeroMonthDayClampCB', 'HelcomNuclideRemapCB',
-           'HelcomSpeciesRemapCB', 'HelcomTissueRemapCB', 'HelcomBioGroupRemapCB', 'HelcomSedTypeRemapCB',
-           'HelcomFilterRemapCB', 'HelcomParseCoordinatesCB', 'load_data_helcom', 'encode']
+__all__ = ['src_dir', 'fname_out', 'zotero_key', 'default_smp_types', 'coi_sediment', 'coi_val', 'coi_units_unc', 'lut_units',
+           'coi_dl', 'basis_fix', 'kw', 'load_data', 'ParseTimeCB', 'MeltSedimentValuesCB', 'SanitizeValueCB',
+           'NormalizeUncCB', 'RemapUnitCB', 'RemapDetectionLimitCB', 'CleanSedimentCodesCB', 'AddSampleIDCB',
+           'AddDepthCB', 'AddSalinityCB', 'AddStationCB', 'AddTemperatureCB', 'RemapSedSliceTopBottomCB',
+           'CleanBasisCB', 'PercentWeightCB', 'WeightCB', 'ParseCoordinatesCB', 'get_attrs', 'ZeroMonthDayClampCB',
+           'load_data_helcom', 'encode']
 
 # %% ../../nbs/handlers/helcom.ipynb #715e849d
 src_dir = 'https://raw.githubusercontent.com/franckalbinet/maris-crawlers/refs/heads/main/data/processed/HELCOM%20MORS'
@@ -60,28 +56,6 @@ def load_data(
         meas = pd.read_csv(f'{fname_in}/{prefix}02.csv').rename(str.lower, axis='columns')
         res[smp_type] = smp.merge(meas, on='key')
     return res
-
-# %% ../../nbs/handlers/helcom.ipynb #60cf885b
-fixes_nuclide_names = {
-    'cs134137': 'cs134_137_tot',
-    'cm243244': 'cm243_244_tot',
-    'pu239240': 'pu239_240_tot',
-    'pu238240': 'pu238_240_tot',
-    'cs143': 'cs137',
-    'cs145': 'cs137',
-    'cs142': 'cs137',
-    'cs141': 'cs137',
-    'cs144': 'cs137',
-    'k-40': 'k40',
-    'cs140': 'cs137',
-    'cs146': 'cs137',
-    'cs139': 'cs137',
-    'cs138': 'cs137'
-    }
-
-# %% ../../nbs/handlers/helcom.ipynb #9a189ef9
-# Resolved nuclide lookup table (provider → MARIS nuclide_id); lazy, resolves at Transformer time
-nuclide_lut = make_lut('NUCLIDE', fixes=fixes_nuclide_names)
 
 # %% ../../nbs/handlers/helcom.ipynb #1a682a3e
 class ParseTimeCB(PerGroupCB):
@@ -218,59 +192,6 @@ class RemapDetectionLimitCB(PerGroupCB):
         dl = self.coi[grp]['DL']
         df['DL'] = df[dl].apply(lambda x: 2 if x == '<' else 1)
 
-# %% ../../nbs/handlers/helcom.ipynb #ce5aeec4
-provider_lut_species = pd.read_csv(f'{src_dir}/RUBIN_NAME.csv')
-print(provider_lut_species.head())
-
-# %% ../../nbs/handlers/helcom.ipynb #159de1b1
-fixes_species = {
-    'LAMINARIA SACCHARINA': 'Saccharina latissima',
-    'CARDIUM EDULE': 'Cerastoderma edule',
-    'CHARA BALTICA': 'NOT AVAILABLE',
-    'PSETTA MAXIMA': 'Scophthalmus maximus'
-    }
-
-# %% ../../nbs/handlers/helcom.ipynb #192e3fb3
-species_lut = make_lut_from(provider_lut_species, 'RUBIN', 'SCIENTIFIC NAME', 'SPECIES', fixes=fixes_species)
-
-# %% ../../nbs/handlers/helcom.ipynb #da4a51ed
-provider_lut_tissues = pd.read_csv(f'{src_dir}/TISSUE.csv')
-print(provider_lut_tissues.head())
-
-# %% ../../nbs/handlers/helcom.ipynb #c6e2b06f-5eb1-4708-8087-75c836f08112
-fixes_biota_tissues = {
-    'WHOLE FISH WITHOUT HEAD AND ENTRAILS': 'Whole animal eviscerated without head',
-    'WHOLE FISH WITHOUT ENTRAILS': 'Whole animal eviscerated',
-    'SKIN/EPIDERMIS': 'Skin',
-    'ENTRAILS': 'Viscera'
-    }
-
-# %% ../../nbs/handlers/helcom.ipynb #4c42eb30
-lut_tissues = make_lut_from(provider_lut_tissues,
-                             'TISSUE', 'TISSUE_DESCRIPTION', 'BODY_PART',
-                             fixes=fixes_biota_tissues)
-
-# %% ../../nbs/handlers/helcom.ipynb #cf290302
-lut_biogroup = get_lut('SPECIES', key='species_id', value='biogroup_id')
-
-# %% ../../nbs/handlers/helcom.ipynb #7fc9d8bb
-provider_lut_sed = pd.read_csv(f'{src_dir}/SEDIMENT_TYPE.csv')
-print(provider_lut_sed.head())
-
-# %% ../../nbs/handlers/helcom.ipynb #4ea46125
-# Expert overrides for sediment type names
-# 'NO DATA' maps to '(Not available)' rather than 'Not available' due to 
-# an inconsistency in the MARIS SED_TYPE reference table — the sentinel entry 
-# uses parentheses while other LUTs use the bare form. This should be aligned.
-fixes_sediments = {
-    'NO DATA': '(Not available)',
-    'MUD AND GARVEL': 'Mud and gravel',
-    'CLACIAL CLAY': 'Glacial clay',
-}
-
-# %% ../../nbs/handlers/helcom.ipynb #052dda42
-sed_replace_lut = {56: -99, 73: -99}
-
 # %% ../../nbs/handlers/helcom.ipynb #82d99eb0
 class CleanSedimentCodesCB(PerGroupCB):
     "Replace invalid HELCOM SEDI codes with -99 sentinel; Pydantic-Schema plugin-ready."
@@ -283,16 +204,6 @@ class CleanSedimentCodesCB(PerGroupCB):
     def each_grp(self, grp, df, tfm):
         df['sedi'] = df['sedi'].replace(self.cfg.replace_lut)
         df.loc[df['sedi'].isna(), 'sedi'] = self.cfg.nan_sentinel
-
-# %% ../../nbs/handlers/helcom.ipynb #23fe1d50
-sediment_lut = make_lut_from(provider_lut_sed, 'SEDI', 'SEDIMENT TYPE', 'SED_TYPE', fixes=fixes_sediments)
-
-# %% ../../nbs/handlers/helcom.ipynb #3d2b4bbc
-lut_filtered = {
-    'N': 2, # No
-    'n': 2, # No
-    'F': 1 # Yes
-}
 
 # %% ../../nbs/handlers/helcom.ipynb #b030cb94
 class AddSampleIDCB(PerGroupCB):
@@ -369,26 +280,25 @@ class WeightCB(PerGroupCB):
 # %% ../../nbs/handlers/helcom.ipynb #623f9222
 class ParseCoordinatesCB(PerGroupCB):
     "Parse lat/lon from decimal-degree or degree-minute columns, preferring decimal."
-    def __init__(self, fn_convert_cor):
-        store_attr()
+    def __init__(self, fn_convert_cor=None):
+        self.fn_convert_cor = fn_convert_cor or ddmm_to_dd
 
    
     def each_grp(self, grp, df, tfm):
         cols = df.columns
-        lat_d = next(c for c in cols if 'lat' in c.lower() and 'dddddd' in c.lower())
-        lat_m = next(c for c in cols if 'lat' in c.lower() and 'ddmmmm' in c.lower())
-        lon_d = next(c for c in cols if 'lon' in c.lower() and 'dddddd' in c.lower())
-        lon_m = next(c for c in cols if 'lon' in c.lower() and 'ddmmmm' in c.lower())
+        lat_d = next(c for c in cols if "lat" in c.lower() and "dddddd" in c.lower())
+        lat_m = next(c for c in cols if "lat" in c.lower() and "ddmmmm" in c.lower())
+        lon_d = next(c for c in cols if "lon" in c.lower() and "dddddd" in c.lower())
+        lon_m = next(c for c in cols if "lon" in c.lower() and "ddmmmm" in c.lower())
 
-        for dec_c, min_c, name in [(lon_d, lon_m, 'LON'), (lat_d, lat_m, 'LAT')]:
-            dec = pd.to_numeric(df[dec_c], errors='coerce')
-            minute = pd.to_numeric(df[min_c], errors='coerce')
+        for dec_c, min_c, name in [(lon_d, lon_m, "LON"), (lat_d, lat_m, "LAT")]:
+            dec = pd.to_numeric(df[dec_c], errors="coerce")
+            minute = pd.to_numeric(df[min_c], errors="coerce")
             df[name] = dec
             mask = (dec.isna() | (dec == 0)) & minute.notna()
             df.loc[mask, name] = minute[mask].apply(self.fn_convert_cor)
 
-        tfm.dfs[grp] = df[(df['LAT'].notna()) & (df['LON'].notna()) & (df['LAT'] != 0) & (df['LON'] != 0)]
-
+        tfm.dfs[grp] = df[(df["LAT"].notna()) & (df["LON"].notna()) & (df["LAT"] != 0) & (df["LON"] != 0)]
 
 # %% ../../nbs/handlers/helcom.ipynb #8c293bb1
 kw = ['oceanography', 'Earth Science > Oceans > Ocean Chemistry> Radionuclides',
@@ -430,35 +340,6 @@ class ZeroMonthDayClampCB(PerGroupCB):
     def each_grp(self, grp, df, tfm):  # ZERO ast.If
         df[self.cfg.day_col]   = df[self.cfg.day_col].replace({0: 1})
         df[self.cfg.month_col] = df[self.cfg.month_col].replace({0: 1})
-
-# %% ../../nbs/handlers/helcom.ipynb #7a477e66
-class HelcomNuclideRemapCB(RemapCB):
-    "RemapCB pre-configured with HELCOM nuclide_lut (zero-arg for YAML injection)."
-    def __init__(self): super().__init__(lut=nuclide_lut, col_remap='NUCLIDE', col_src='NUCLIDE')
-
-class HelcomSpeciesRemapCB(RemapCB):
-    "RemapCB pre-configured with HELCOM species_lut for BIOTA group."
-    def __init__(self): super().__init__(lut=species_lut, col_remap='SPECIES', col_src='rubin', grps=['BIOTA'])
-
-class HelcomTissueRemapCB(RemapCB):
-    "RemapCB pre-configured with HELCOM lut_tissues for BIOTA group."
-    def __init__(self): super().__init__(lut=lut_tissues, col_remap='BODY_PART', col_src='tissue', grps=['BIOTA'])
-
-class HelcomBioGroupRemapCB(RemapCB):
-    "RemapCB pre-configured with HELCOM lut_biogroup for BIOTA group."
-    def __init__(self): super().__init__(lut=lut_biogroup, col_remap='BIO_GROUP', col_src='SPECIES', grps=['BIOTA'])
-
-class HelcomSedTypeRemapCB(RemapCB):
-    "RemapCB pre-configured with HELCOM sediment_lut for SEDIMENT group."
-    def __init__(self): super().__init__(lut=sediment_lut, col_remap='SED_TYPE', col_src='sedi', grps=['SEDIMENT'])
-
-class HelcomFilterRemapCB(RemapCB):
-    "RemapCB pre-configured with HELCOM lut_filtered for SEAWATER group."
-    def __init__(self): super().__init__(lut=lut_filtered, col_remap='FILT', col_src='filt', grps=['SEAWATER'])
-
-class HelcomParseCoordinatesCB(ParseCoordinatesCB):
-    "ParseCoordinatesCB pre-configured with ddmm_to_dd (zero-arg for YAML injection)."
-    def __init__(self): super().__init__(fn_convert_cor=ddmm_to_dd)
 
 # %% ../../nbs/handlers/helcom.ipynb #95048cf6
 def load_data_helcom(cfg) -> dict:
