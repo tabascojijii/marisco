@@ -4,7 +4,8 @@
 
 from .core import (
     Callback, PerGroupCB, run_cbs,
-    Transformer as _CoreTransformer,   # thin core; no unique() — used by general.py directly
+    PipelineState, run_pipeline,
+    Transformer as _CoreTransformer,   # thin proxy; no unique() — used by general.py directly
     SanitizeLonLatCB, RemapCB, SoftRemapCB,
     RenameColsCB, SoftMeltWideNuclidesCB, AddSampleIDCB,
     EncodeTimeCB, DecodeTimeCB, SoftParseDateTimeCB, SoftConvertUnitCB,
@@ -26,7 +27,9 @@ from .shared import (
 
 __all__ = [
     # Core
-    'Callback', 'PerGroupCB', 'run_cbs', 'Transformer',
+    'Callback', 'PerGroupCB', 'run_cbs',
+    'PipelineState', 'run_pipeline',
+    'Transformer',
     'SanitizeLonLatCB', 'RemapCB', 'SoftRemapCB',
     'RenameColsCB', 'SoftMeltWideNuclidesCB', 'AddSampleIDCB',
     'EncodeTimeCB', 'DecodeTimeCB', 'SoftParseDateTimeCB', 'SoftConvertUnitCB',

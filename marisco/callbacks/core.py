@@ -8,6 +8,7 @@ Docs: https://franckalbinet.github.io/mariscoapi/callbacks/core.html.md"""
 # %% ../../nbs/api/callbacks/core.ipynb #5a293345
 from __future__ import annotations
 import copy
+from functools import singledispatch
 from fastcore.all import *
 from operator import attrgetter
 from cftime import date2num ,num2date
@@ -20,9 +21,9 @@ from pydantic import BaseModel, Field, ConfigDict
 
 
 # %% auto #0
-__all__ = ['Callback', 'PerGroupCB', 'run_cbs', 'Transformer', 'SanitizeLonLatCB', 'RemapCB', 'SoftRemapCB', 'RenameColsCB',
-           'SoftMeltWideNuclidesCB', 'AddSampleIDCB', 'EncodeTimeCB', 'DecodeTimeCB', 'SoftParseDateTimeCB',
-           'SoftConvertUnitCB']
+__all__ = ['Callback', 'PerGroupCB', 'run_cbs', 'PipelineState', 'run_pipeline', 'Transformer', 'SanitizeLonLatCB', 'RemapCB',
+           'SoftRemapCB', 'RenameColsCB', 'SoftMeltWideNuclidesCB', 'AddSampleIDCB', 'EncodeTimeCB', 'DecodeTimeCB',
+           'SoftParseDateTimeCB', 'SoftConvertUnitCB']
 
 # %% ../../nbs/api/callbacks/core.ipynb #4e58c73c
 class Callback(): 
@@ -65,16 +66,63 @@ def run_cbs(
         cb(obj)
 
 # %% ../../nbs/api/callbacks/core.ipynb #82a6611d
-class Transformer(BaseModel):
-    "Transform the dataframe(s) according to the specified callbacks."
+# ── Type-dispatch table: ZERO isinstance inside Transformer body ──────────────
+@singledispatch
+def _dfs_from(data: Any, inplace: bool, key: str) -> Dict[str, pd.DataFrame]:
+    "Fallback: raise on unsupported data type."
+    raise TypeError(f"Unsupported Transformer data type: {type(data)!r}")
+
+@_dfs_from.register(pd.DataFrame)
+def _(data: pd.DataFrame, inplace: bool, key: str) -> Dict[str, pd.DataFrame]:
+    return {key: data if inplace else data.copy()}
+
+@_dfs_from.register(dict)
+def _(data: dict, inplace: bool, key: str) -> Dict[str, pd.DataFrame]:
+    return data if inplace else {k: v.copy() for k, v in data.items()}
+
+
+class PipelineState(BaseModel):
+    "Pure data vessel: dfs + logs + custom_maps. No execution logic."
     model_config = ConfigDict(arbitrary_types_allowed=True, validate_assignment=True)
 
-    _SINGLE_KEY: ClassVar[str] = ""  # Pydantic ClassVar — not a model field
+    _SINGLE_KEY: ClassVar[str] = ""
 
-    dfs:         Dict[str, pd.DataFrame]  = Field(default_factory=dict)
-    cbs:         Optional[List[Any]]      = None
+    dfs:         Dict[str, pd.DataFrame] = Field(default_factory=dict)
+    logs:        List[str]               = Field(default_factory=list)
     custom_maps: Any = Field(default_factory=lambda: defaultdict(lambda: defaultdict(dict)))
-    logs:        List[str]                = Field(default_factory=list)
+
+    @property
+    def is_single_df(self) -> bool:
+        return self._SINGLE_KEY in self.dfs and len(self.dfs) == 1
+
+    @property
+    def df(self) -> Optional[pd.DataFrame]:
+        return self.dfs.get(self._SINGLE_KEY)
+
+    def __setattr__(self, name: str, value: Any) -> None:
+        if name == 'df':
+            if self._SINGLE_KEY not in self.dfs and len(self.dfs) > 0:
+                raise ValueError(
+                    "Cannot assign state.df in multi-group state "
+                    "(active groups: " + str(list(self.dfs.keys())) + "). "
+                    "Use state.dfs[grp] instead."
+                )
+            self.dfs[self._SINGLE_KEY] = value
+        else:
+            super().__setattr__(name, value)
+
+
+def run_pipeline(
+    state: 'PipelineState',  # Pipeline state (dfs + logs)
+    cbs:   List[Callback],    # Callbacks to execute
+    ) -> None:
+    "Execute callbacks on state in-place; logs accumulated in state.logs."
+    run_cbs(cbs, state)
+
+
+class Transformer:
+    "Backward-compatible proxy: wraps PipelineState + cbs. data/inplace are transient."
+    _SINGLE_KEY: ClassVar[str] = ""
 
     def __init__(self,
                  data:        Union[Dict[str, pd.DataFrame], pd.DataFrame],
@@ -82,48 +130,41 @@ class Transformer(BaseModel):
                  custom_maps: Dict = None,
                  inplace:     bool = False,
                  **kwargs):
-        # data and inplace are transient: evaluated here, never stored as fields
-        super().__init__(
-            dfs=Transformer._make_dfs(data, inplace),
-            cbs=cbs,
-            custom_maps=custom_maps or defaultdict(lambda: defaultdict(dict)),
-            **kwargs
-        )
-
-    @classmethod
-    def _make_dfs(cls, data, inplace) -> Dict[str, pd.DataFrame]:
-        "Normalize input; single DataFrame maps to {_SINGLE_KEY: df}."
-        if isinstance(data, pd.DataFrame):
-            return {cls._SINGLE_KEY: data if inplace else data.copy()}
-        return data if inplace else {k: v.copy() for k, v in data.items()}
+        # object.__setattr__ bypasses our __setattr__ guard during init
+        object.__setattr__(self, '_state', PipelineState(
+            dfs=_dfs_from(data, inplace, Transformer._SINGLE_KEY),
+            custom_maps=custom_maps or defaultdict(lambda: defaultdict(dict))
+        ))
+        object.__setattr__(self, '_cbs', cbs or [])
 
     @property
-    def is_single_df(self) -> bool:
-        "True iff sentinel key present AND dict has exactly one entry."
-        return self._SINGLE_KEY in self.dfs and len(self.dfs) == 1
+    def dfs(self) -> Dict[str, pd.DataFrame]: return self._state.dfs
+    @dfs.setter
+    def dfs(self, value: Dict) -> None: self._state.dfs = value
 
     @property
-    def df(self) -> Optional[pd.DataFrame]:
-        "Single-DF accessor; valid only when constructed with a single DataFrame."
-        return self.dfs.get(self._SINGLE_KEY)
+    def df(self) -> Optional[pd.DataFrame]: return self._state.df
+
+    @property
+    def logs(self) -> List[str]: return self._state.logs
+
+    @property
+    def custom_maps(self) -> Any: return self._state.custom_maps
+
+    @property
+    def is_single_df(self) -> bool: return self._state.is_single_df
 
     def __setattr__(self, name: str, value: Any) -> None:
-        "Route df assignment through state-contamination guard; delegate all else to Pydantic."
         if name == 'df':
-            if self._SINGLE_KEY not in self.dfs and len(self.dfs) > 0:
-                raise ValueError(
-                    "Cannot assign tfm.df in multi-group state "
-                    "(active groups: " + str(list(self.dfs.keys())) + "). "
-                    "Use tfm.dfs[grp] instead."
-                )
-            self.dfs[self._SINGLE_KEY] = value
+            self._state.df = value  # delegates to PipelineState state-guard
         else:
-            super().__setattr__(name, value)
+            object.__setattr__(self, name, value)
 
     def __call__(self):
-        "Transform the dataframe(s) according to the specified callbacks."
-        if self.cbs: run_cbs(self.cbs, self)
-        return self.dfs[self._SINGLE_KEY] if self.is_single_df else self.dfs
+        "Execute pipeline: run cbs on state, return processed data."
+        run_pipeline(self._state, self._cbs)
+        return (self._state.dfs[self._SINGLE_KEY]
+                if self._state.is_single_df else self._state.dfs)
 
 
 # %% ../../nbs/api/callbacks/core.ipynb #097d66b6

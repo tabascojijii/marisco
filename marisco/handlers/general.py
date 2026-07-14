@@ -6,9 +6,10 @@
 from __future__ import annotations
 import importlib
 from pathlib import Path
-from ..callbacks.core import Transformer
+from ..callbacks.core import PipelineState, run_pipeline
 from .pipeline.loader  import HandlerConfig, PluginSpec, load_data, gap_check
 from .pipeline.writer  import write_netcdf
+
 
 # %% auto #0
 __all__ = ['build_core_pipeline', 'encode']
@@ -71,6 +72,6 @@ def encode(yaml_path: str | Path, fname_out: str = None) -> None:
                *[_load_plugin(s) for s in cfg.pre_cbs],
                *build_core_pipeline(cfg),
                *[_load_plugin(s) for s in cfg.post_cbs]]
-    tfm     = Transformer(dfs, cbs=chain)
-    tfm()
-    write_netcdf(tfm, cfg)
+    state   = PipelineState(dfs=dfs)
+    run_pipeline(state, chain)
+    write_netcdf(state, cfg)
