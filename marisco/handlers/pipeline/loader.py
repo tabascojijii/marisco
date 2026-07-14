@@ -8,11 +8,11 @@ import io
 import importlib
 import importlib.util
 from pathlib import Path
-from typing import Annotated, Optional, Union
+from typing import Annotated, Any, Optional, Union
 import requests
 import yaml
 import pandas as pd
-from pydantic import BaseModel, Field, ConfigDict, TypeAdapter
+from pydantic import BaseModel, Field, ConfigDict, TypeAdapter, ValidationError
 
 
 # %% auto #0
@@ -25,6 +25,73 @@ _SHARED_SCAN_MODULES = [
     "marisco.callbacks.shared",
     "marisco.callbacks.core",
 ]
+
+_RECIPE_HINTS = {
+    frozenset({"LAT", "LON"}): "config/recipes/recipe_split_lat_lon.yaml",
+    frozenset({"VALUE", "UNC"}): "config/recipes/recipe_extract_value_unit.yaml",
+}
+
+def _yaml_step1_message(err: ValidationError) -> str:
+    details = []
+    for item in err.errors():
+        loc = ".".join(str(p) for p in item["loc"])
+        details.append(f"- {loc}: {item['msg']}")
+    body = "\n".join(details) or "- YAML contract could not be validated."
+    return (
+        "Step 1: Type mismatch or missing fields detected in your YAML contract.\n"
+        "Please fix the YAML configuration first; runtime callback guidance is withheld.\n"
+        f"{body}"
+    )
+
+class _HandlerSection(BaseModel):
+    module_name: str
+    title: str = ""
+    description: str = ""
+
+class _DataSourceSection(BaseModel):
+    url: str
+    fname_out: str
+    zenodo_id: str = ""
+    format: str = "csv"
+
+class _RenameColsSection(BaseModel):
+    mapping: dict[str, str] = Field(default_factory=dict)
+    string_cast: list[str] = Field(default_factory=list)
+
+class _ParseDateTimeSection(BaseModel):
+    col_date: Optional[str] = None
+    col_time: Optional[str] = None
+    format: str = "%Y-%m-%d"
+
+class _MeltSection(BaseModel):
+    meta_cols: list[str] = Field(default_factory=list)
+    spec: list[dict[str, Any]] = Field(default_factory=list)
+
+class _NomenclaturesSection(BaseModel):
+    nuclide_lut: dict[str, int] = Field(default_factory=dict)
+    unit_lut: dict[str, int] = Field(default_factory=dict)
+    lab_lut: dict[str, int] = Field(default_factory=dict)
+    lab_constants: dict[str, str] = Field(default_factory=dict)
+    area_default: int = 0
+
+class _OutputSection(BaseModel):
+    keywords: list[str] = Field(default_factory=list)
+
+class _RawHandlerContract(BaseModel):
+    handler: _HandlerSection
+    data_source: _DataSourceSection
+    rename_cols: _RenameColsSection = Field(default_factory=_RenameColsSection)
+    columns: dict[str, str] = Field(default_factory=dict)
+    normalize_case: dict[str, str] = Field(default_factory=dict)
+    parse_datetime: _ParseDateTimeSection = Field(default_factory=_ParseDateTimeSection)
+    time_format: Optional[str] = None
+    melt: _MeltSection = Field(default_factory=_MeltSection)
+    unit_conversions: list[dict[str, Any]] = Field(default_factory=list)
+    nomenclatures: _NomenclaturesSection = Field(default_factory=_NomenclaturesSection)
+    output: _OutputSection = Field(default_factory=_OutputSection)
+    loader: Optional[dict[str, Any]] = None
+    pre_cbs: list[dict[str, Any]] = Field(default_factory=list)
+    post_cbs: list[dict[str, Any]] = Field(default_factory=list)
 
 class BasePluginSpec(BaseModel):
     "External Callback injection spec with polymorphic resolution."
@@ -121,83 +188,73 @@ class UnitConversionCfg(BaseModel):
 
 class HandlerConfig(BaseModel):
     "Complete handler configuration loaded from a YAML data-contract file."
-    # handler
     module_name: str
     title:       str = ""
     description: str = ""
-    # data_source
     url:       str
     fname_out: str
     zenodo_id: str = ""
     fmt:       str = "csv"
-    # rename_cols (legacy) + declarative columns shorthand (S-7c)
     rename:      dict[str, str] = Field(default_factory=dict)
     string_cast: list[str]      = Field(default_factory=list)
-    columns:     dict[str, str] = Field(default_factory=dict)  # provider_col → MARIS_col, merged into rename at pipeline build time
-    # case normalisation: {src_col: dst_col} → LowerStripNameCB auto-assembled before pre_cbs (S-7c)
+    columns:     dict[str, str] = Field(default_factory=dict)
     normalize_case: dict[str, str] = Field(default_factory=dict)
-    # parse_datetime
     col_date:    Optional[str] = None
     col_time:    Optional[str] = None
     dt_format:   str           = "%Y-%m-%d"
-    time_format: Optional[str] = None  # explicit format hint; overrides dt_format when set
-    # melt
+    time_format: Optional[str] = None
     meta_cols: list[str]             = Field(default_factory=list)
     melt_spec: list[MeltEntry]       = Field(default_factory=list)
-    # unit_conversions
     unit_conversions: list[UnitConversionCfg] = Field(default_factory=list)
-    # nomenclatures (all optional — empty dict/0 → Null-Object no-ops in build_core_pipeline)
     nuclide_lut:   dict[str, int] = Field(default_factory=dict)
     unit_lut:      dict[str, int] = Field(default_factory=dict)
     lab_lut:       dict[str, int] = Field(default_factory=dict)
     lab_constants: dict[str, str] = Field(default_factory=dict)
     area_default:  int            = 0
-    # output
     keywords: list[str] = Field(default_factory=list)
-    # plugin injection: custom loader + pre/post standard core pipeline
     loader:   Optional[PluginSpecModel] = None
     pre_cbs:  list[PluginSpecModel]     = Field(default_factory=list)
     post_cbs: list[PluginSpecModel]     = Field(default_factory=list)
 
     @classmethod
     def from_yaml(cls, path: str | Path) -> "HandlerConfig":
-        "Load and validate a handler YAML config; raises ValidationError on schema mismatch."
-        raw      = yaml.safe_load(Path(path).read_text(encoding="utf-8"))
-        h, ds    = raw["handler"], raw["data_source"]
-        nom      = raw.get("nomenclatures", {})   # optional: absent → all LUTs default to {}
-        ren      = raw.get("rename_cols", {})
-        pdt      = raw.get("parse_datetime", {})
-        mlt      = raw.get("melt", {})
-        loader_raw = raw.get("loader", None)
-        return cls(
-            module_name      = h["module_name"],
-            title            = h.get("title", ""),
-            description      = h.get("description", "").strip(),
-            url              = ds["url"],
-            fname_out        = ds["fname_out"],
-            zenodo_id        = ds.get("zenodo_id", ""),
-            fmt              = ds.get("format", "csv"),
-            rename           = ren.get("mapping", {}),
-            string_cast      = ren.get("string_cast", []),
-            columns          = raw.get("columns", {}),
-            normalize_case   = raw.get("normalize_case", {}),
-            col_date         = pdt.get("col_date"),
-            col_time         = pdt.get("col_time"),
-            dt_format        = pdt.get("format", "%Y-%m-%d"),
-            time_format      = raw.get("time_format"),
-            meta_cols        = mlt.get("meta_cols", []),
-            melt_spec        = mlt.get("spec", []),
-            unit_conversions = raw.get("unit_conversions", []),
-            nuclide_lut      = nom.get("nuclide_lut", {}),
-            unit_lut         = nom.get("unit_lut", {}),
-            lab_lut          = nom.get("lab_lut", {}),
-            lab_constants    = nom.get("lab_constants", {}),
-            area_default     = nom.get("area_default", 0),
-            keywords         = raw.get("output", {}).get("keywords", []),
-            loader           = loader_raw,
-            pre_cbs          = raw.get("pre_cbs", []),
-            post_cbs         = raw.get("post_cbs", []),
-        )
+        "Load and validate a handler YAML config with Gate 1 static quarantine."
+        raw = yaml.safe_load(Path(path).read_text(encoding="utf-8"))
+        try:
+            contract = _RawHandlerContract.model_validate(raw)
+            return cls(
+                module_name      = contract.handler.module_name,
+                title            = contract.handler.title,
+                description      = contract.handler.description.strip(),
+                url              = contract.data_source.url,
+                fname_out        = contract.data_source.fname_out,
+                zenodo_id        = contract.data_source.zenodo_id,
+                fmt              = contract.data_source.format,
+                rename           = contract.rename_cols.mapping,
+                string_cast      = contract.rename_cols.string_cast,
+                columns          = contract.columns,
+                normalize_case   = contract.normalize_case,
+                col_date         = contract.parse_datetime.col_date,
+                col_time         = contract.parse_datetime.col_time,
+                dt_format        = contract.parse_datetime.format,
+                time_format      = contract.time_format,
+                meta_cols        = contract.melt.meta_cols,
+                melt_spec        = contract.melt.spec,
+                unit_conversions = contract.unit_conversions,
+                nuclide_lut      = contract.nomenclatures.nuclide_lut,
+                unit_lut         = contract.nomenclatures.unit_lut,
+                lab_lut          = contract.nomenclatures.lab_lut,
+                lab_constants    = contract.nomenclatures.lab_constants,
+                area_default     = contract.nomenclatures.area_default,
+                keywords         = contract.output.keywords,
+                loader           = contract.loader,
+                pre_cbs          = contract.pre_cbs,
+                post_cbs         = contract.post_cbs,
+            )
+        except ValidationError as err:
+            msg = _yaml_step1_message(err)
+            print(msg)
+            raise ValueError(msg) from err
 
 
 # %% ../../../nbs/handlers/pipeline/loader.ipynb #fb3b4a2b
@@ -212,23 +269,45 @@ def load_data(cfg: HandlerConfig, grp: str = "SEAWATER") -> dict[str, pd.DataFra
 _MARIS_REQUIRED = frozenset({"LAT", "LON", "TIME", "NUCLIDE", "VALUE", "UNC", "UNIT"})
 _MELT_PROVIDES  = frozenset({"NUCLIDE", "VALUE", "UNC", "UNIT"})
 
-def gap_check(cfg: HandlerConfig) -> None:
-    "Fail-Fast: raise ValueError listing missing MARIS columns and printing skeleton CBs."
-    if cfg.pre_cbs: return  # plugin chain is responsible for column provision
-    # columns (S-7c shorthand) and rename both contribute mapped destination names
-    all_rename = {**cfg.columns, **cfg.rename}
-    available = (set(all_rename.values())
-                 | (_MELT_PROVIDES if cfg.melt_spec else set())
-                 | ({"TIME"}       if cfg.col_date  else set()))
-    gaps = _MARIS_REQUIRED - available
-    if not gaps:
-        return
-    skeleton = "\n\n".join(
+def _gap_skeleton(gaps: set[str]) -> str:
+    return "\n\n".join(
         f"class Fill{g}CB(PerGroupCB):\n"
         f"    \"TODO: provide {g} — add to columns/rename_cols or as a standalone CB.\"\n"
         f"    grps = [\'SEAWATER\']\n"
         f"    def each_grp(self, grp, df, state: PipelineState): df[\'{g}\'] = None  # FIXME"
         for g in sorted(gaps)
     )
-    print(f"\n⚠  GAP in {cfg.title!r} — missing MARIS columns: {sorted(gaps)}\n\n{skeleton}\n")
+
+def _recipe_paths_for(gaps: set[str]) -> list[str]:
+    return [path for keys, path in _RECIPE_HINTS.items() if gaps & keys]
+
+def _gap_gate_message(cfg: HandlerConfig, gaps: set[str]) -> str:
+    parts = [
+        f"⚠  GAP in {cfg.title!r} — missing MARIS columns: {sorted(gaps)}",
+        "Easy Path (Check columns mapping): First, verify if simply adding raw CSV column mappings to 'columns:' resolves this missing column.",
+    ]
+    recipe_paths = _recipe_paths_for(gaps)
+    if recipe_paths:
+        parts.append(
+            "Medium Path (Apply standard recipes): If dealing with combined coordinates or value-unit formats, copy-paste standard recipes from config/recipes/. Available recipes: " + ", ".join(recipe_paths)
+        )
+    parts.extend([
+        "Hard Path (Custom Skeleton): If your dataset has highly specific anomalies (for example, conditional sign inversion), implement a local custom callback using the skeleton below.",
+        _gap_skeleton(gaps),
+    ])
+    return "\n\n".join(parts)
+
+def gap_check(cfg: HandlerConfig) -> None:
+    "Fail-Fast Gate 2: missing MARIS columns get progressive remediation guidance."
+    if cfg.pre_cbs: return
+    all_rename = {**cfg.columns, **cfg.rename}
+    available = (set(all_rename.values())
+                 | (_MELT_PROVIDES if cfg.melt_spec else set())
+                 | ({"TIME"} if cfg.col_date else set()))
+    gaps = _MARIS_REQUIRED - available
+    if not gaps:
+        return
+    msg = _gap_gate_message(cfg, gaps)
+    print(f"\n{msg}\n")
     raise ValueError(f"YAML spec missing mappings for: {sorted(gaps)}")
+

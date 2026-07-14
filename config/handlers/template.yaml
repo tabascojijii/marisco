@@ -1,16 +1,16 @@
-# config/handlers/template.yaml — marisco 3.0 最小骨格テンプレート
+# config/handlers/template.yaml — marisco 3.0 minimal handler skeleton
 #
-# 【使い方】 このファイルを config/handlers/<データセット名>.yaml にコピーして
-#            プレースホルダーを実データに合わせて書き換えてください。
+# Usage: copy this file to config/handlers/<dataset_name>.yaml and
+# replace the placeholders with values that match your dataset.
 #
-# 【カオスデータ対応】 以下のレシピを pre_cbs: / post_cbs: にペーストしてください:
-#   緯度経度が 1 列に合体         → config/recipes/recipe_split_lat_lon.yaml
-#   度・分・秒・方位の 4 列分割   → config/recipes/recipe_dms_to_decimal.yaml
-#   濃度値と単位が同一セルに混在  → config/recipes/recipe_extract_value_unit.yaml
-# ──────────────────────────────────────────────────────────────────────────────
+# Chaos-data helpers: paste one of the following recipes into pre_cbs: / post_cbs:
+#   Combined latitude/longitude in one column  -> config/recipes/recipe_split_lat_lon.yaml
+#   Degrees/minutes/seconds + hemisphere cols  -> config/recipes/recipe_dms_to_decimal.yaml
+#   Value and unit combined in one cell        -> config/recipes/recipe_extract_value_unit.yaml
+# -----------------------------------------------------------------------------
 
 handler:
-  module_name: handlers.my_dataset          # Python モジュールパス (handlers.<名前>)
+  module_name: handlers.my_dataset          # Python module path (handlers.<name>)
   title: "My Dataset YYYY"
   description: "Brief dataset description."
 
@@ -20,7 +20,7 @@ data_source:
   zenodo_id: "XXXXXXX"
   format: csv                               # csv | tsv
 
-# 生 CSV 列名 → MARIS 正典列名 (Rail 1 で rename される)
+# Raw CSV column name -> canonical MARIS column name (renamed in Rail 1)
 columns:
   Latitude_deg:   LAT
   Longitude_deg:  LON
@@ -31,31 +31,31 @@ columns:
   Sample_ID:      SMP_ID_PROVIDER
 
 rename_cols:
-  mapping: {}                               # 追加マッピングが必要な場合のみ記入
-  string_cast: [STATION, SMP_ID_PROVIDER]  # 数値として読まれる可能性がある列
+  mapping: {}                               # Fill only if extra mappings are needed
+  string_cast: [STATION, SMP_ID_PROVIDER]   # Columns that may otherwise be parsed as numeric
 
 parse_datetime:
   col_date: Date
-  col_time: Time                            # 時刻列がない場合はこの行を削除
-  format: "%d/%m/%Y %H:%M:%S"              # Python strftime 記法
+  col_time: Time                            # Remove this line if there is no time column
+  format: "%d/%m/%Y %H:%M:%S"              # Python strftime notation
 
 melt:
   meta_cols: [STATION, SMP_ID_PROVIDER, LAT, LON, TIME, SMP_DEPTH, TEMP, SAL]
   spec:
-    # val: 濃度値列名  unc: 不確かさ列名  nuclide/unit/lab は nomenclatures のキーと一致
+    # val: measurement column  unc: uncertainty column  nuclide/unit/lab must match nomenclature keys
     - {val: Cs137_Bq_kg, unc: Cs137_unc_Bq_kg, nuclide: Cs137, unit: Bq_kg, lab: IAEA}
 
-unit_conversions: []                        # 単位変換が不要な場合は空リストのまま
+unit_conversions: []                        # Keep as an empty list if no unit conversion is required
 
 nomenclatures:
-  nuclide_lut: {Cs137: 2}                  # 核種名 → MARIS ID (dbo_nuclide.xlsx)
-  unit_lut:    {Bq_kg: 1}                  # 単位名 → MARIS ID (dbo_unit.xlsx)
-  lab_lut:     {IAEA: 4}                   # 機関名 → MARIS ID (dbo_lab.xlsx)
+  nuclide_lut: {Cs137: 2}                   # Nuclide token -> MARIS ID (dbo_nuclide.xlsx)
+  unit_lut:    {Bq_kg: 1}                   # Unit token    -> MARIS ID (dbo_unit.xlsx)
+  lab_lut:     {IAEA: 4}                    # Lab token     -> MARIS ID (dbo_lab.xlsx)
   lab_constants: {}
-  area_default: 0                           # dbo_area.xlsx ID (0 = 未設定)
+  area_default: 0                           # dbo_area.xlsx ID (0 = unset)
 
 output:
   keywords: [radionuclides, seawater]
 
-pre_cbs: []   # ← カオスデータ対応が必要な場合、レシピのリストエントリをここにペースト
-post_cbs: []  # ← melt 後の後処理が必要な場合にペースト
+pre_cbs: []   # Paste recipe list entries here when the source data needs chaos handling
+post_cbs: []  # Paste post-melt clean-up callbacks here when needed

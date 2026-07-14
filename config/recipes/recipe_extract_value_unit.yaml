@@ -1,60 +1,45 @@
-# ══════════════════════════════════════════════════════════════════════════════
-# レシピ: 値+単位合体列の解体 — "3.4 Bq/kg" や "1.2e-3 mBq/L" を数値と単位に分割
+# =============================================================================
+# Recipe: split combined value+unit cells such as "3.4 Bq/kg"
 #
-# 【症状】 濃度値と単位が同一セルに格納されている
-#   例: "3.4 Bq/kg"   "1.2e-3 mBq/L"   "3.4 (Bq/kg)"   "<0.5 Bq/kg"
+# Symptom:
+#   The measured value and its unit are stored in the same cell.
+#   Examples: "3.4 Bq/kg", "1.2e-3 mBq/L", "3.4 (Bq/kg)", "<0.5 Bq/kg"
 #
-# 【使い方】
-#   1. src_col を実データの合体列名に変更する
-#   2. Step 1 の dst_cols のリスト内名 (例: Cs137_Bq_kg) を melt.spec の val と一致させる
-#   3. 単位フォーマットに合わせて Step 2 の pattern を選択する
-#   4. この pre_cbs: ブロック全体を template.yaml の pre_cbs: [] と置換してペーストする
+# Usage:
+#   1. Replace src_col with the real combined source column.
+#   2. Make the Step 1 destination column name match melt.spec.val.
+#   3. Pick the Step 2 pattern that matches your unit formatting.
+#   4. Replace template.yaml's pre_cbs: [] line with this entire block.
 #
-# ⚠ キャスト分離の必然性:
-#   SoftRegexTransformCB は dst_cols の「全列」に同一の cast を適用する仕様。
-#   VALUE (float) と UNIT (str) を 1 つの CB で同時抽出するとキャストが衝突する。
-#   このレシピが 2 CB 構成になっているのはこの制約を回避するための設計である。
+# Warning: SoftRegexTransformCB applies one cast to every destination column.
+#   VALUE (float) and UNIT (str) therefore cannot be extracted safely in one pass.
+#   This recipe intentionally uses two callbacks to avoid cast collisions.
 #
-# ⚠ melt.spec の unit は固定文字列:
-#   melt.spec の unit フィールドは行ごとに変化する列値を参照できない (固定リテラル)。
-#   単位が列内で全行一致する場合 → Step 2 は不要。melt.spec に直接 unit を書く。
-#   単位が行ごとに異なる場合 → post_cbs の SoftAssetRemapCB で UNIT 列を補正する。
-# ══════════════════════════════════════════════════════════════════════════════
+# Warning: melt.spec.unit is a fixed literal, not a per-row column reference.
+#   If every row shares the same unit, Step 2 is unnecessary and melt.spec.unit
+#   can be written directly. If units vary per row, normalize them later in post_cbs.
+# =============================================================================
 
 pre_cbs:
 
-  # Step 1: 数値部分を float として抽出 → melt.spec の val 列を新規作成 ─────
+  # Step 1: extract the numeric part as float -> create the melt.spec value column
   - name: SoftRegexTransformCB
     args:
-      src_col:  "Cs137_measured"            # ← 実際の合体列名に変更
-      # [\\d.]+        整数・小数にマッチ
-      # (?:[eE][+-]?\\d+)?  指数表記 "1.2e-3" にも対応 (省略可能)
-      pattern:  "(?P<Cs137_Bq_kg>[\\d.]+(?:[eE][+-]?\\d+)?)"
-      dst_cols: ["Cs137_Bq_kg"]            # ← melt.spec の val フィールドと一致させること
-      cast:     "float"                     # VALUE は float 必須
+      src_col:  "Cs137_measured"            # Replace with the real combined source column
+      # [\d.]+ matches integers/decimals; the optional exponent part supports 1.2e-3
+      pattern:  "(?P<Cs137_Bq_kg>[\d.]+(?:[eE][+-]?\d+)?)"
+      dst_cols: ["Cs137_Bq_kg"]            # Must match melt.spec.val
+      cast:     "float"
 
-  # Step 2a: 単位を抽出 (括弧付き形式 "3.4 (Bq/kg)" → "Bq/kg") ──────────
-  # SoftExtractUnitFromColCB は 1 つのキャプチャグループを dst_col に格納する。
+  # Step 2a: extract the unit from parenthesized cells such as "3.4 (Bq/kg)"
   - name: SoftExtractUnitFromColCB
     args:
-      src_col: "Cs137_measured"             # ← Step 1 と同じ元列名
-      dst_col: "Cs137_unit_raw"             # 抽出した単位文字列の格納先
-      pattern: "\\((.*?)\\)"               # デフォルト: 括弧内を抽出
+      src_col: "Cs137_measured"
+      dst_col: "Cs137_unit_raw"
+      pattern: "\((.*?)\)"
 
-  # Step 2b: スペース区切り "3.4 Bq/kg" の場合は pattern を以下に変更:
-  # pattern: "[\\d.]+(?:[eE][+-]?\\d+)?\\s+(.+)"
+  # Step 2b: for space-separated cells such as "3.4 Bq/kg", use this pattern instead:
+  # pattern: "[\d.]+(?:[eE][+-]?\d+)?\s+(.+)"
 
-  # Step 2c: 単位が全行同一なら Step 2 全体を削除し、melt.spec に直接書く:
-  # melt:
-  #   spec:
-  #     - {val: Cs137_Bq_kg, unc: Cs137_unc, nuclide: Cs137, unit: Bq_kg, lab: IAEA}
-  #                                                            ↑ ここに固定単位を記述
-
-  # ── 複数核種が同じパターンで合体している場合 ──────────────────────────────
-  # 同一パターンで別の核種も合体している場合、SoftRegexTransformCB を核種ごとに追加:
-  # - name: SoftRegexTransformCB
-  #   args:
-  #     src_col:  "Sr90_measured"
-  #     pattern:  "(?P<Sr90_Bq_kg>[\\d.]+(?:[eE][+-]?\\d+)?)"
-  #     dst_cols: ["Sr90_Bq_kg"]
-  #     cast:     "float"
+  # Step 2c: if the unit is constant in every row, remove Step 2 entirely and put
+  # the unit token directly into melt.spec.unit.

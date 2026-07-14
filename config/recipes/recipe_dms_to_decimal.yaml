@@ -1,50 +1,48 @@
-# ══════════════════════════════════════════════════════════════════════════════
-# レシピ: 度分秒分解 — 度・分・秒・方位の 4 列セットを十進度 LAT/LON へ変換
+# =============================================================================
+# Recipe: convert degree/minute/second + hemisphere columns into decimal LAT/LON
 #
-# 【症状】 緯度・経度が以下のように 4 列 x 2 (緯度用・経度用) で分割されている
-#   Lat_D | Lat_M | Lat_S | Lat_Dir || Lon_D | Lon_M | Lon_S | Lon_Dir
-#    78   |  30   |   0   |    N    ||  15   |  12   |   0   |    E
+# Symptom:
+#   Coordinates are split across four columns for latitude and four for longitude.
+#   Example:
+#     Lat_D | Lat_M | Lat_S | Lat_Dir || Lon_D | Lon_M | Lon_S | Lon_Dir
+#      78   |  30   |   0   |    N    ||  15   |  12   |   0   |    E
 #
-# 【使い方】
-#   1. col_deg / col_min / col_sec / col_dir の 4 つを実データの列名に変更する
-#   2. この pre_cbs: ブロック全体を template.yaml の pre_cbs: [] と置換してペーストする
+# Usage:
+#   1. Replace col_deg / col_min / col_sec / col_dir with the real column names.
+#   2. Replace template.yaml's pre_cbs: [] line with this entire block.
 #
-# ⚠ col_dir は省略不可: SoftDMStoDecimalCB の each_grp は col_dir を無条件参照する。
-#   col_dir=None のまま実行すると df[None] → KeyError で即死する。
-#   方位列が存在しない場合は、前段で定数列 (全行 "N" 等) を作成してから使用すること。
+# Warning: col_dir is mandatory. SoftDMStoDecimalCB reads it unconditionally.
+#   If you leave col_dir=None, df[None] will immediately raise KeyError.
+#   If the source file has no hemisphere column, create a constant column first.
 #
-# ⚠ 数値型前提: col_deg / col_min / col_sec は数値型 (int/float) が必須。
-#   CSV が文字列として読み込む場合は前段で pd.to_numeric 等の変換が必要
-#   (その場合は追加の pre_cbs エントリか別のカスタム CB を使用)。
+# Warning: col_deg / col_min / col_sec must already be numeric.
+#   If the CSV loader reads them as strings, convert them before this recipe runs.
 #
-# ⚠ columns: への追加禁止: Lat_D, Lat_M 等を LAT/LON にマッピングしないこと
-#   (recipe_split_lat_lon.yaml の鉄則と同じ理由)。
-# ══════════════════════════════════════════════════════════════════════════════
+# Warning: do not map Lat_D / Lon_D style columns to LAT/LON in columns:.
+# =============================================================================
 
 pre_cbs:
 
-  # LAT 生成 (SoftDMStoDecimalCB 1 発目)
+  # Build LAT
   - name: SoftDMStoDecimalCB
     args:
-      col_deg: "Lat_D"       # ← 緯度「度」の列名に変更
-      col_min: "Lat_M"       # ← 緯度「分」の列名に変更
-      col_sec: "Lat_S"       # ← 緯度「秒」の列名に変更 (秒列がない場合は 0 で埋めた列を事前作成)
-      col_dir: "Lat_Dir"     # ← 緯度方位 ("N"/"S") の列名に変更 ★ 省略不可
-      dst_col: "LAT"         # 生成先の列名 (固定)
-      neg_dir: ["S", "W"]    # 負数扱いにする方位 (デフォルト値: 変更不要)
+      col_deg: "Lat_D"       # Replace with latitude degrees column
+      col_min: "Lat_M"       # Replace with latitude minutes column
+      col_sec: "Lat_S"       # Replace with latitude seconds column
+      col_dir: "Lat_Dir"     # Replace with latitude hemisphere column (N/S)
+      dst_col: "LAT"         # Destination column (fixed)
+      neg_dir: ["S", "W"]   # Directions that should become negative
 
-  # LON 生成 (SoftDMStoDecimalCB 2 発目)
+  # Build LON
   - name: SoftDMStoDecimalCB
     args:
-      col_deg: "Lon_D"       # ← 経度「度」の列名に変更
-      col_min: "Lon_M"       # ← 経度「分」の列名に変更
-      col_sec: "Lon_S"       # ← 経度「秒」の列名に変更
-      col_dir: "Lon_Dir"     # ← 経度方位 ("E"/"W") の列名に変更 ★ 省略不可
-      dst_col: "LON"         # 生成先の列名 (固定)
-      neg_dir: ["S", "W"]    # 負数扱いにする方位 (変更不要)
+      col_deg: "Lon_D"       # Replace with longitude degrees column
+      col_min: "Lon_M"       # Replace with longitude minutes column
+      col_sec: "Lon_S"       # Replace with longitude seconds column
+      col_dir: "Lon_Dir"     # Replace with longitude hemisphere column (E/W)
+      dst_col: "LON"         # Destination column (fixed)
+      neg_dir: ["S", "W"]   # Directions that should become negative
 
-  # ── 分のみ (秒なし) のケース ─────────────────────────────────────────────
-  # 秒列が存在しない場合、col_sec に 0 が入った列名を渡す。
-  # 0 列を作成する最も簡単な方法: pre_cbs の前段で別途 CB を追加するか、
-  # YAML ではなくカスタムローダーで df['Lat_S_zero'] = 0 を追加する。
-  # (Fail-Fast 規則 6 に従い、CB 内での fillna/assign は禁止)
+  # Minute-only variant (no seconds column)
+  # If your source has no seconds field, create a zero-filled helper column first
+  # and pass that helper as col_sec.
