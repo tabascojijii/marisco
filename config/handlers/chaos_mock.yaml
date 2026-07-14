@@ -1,0 +1,33 @@
+handler:
+  module_name: chaos_mock
+  title: Chaos Mock
+  description: Runtime chaos fixture for local file-based callback loading audit.
+
+data_source:
+  url: tests/data/chaos_mock.csv
+  fname_out: chaos_mock.nc
+  format: csv
+
+loader:
+  path: "tests.data.chaos_patch.load_chaos_mock"
+
+columns: {}
+normalize_case: {}
+pre_cbs:
+  - file: "../../tests/data/chaos_patch.py"
+    class: "UltimateChaosPatchCB"
+post_cbs: []
+
+nomenclatures:
+  nuclide_lut:
+    Cs137: 1
+  unit_lut:
+    Bq_kg: 1
+  lab_lut:
+    CHAOS_LAB: 1
+  area_default: 0
+
+output:
+  keywords:
+    - audit
+    - chaos

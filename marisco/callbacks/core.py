@@ -33,24 +33,24 @@ class Callback():
 
 # %% ../../nbs/api/callbacks/core.ipynb #0414ac1d
 class PerGroupCB(Callback):
-    "Calls `each_grp` for each group in `tfm.dfs`; set `grps` to restrict to specific groups."
+    "Calls `each_grp` for each group in `state.dfs`; set `grps` to restrict to specific groups."
     grps: list = None
 
     def __init__(self,
-                 grps: list=None  # Groups to process; None = all groups in `tfm.dfs`
+                 grps: list=None  # Groups to process; None = all groups in `state.dfs`
                  ):
         if grps is not None: self.grps = grps
 
-    def __call__(self, tfm):
-        for grp in (self.grps or tfm.dfs):
-            if grp in tfm.dfs: self.each_grp(grp, tfm.dfs[grp], tfm)
+    def __call__(self, state: PipelineState):
+        for grp in (self.grps or state.dfs):
+            if grp in state.dfs: self.each_grp(grp, state.dfs[grp], state)
 
 # %% ../../nbs/api/callbacks/core.ipynb #92cf2c26
 @patch
 def each_grp(self:PerGroupCB,
-             grp: str,          # Group key e.g. `'SEAWATER'`, `'BIOTA'`
-             df: pd.DataFrame,  # DataFrame for this group
-             tfm,               # Parent `Transformer`
+             grp: str,                    # Group key e.g. `'SEAWATER'`, `'BIOTA'`
+             df: pd.DataFrame,            # DataFrame for this group
+             state: PipelineState,        # Pipeline state carrying dfs + logs
              ):
     "Override to implement per-group transformation logic."
     raise NotImplementedError

@@ -227,7 +227,7 @@ def gap_check(cfg: HandlerConfig) -> None:
         f"class Fill{g}CB(PerGroupCB):\n"
         f"    \"TODO: provide {g} — add to columns/rename_cols or as a standalone CB.\"\n"
         f"    grps = [\'SEAWATER\']\n"
-        f"    def each_grp(self, grp, df, tfm): df[\'{g}\'] = None  # FIXME"
+        f"    def each_grp(self, grp, df, state: PipelineState): df[\'{g}\'] = None  # FIXME"
         for g in sorted(gaps)
     )
     print(f"\n⚠  GAP in {cfg.title!r} — missing MARIS columns: {sorted(gaps)}\n\n{skeleton}\n")
