@@ -13,10 +13,11 @@ from operator import attrgetter
 from cftime import date2num ,num2date
 import numpy as np
 import pandas as pd
-from typing import List, Dict, Callable, Any, Optional, Union
+from typing import List, Dict, Callable, Any, Optional, Union, ClassVar
 from collections import defaultdict
 from ..configs import get_lut, get_time_units, NC_GROUPS, SMP_TYPE_LUT
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
+
 
 # %% auto #0
 __all__ = ['Callback', 'PerGroupCB', 'run_cbs', 'Transformer', 'SanitizeLonLatCB', 'RemapCB', 'SoftRemapCB', 'RenameColsCB',
@@ -64,25 +65,36 @@ def run_cbs(
         cb(obj)
 
 # %% ../../nbs/api/callbacks/core.ipynb #82a6611d
-class Transformer():
+class Transformer(BaseModel):
     "Transform the dataframe(s) according to the specified callbacks."
-    _SINGLE_KEY = ""  # sentinel key for single-DF mode
+    model_config = ConfigDict(arbitrary_types_allowed=True, validate_assignment=True)
+
+    _SINGLE_KEY: ClassVar[str] = ""  # Pydantic ClassVar — not a model field
+
+    dfs:         Dict[str, pd.DataFrame]  = Field(default_factory=dict)
+    cbs:         Optional[List[Any]]      = None
+    custom_maps: Any = Field(default_factory=lambda: defaultdict(lambda: defaultdict(dict)))
+    logs:        List[str]                = Field(default_factory=list)
 
     def __init__(self,
-                 data: Union[Dict[str, pd.DataFrame], pd.DataFrame],
-                 cbs: Optional[List[Callback]]=None,
+                 data:        Union[Dict[str, pd.DataFrame], pd.DataFrame],
+                 cbs:         Optional[List[Any]] = None,
                  custom_maps: Dict = None,
-                 inplace: bool=False
-                 ):
-        store_attr()
-        self.dfs  = self._to_dict(data, inplace)
-        self.logs = []
-        self.custom_maps = custom_maps or defaultdict(lambda: defaultdict(dict))
+                 inplace:     bool = False,
+                 **kwargs):
+        # data and inplace are transient: evaluated here, never stored as fields
+        super().__init__(
+            dfs=Transformer._make_dfs(data, inplace),
+            cbs=cbs,
+            custom_maps=custom_maps or defaultdict(lambda: defaultdict(dict)),
+            **kwargs
+        )
 
-    def _to_dict(self, data, inplace) -> Dict[str, pd.DataFrame]:
-        "Normalise input to a dict; single DataFrame maps to {_SINGLE_KEY: df}."
+    @classmethod
+    def _make_dfs(cls, data, inplace) -> Dict[str, pd.DataFrame]:
+        "Normalize input; single DataFrame maps to {_SINGLE_KEY: df}."
         if isinstance(data, pd.DataFrame):
-            return {self._SINGLE_KEY: data if inplace else data.copy()}
+            return {cls._SINGLE_KEY: data if inplace else data.copy()}
         return data if inplace else {k: v.copy() for k, v in data.items()}
 
     @property
@@ -95,16 +107,18 @@ class Transformer():
         "Single-DF accessor; valid only when constructed with a single DataFrame."
         return self.dfs.get(self._SINGLE_KEY)
 
-    @df.setter
-    def df(self, value: pd.DataFrame) -> None:
-        "State-contamination guard: raises ValueError in multi-group state."
-        if self._SINGLE_KEY not in self.dfs and len(self.dfs) > 0:
-            raise ValueError(
-                "Cannot assign tfm.df in multi-group state "
-                "(active groups: " + str(list(self.dfs.keys())) + "). "
-                "Use tfm.dfs[grp] instead."
-            )
-        self.dfs[self._SINGLE_KEY] = value
+    def __setattr__(self, name: str, value: Any) -> None:
+        "Route df assignment through state-contamination guard; delegate all else to Pydantic."
+        if name == 'df':
+            if self._SINGLE_KEY not in self.dfs and len(self.dfs) > 0:
+                raise ValueError(
+                    "Cannot assign tfm.df in multi-group state "
+                    "(active groups: " + str(list(self.dfs.keys())) + "). "
+                    "Use tfm.dfs[grp] instead."
+                )
+            self.dfs[self._SINGLE_KEY] = value
+        else:
+            super().__setattr__(name, value)
 
     def __call__(self):
         "Transform the dataframe(s) according to the specified callbacks."
