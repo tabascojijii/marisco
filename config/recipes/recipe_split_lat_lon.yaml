@@ -1,0 +1,47 @@
+# ══════════════════════════════════════════════════════════════════════════════
+# レシピ: 合体列解体 — "45.5/135.2" 形式の 1 列を LAT・LON の 2 列へ分割
+#
+# 【症状】 緯度と経度が 1 つの列に "/" や "," で区切られて入っている
+#   例: "45.5/135.2"  "-78.3/15.8"  "78.5N,15.2E"
+#
+# 【使い方】
+#   1. src_col を実データの列名に変更する
+#   2. データの区切り形式に合わせて pattern を選択する (バリエーションは下記参照)
+#   3. この pre_cbs: ブロック全体を template.yaml の pre_cbs: [] と置換してペーストする
+#
+# ⚠ 鉄則: columns: に合体列 → LAT / LON のマッピングを「絶対に書くな」。
+#   書くと文字列 "45.5/135.2" が LAT 列に入り、Rail 9 の _GuardedSanitizeLonLatCB が
+#   float() 変換を試みて ValueError で崩壊する。
+#   pre_cbs のこのレシピが LAT/LON を生成するまで columns: には合体列を追加しないこと。
+#
+# ⚠ キャスト制約: SoftRegexTransformCB は dst_cols の全列に同一の cast を適用する。
+#   LAT と LON は両方 float なので問題ないが、float と str を混在させることはできない。
+# ══════════════════════════════════════════════════════════════════════════════
+
+pre_cbs:
+
+  # ── バリエーション 1: スラッシュ区切り "45.5/135.2" または "-78.3/-15.8" ──
+  - name: SoftRegexTransformCB
+    args:
+      src_col:  "lat_lon"            # ← 実際の合体列名に変更すること
+      # [-\\d.]+ で負値 (南緯・西経) にも対応する
+      pattern:  "(?P<LAT>[-\\d.]+)/(?P<LON>[-\\d.]+)"
+      dst_cols: ["LAT", "LON"]       # ← グループ名 (?P<NAME>) と一致させること
+      cast:     "float"
+
+  # ── バリエーション 2: コンマ区切り "78.5N,15.2E" (方位記号付き) ────────────
+  # 数値部分のみを抽出。負値変換が必要な場合は後段に SoftDMStoDecimalCB を追加。
+  # - name: SoftRegexTransformCB
+  #   args:
+  #     src_col:  "position"
+  #     pattern:  "(?P<LAT>[\\d.]+)[NS],\\s*(?P<LON>[\\d.]+)[EW]"
+  #     dst_cols: ["LAT", "LON"]
+  #     cast:     "float"
+
+  # ── バリエーション 3: スペース区切り "45 135" ─────────────────────────────
+  # - name: SoftRegexTransformCB
+  #   args:
+  #     src_col:  "lat_lon"
+  #     pattern:  "(?P<LAT>[-\\d.]+)\\s+(?P<LON>[-\\d.]+)"
+  #     dst_cols: ["LAT", "LON"]
+  #     cast:     "float"

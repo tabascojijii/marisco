@@ -4,7 +4,6 @@
 
 # %% ../../nbs/handlers/general.ipynb #d3398dc1
 from __future__ import annotations
-import importlib
 from pathlib import Path
 from ..callbacks.core import PipelineState, run_pipeline
 from .pipeline.loader  import HandlerConfig, PluginSpec, load_data, gap_check
@@ -12,19 +11,21 @@ from .pipeline.writer  import write_netcdf
 
 
 # %% auto #0
-__all__ = ['build_core_pipeline', 'encode']
+__all__ = ['resolve_callback', 'build_core_pipeline', 'encode']
 
 # %% ../../nbs/handlers/general.ipynb #717fbb3a
-def _load_plugin(spec: PluginSpec):
-    "Fail-Fast dynamic import: ImportError/AttributeError raised before pipeline starts."
-    module_path, class_name = spec.path.rsplit(".", 1)
-    cls = getattr(importlib.import_module(module_path), class_name)
+def resolve_callback(spec: PluginSpec, yaml_dir: Path = None):
+    "Return the CB *class* (not yet instantiated) for the given PluginSpec."
+    return spec.resolve(yaml_dir)
+
+def _load_plugin(spec: PluginSpec, yaml_dir: Path = None):
+    "Fail-Fast dynamic import: resolve class then instantiate with spec.args."
+    cls = resolve_callback(spec, yaml_dir=yaml_dir)
     return cls(**spec.args)
 
-def _load_plugin_fn(spec: PluginSpec):
+def _load_plugin_fn(spec: PluginSpec, yaml_dir: Path = None):
     "Fail-Fast dynamic import of a plain function (not instantiated); for custom loaders."
-    module_path, fn_name = spec.path.rsplit(".", 1)
-    return getattr(importlib.import_module(module_path), fn_name)
+    return spec.resolve_fn(yaml_dir)
 
 def build_core_pipeline(cfg: HandlerConfig) -> list:
     "Auto-assemble the standard core CB chain with topology guards; EncodeTimeCB/SanitizeLonLatCB degrade to Null-Object when their required columns are absent."
@@ -33,7 +34,6 @@ def build_core_pipeline(cfg: HandlerConfig) -> list:
         SoftConvertUnitCB, SoftRemapCB, EncodeTimeCB, SanitizeLonLatCB, AddSampleIDCB,
         _GuardedEncodeTimeCB, _GuardedSanitizeLonLatCB,
     )
-
 
     # Merge columns shorthand (S-7c) with legacy rename; time_format hint wins over dt_format
     merged = cfg.model_copy(update={
@@ -59,19 +59,22 @@ def build_core_pipeline(cfg: HandlerConfig) -> list:
 def encode(yaml_path: str | Path, fname_out: str = None) -> None:
     "Encode any YAML-configured dataset to MARIS NetCDF4 in a pure, single-pass pipeline."
     from marisco.callbacks import LowerStripNameCB
+    yaml_path = Path(yaml_path)
+    yaml_dir  = yaml_path.parent
     cfg = HandlerConfig.from_yaml(yaml_path)
     gap_check(cfg)
     if fname_out:
         cfg = cfg.model_copy(update={"fname_out": fname_out})
-    loader  = _load_plugin_fn(cfg.loader) if cfg.loader else load_data
+    loader  = _load_plugin_fn(cfg.loader, yaml_dir=yaml_dir) if cfg.loader else load_data
     dfs     = loader(cfg)
     # normalize_case CBs run FIRST (before pre_cbs) to satisfy topology: e.g. nuclide→NUCLIDE
     # must exist before any pre_cb that reads NUCLIDE (such as HelcomNuclideRemapCB).
     normalize_cbs = [LowerStripNameCB(col_src=s, col_dst=d) for s, d in cfg.normalize_case.items()]
     chain   = [*normalize_cbs,
-               *[_load_plugin(s) for s in cfg.pre_cbs],
+               *[_load_plugin(s, yaml_dir=yaml_dir) for s in cfg.pre_cbs],
                *build_core_pipeline(cfg),
-               *[_load_plugin(s) for s in cfg.post_cbs]]
+               *[_load_plugin(s, yaml_dir=yaml_dir) for s in cfg.post_cbs]]
     state   = PipelineState(dfs=dfs)
     run_pipeline(state, chain)
     write_netcdf(state, cfg)
+

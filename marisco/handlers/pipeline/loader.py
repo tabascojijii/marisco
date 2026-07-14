@@ -5,21 +5,102 @@
 # %% ../../../nbs/handlers/pipeline/loader.ipynb #6eadfec0
 from __future__ import annotations
 import io
+import importlib
+import importlib.util
 from pathlib import Path
-from typing import Optional
+from typing import Annotated, Optional, Union
 import requests
 import yaml
 import pandas as pd
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict, TypeAdapter
+
 
 # %% auto #0
-__all__ = ['PluginSpec', 'MeltEntry', 'UnitConversionCfg', 'HandlerConfig', 'load_data', 'gap_check']
+__all__ = ['PluginSpecModel', 'BasePluginSpec', 'LegacyPathPluginSpec', 'NamePluginSpec', 'FilePluginSpec', 'PluginSpec',
+           'MeltEntry', 'UnitConversionCfg', 'HandlerConfig', 'load_data', 'gap_check']
 
 # %% ../../../nbs/handlers/pipeline/loader.ipynb #1f01e56c
-class PluginSpec(BaseModel):
-    "External Callback injection spec: fully-qualified class path + constructor kwargs."
-    path: str                           # e.g. 'marisco.handlers.tepco.RemoveJapaneseCharCB'
+# Modules scanned (in order) when spec.name is used; first hit wins.
+_SHARED_SCAN_MODULES = [
+    "marisco.callbacks.shared",
+    "marisco.callbacks.core",
+]
+
+class BasePluginSpec(BaseModel):
+    "External Callback injection spec with polymorphic resolution."
+    model_config = ConfigDict(populate_by_name=True)
+    path: Optional[str] = None
+    name: Optional[str] = None
+    file: Optional[str] = None
+    class_: Optional[str] = Field(None, alias="class")
     args: dict = Field(default_factory=dict)
+
+    def resolve(self, yaml_dir: Path = None):
+        raise NotImplementedError
+
+    def resolve_fn(self, yaml_dir: Path = None):
+        raise ValueError("Custom loader PluginSpec must use 'path:' (function, not class).")
+
+class LegacyPathPluginSpec(BasePluginSpec):
+    "Legacy fully-qualified dotted import path."
+    path: str
+
+    def resolve(self, yaml_dir: Path = None):
+        module_path, class_name = self.path.rsplit(".", 1)
+        return getattr(importlib.import_module(module_path), class_name)
+
+    def resolve_fn(self, yaml_dir: Path = None):
+        module_path, fn_name = self.path.rsplit(".", 1)
+        return getattr(importlib.import_module(module_path), fn_name)
+
+class NamePluginSpec(BasePluginSpec):
+    "Shorthand callback name auto-resolved from shared/core modules."
+    name: str
+
+    def resolve(self, yaml_dir: Path = None):
+        for mod_path in _SHARED_SCAN_MODULES:
+            mod = importlib.import_module(mod_path)
+            if hasattr(mod, self.name):
+                return getattr(mod, self.name)
+        raise ImportError(
+            f"Callback '{self.name}' not found in {_SHARED_SCAN_MODULES}. "
+            "Use the full 'path:' form to specify a non-shared callback."
+        )
+
+class FilePluginSpec(BasePluginSpec):
+    "Local file import relative to the YAML directory."
+    file: str
+    class_: str = Field(alias="class")
+
+    def resolve(self, yaml_dir: Path = None):
+        if yaml_dir is None:
+            raise ValueError("yaml_dir is required for file-based plugin loading")
+        file_path = (Path(yaml_dir) / self.file).resolve()
+        if not file_path.exists():
+            raise FileNotFoundError(f"Plugin file not found: {file_path}")
+        mod_spec = importlib.util.spec_from_file_location("_marisco_local_cb", file_path)
+        mod = importlib.util.module_from_spec(mod_spec)
+        mod_spec.loader.exec_module(mod)
+        if not hasattr(mod, self.class_):
+            raise AttributeError(f"Class '{self.class_}' not found in {file_path}")
+        return getattr(mod, self.class_)
+
+PluginSpecModel = Annotated[
+    Union[LegacyPathPluginSpec, NamePluginSpec, FilePluginSpec],
+    Field(union_mode="smart"),
+]
+_PLUGIN_SPEC_ADAPTER = TypeAdapter(PluginSpecModel)
+
+class PluginSpec:
+    "Backward-compatible factory for polymorphic plugin specs."
+
+    def __new__(cls, *args, **kwargs):
+        data = args[0] if args else kwargs
+        return _PLUGIN_SPEC_ADAPTER.validate_python(data)
+
+    @classmethod
+    def model_validate(cls, data):
+        return _PLUGIN_SPEC_ADAPTER.validate_python(data)
 
 class MeltEntry(BaseModel):
     "One wide-to-long mapping entry: value column, uncertainty column, nuclide, unit, and lab."
@@ -74,9 +155,9 @@ class HandlerConfig(BaseModel):
     # output
     keywords: list[str] = Field(default_factory=list)
     # plugin injection: custom loader + pre/post standard core pipeline
-    loader:   Optional[PluginSpec] = None
-    pre_cbs:  list[PluginSpec]     = Field(default_factory=list)
-    post_cbs: list[PluginSpec]     = Field(default_factory=list)
+    loader:   Optional[PluginSpecModel] = None
+    pre_cbs:  list[PluginSpecModel]     = Field(default_factory=list)
+    post_cbs: list[PluginSpecModel]     = Field(default_factory=list)
 
     @classmethod
     def from_yaml(cls, path: str | Path) -> "HandlerConfig":
@@ -113,10 +194,11 @@ class HandlerConfig(BaseModel):
             lab_constants    = nom.get("lab_constants", {}),
             area_default     = nom.get("area_default", 0),
             keywords         = raw.get("output", {}).get("keywords", []),
-            loader           = PluginSpec(**loader_raw) if loader_raw else None,
+            loader           = loader_raw,
             pre_cbs          = raw.get("pre_cbs", []),
             post_cbs         = raw.get("post_cbs", []),
         )
+
 
 # %% ../../../nbs/handlers/pipeline/loader.ipynb #fb3b4a2b
 def load_data(cfg: HandlerConfig, grp: str = "SEAWATER") -> dict[str, pd.DataFrame]:
