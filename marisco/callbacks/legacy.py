@@ -13,6 +13,7 @@ Docs: https://franckalbinet.github.io/mariscoapi/callbacks/legacy.html.md"""
 
 # %% ../../nbs/api/callbacks/legacy.ipynb #legacy_imports
 from __future__ import annotations
+import numpy as np
 import pandas as pd
 from typing import Dict, Union
 from fastcore.all import store_attr
@@ -22,7 +23,7 @@ from ..configs import SMP_TYPE_LUT
 
 # %% auto #0
 __all__ = ['AddSampleTypeIdColumnCB', 'RenameColumnsCB', 'RemoveAllNAValuesCB', 'MeltWideNuclidesCB', 'CompareDfsAndTfmCB',
-           'UniqueIndexCB', 'ParseTimeCB']
+           'UniqueIndexCB', 'ParseTimeCB', 'LegacyTransformer']
 
 # %% ../../nbs/api/callbacks/legacy.ipynb #949d6471
 class AddSampleTypeIdColumnCB(PerGroupCB):
@@ -145,3 +146,16 @@ class ParseTimeCB(PerGroupCB):
     def __init__(self, time_col_name: str='TIME'): store_attr()
     def each_grp(self, grp, df, tfm):
         df[self.time_col_name] = pd.to_datetime(df[self.time_col_name], format='ISO8601')
+
+# %% ../../nbs/api/callbacks/legacy.ipynb #legacy_transformer
+class LegacyTransformer(Transformer):
+    "Backward-compatible Transformer; adds unique() grandfathered from marisco 1.x."
+
+    def unique(self, col_name: str) -> np.ndarray:
+        "Distinct values of a specific column present in all groups."
+        columns = [df.get(col_name) for df in self.dfs.values()
+                   if df.get(col_name) is not None]
+        values = (np.concatenate([col.dropna().values for col in columns])  # grandfathered
+                  if columns else [])
+        return np.unique(values)
+

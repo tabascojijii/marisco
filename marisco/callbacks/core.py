@@ -66,37 +66,51 @@ def run_cbs(
 # %% ../../nbs/api/callbacks/core.ipynb #82a6611d
 class Transformer():
     "Transform the dataframe(s) according to the specified callbacks."
-    def __init__(self, 
-                 data: Union[Dict[str, pd.DataFrame], pd.DataFrame], # Data to be transformed
-                 cbs: Optional[List[Callback]]=None, # List of callbacks to run
+    _SINGLE_KEY = ""  # sentinel key for single-DF mode
+
+    def __init__(self,
+                 data: Union[Dict[str, pd.DataFrame], pd.DataFrame],
+                 cbs: Optional[List[Callback]]=None,
                  custom_maps: Dict = None,
-                 inplace: bool=False # Whether to modify the dataframe(s) in place
-                 ): 
+                 inplace: bool=False
+                 ):
         store_attr()
-        self.is_single_df = isinstance(data, pd.DataFrame)
-        self.df, self.dfs = self._prepare_data(data, inplace)
+        self.dfs  = self._to_dict(data, inplace)
         self.logs = []
         self.custom_maps = custom_maps or defaultdict(lambda: defaultdict(dict))
-            
-    def _prepare_data(self, data, inplace):
-        if self.is_single_df:
-            return (data if inplace else data.copy()), None
-        else:
-            return None, (data if inplace else {k: v.copy() for k, v in data.items()})
-    
-    def unique(self, col_name: str) -> np.ndarray:
-        "Distinct values of a specific column present in all groups."
-        if self.is_single_df:
-            values = self.df.get(col_name, pd.Series()).dropna().values  # grandfathered
-        else:
-            columns = [df.get(col_name) for df in self.dfs.values() if df.get(col_name) is not None]
-            values = np.concatenate([col.dropna().values for col in columns]) if columns else []  # grandfathered
-        return np.unique(values)
-        
+
+    def _to_dict(self, data, inplace) -> Dict[str, pd.DataFrame]:
+        "Normalise input to a dict; single DataFrame maps to {_SINGLE_KEY: df}."
+        if isinstance(data, pd.DataFrame):
+            return {self._SINGLE_KEY: data if inplace else data.copy()}
+        return data if inplace else {k: v.copy() for k, v in data.items()}
+
+    @property
+    def is_single_df(self) -> bool:
+        "True iff sentinel key present AND dict has exactly one entry."
+        return self._SINGLE_KEY in self.dfs and len(self.dfs) == 1
+
+    @property
+    def df(self) -> Optional[pd.DataFrame]:
+        "Single-DF accessor; valid only when constructed with a single DataFrame."
+        return self.dfs.get(self._SINGLE_KEY)
+
+    @df.setter
+    def df(self, value: pd.DataFrame) -> None:
+        "State-contamination guard: raises ValueError in multi-group state."
+        if self._SINGLE_KEY not in self.dfs and len(self.dfs) > 0:
+            raise ValueError(
+                "Cannot assign tfm.df in multi-group state "
+                "(active groups: " + str(list(self.dfs.keys())) + "). "
+                "Use tfm.dfs[grp] instead."
+            )
+        self.dfs[self._SINGLE_KEY] = value
+
     def __call__(self):
         "Transform the dataframe(s) according to the specified callbacks."
         if self.cbs: run_cbs(self.cbs, self)
-        return self.df if self.dfs is None else self.dfs
+        return self.dfs[self._SINGLE_KEY] if self.is_single_df else self.dfs
+
 
 # %% ../../nbs/api/callbacks/core.ipynb #097d66b6
 class SanitizeLonLatCB(PerGroupCB):
@@ -134,11 +148,9 @@ class RemapCB(PerGroupCB):
         self.__doc__ = f"Remap values from '{col_src}' to '{col_remap}' for groups: {grp_str}."
 
     def _resolve_lut(self, tfm):
-        "Resolve the LUT: if a callable, call it with tfm's dfs to produce a dict."
+        "Resolve the LUT: if a callable, call it with tfm.dfs to produce a dict."
         spec = self.lut
-        if callable(spec):
-            dfs = tfm.dfs if not tfm.is_single_df else {'_': tfm.df}
-            spec = spec(dfs)
+        if callable(spec): spec = spec(tfm.dfs)   # unified dict; single-DF = {"": df}
         return spec
 
     def __call__(self, tfm):
@@ -148,6 +160,7 @@ class RemapCB(PerGroupCB):
     def each_grp(self, grp, df, tfm):
         df[self.col_remap] = (df[self.col_src]
             .map(self._resolved_lut).fillna(self.default_val).astype(int))  # grandfathered
+
 
 # %% ../../nbs/api/callbacks/core.ipynb #30153e7b
 class SoftRemapCB(PerGroupCB):

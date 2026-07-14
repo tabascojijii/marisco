@@ -6,7 +6,7 @@
 from __future__ import annotations
 import importlib
 from pathlib import Path
-from ..callbacks import Transformer
+from ..callbacks.core import Transformer
 from .pipeline.loader  import HandlerConfig, PluginSpec, load_data, gap_check
 from .pipeline.writer  import write_netcdf
 
