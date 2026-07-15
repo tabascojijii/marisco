@@ -164,3 +164,6 @@ tools/
 
 # Local design mementos & refactoring notes (never export to remote)
 nbs/reference/titanica-meltpattern-refactoring.md
+nbs/reference/cb-design-rules.md
+
+TODO_local.md
