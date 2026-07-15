@@ -6,6 +6,7 @@ from __future__ import annotations
 import io
 import importlib
 import importlib.util
+import sys
 from pathlib import Path
 from typing import Annotated, Any, Optional, Union
 import requests
@@ -389,6 +390,10 @@ def load_data(cfg: HandlerConfig, grp: str = "SEAWATER") -> dict[str, pd.DataFra
 _MARIS_REQUIRED = frozenset({"LAT", "LON", "TIME", "NUCLIDE", "VALUE", "UNC", "UNIT"})
 _MELT_PROVIDES = frozenset({"NUCLIDE", "VALUE", "UNC", "UNIT"})
 _DEEP_CRITICAL = frozenset({"LAT", "LON", "TIME"})
+_DEFAULT_LOADER_PATHS = frozenset({
+    "marisco.handlers.pipeline.loader.load_data",
+    "marisco.handlers.pipeline.loader:load_data",
+})
 
 
 def _gate2_skeleton(columns: set[str]) -> str:
@@ -401,10 +406,70 @@ def _gate2_skeleton(columns: set[str]) -> str:
     )
 
 
-def _deep_gap_message(title: str, findings: list[dict[str, Any]]) -> str:
+def _stdout_supports(text: str) -> bool:
+    encoding = getattr(sys.stdout, "encoding", None) or "utf-8"
+    try:
+        text.encode(encoding)
+        return True
+    except UnicodeEncodeError:
+        return False
+
+
+def _loader_suggestion_prefix() -> str:
+    return "💡 SUGGESTION:" if _stdout_supports("💡") else "SUGGESTION:"
+
+
+def _uses_default_loader(cfg: HandlerConfig) -> bool:
+    if cfg.loader is None:
+        return True
+    return getattr(cfg.loader, "path", None) in _DEFAULT_LOADER_PATHS
+
+
+def _loader_hint_name(cfg: HandlerConfig) -> str:
+    stem = (cfg.module_name or "handler").split(".")[-1].strip() or "handler"
+    return stem.replace("-", "_")
+
+
+def _loader_read_hint(cfg: HandlerConfig) -> str:
+    if cfg.fmt.lower() in {"xls", "xlsx", "excel"}:
+        return "# df = pd.read_excel(cfg.url)"
+    return "# df = pd.read_csv(cfg.url)"
+
+
+def _custom_loader_skeleton(cfg: HandlerConfig, findings: list[dict[str, Any]]) -> str:
+    grp = next((finding["grp"] for finding in findings if finding.get("grp")), "SEAWATER")
+    lines = [
+        _loader_suggestion_prefix() + " Do not patch this in the pipeline using callbacks.",
+        'Use the "Boundary Ingestion Pattern" to cleanse this file before the pipeline runs.',
+        "",
+        f"[Step 1] Save this skeleton as: config/handlers/{_loader_hint_name(cfg)}_loader.py",
+        "[Step 2] Point to it in your YAML under 'loader:'",
+        "",
+        "--- CUSTOM LOADER SKELETON ---",
+        "import pandas as pd",
+        "from marisco.handlers.pipeline.loader import HandlerConfig",
+        "",
+        "def load_and_cleanse(cfg: HandlerConfig) -> dict[str, pd.DataFrame]:",
+        '    """',
+        f"    Boundary Loader Skeleton for {cfg.title or cfg.module_name}.",
+        "    TODO: Fix missing values in coordinates/time columns.",
+        '    """',
+        "    # 1. Load the raw file",
+        f"    {_loader_read_hint(cfg)}  # or adapt to the provider format",
+        "",
+        "    # 2. Cleanse data (e.g., forward-fill, cast types)",
+        "    # ...",
+        "",
+        "    # 3. Return a dictionary of cleansed DataFrames mapped to MARIS groups",
+        f"    return {{'{grp}': df}}",
+    ]
+    return "\n".join(lines)
+
+
+def _deep_gap_message(cfg: HandlerConfig, findings: list[dict[str, Any]]) -> str:
     sections = [
         "Gate 2 failed: the YAML contract declared canonical MARIS fields, but the loaded dataset is not semantically valid.",
-        f"Dataset: {title or 'Untitled handler'}",
+        f"Dataset: {cfg.title or 'Untitled handler'}",
     ]
     skeleton_cols: set[str] = set()
     for finding in findings:
@@ -419,12 +484,16 @@ def _deep_gap_message(title: str, findings: list[dict[str, Any]]) -> str:
             lines.extend(f"- {col} is present but empty in every row." for col in finding['empty_cols'])
             skeleton_cols.update(finding['empty_cols'])
         sections.append("\n".join(lines))
-    sections.extend([
-        "Encoding would be unsafe here because downstream time/coordinate rails can discard rows and mask the upstream defect.",
-        "Fix the boundary loader or add a pre-canonical callback that materializes these fields before Gate 2.",
-        "CB skeleton:",
-        _gate2_skeleton(skeleton_cols),
-    ])
+    sections.append("Encoding would be unsafe here because downstream time/coordinate rails can discard rows and mask the upstream defect.")
+    boundary_cols = skeleton_cols & _DEEP_CRITICAL
+    if boundary_cols:
+        sections.append(_custom_loader_skeleton(cfg, findings))
+    if skeleton_cols and (not boundary_cols or not _uses_default_loader(cfg)):
+        sections.extend([
+            "Fix the boundary loader or add a pre-canonical callback that materializes these fields before Gate 2.",
+            "CB skeleton:",
+            _gate2_skeleton(skeleton_cols),
+        ])
     return "\n\n".join(part for part in sections if part)
 
 
@@ -457,6 +526,6 @@ def gap_check(cfg: HandlerConfig, dfs: Optional[dict[str, pd.DataFrame]] = None)
     if not findings:
         return
 
-    msg = _deep_gap_message(cfg.title, findings)
+    msg = _deep_gap_message(cfg, findings)
     print(f"\n{msg}\n")
     raise ValueError(msg)

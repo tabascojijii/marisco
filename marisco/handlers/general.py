@@ -8,7 +8,7 @@ from ..callbacks.core import PipelineState, run_pipeline
 from .pipeline.loader import HandlerConfig, PluginSpec, load_data, gap_check
 from .pipeline.writer import write_netcdf
 
-__all__ = ['resolve_callback', 'build_phase_pipelines', 'build_core_pipeline', 'encode']
+__all__ = ['resolve_callback', 'build_phase_pipelines', 'build_core_pipeline', 'verify', 'encode']
 
 
 def resolve_callback(spec: PluginSpec, yaml_dir: Path = None):
@@ -33,6 +33,28 @@ def _call_loader(cfg: HandlerConfig, yaml_dir: Path = None):
         return load_data(cfg)
     loader_fn = _load_plugin_fn(cfg.loader, yaml_dir=yaml_dir)
     return loader_fn(cfg, **cfg.loader.args)
+
+
+def _build_normalize_cbs(cfg: HandlerConfig) -> list:
+    "Assemble the normalization callbacks declared in normalize_case."
+    from marisco.callbacks import LowerStripNameCB
+    return [LowerStripNameCB(col_src=s, col_dst=d) for s, d in cfg.normalize_case.items()]
+
+
+def _load_cfg(yaml_path: str | Path, fname_out: str = None):
+    "Bind YAML to HandlerConfig and apply an optional output override."
+    yaml_path = Path(yaml_path)
+    yaml_dir = yaml_path.parent
+    cfg = HandlerConfig.from_yaml(yaml_path)
+    gap_check(cfg)
+    if fname_out:
+        cfg = cfg.model_copy(update={"fname_out": fname_out})
+    return cfg, yaml_dir
+
+
+def _init_state(cfg: HandlerConfig, yaml_dir: Path = None) -> PipelineState:
+    "Load provider data and wrap it in PipelineState."
+    return PipelineState(dfs=_call_loader(cfg, yaml_dir=yaml_dir))
 
 
 def build_phase_pipelines(cfg: HandlerConfig) -> tuple[list, list]:
@@ -67,38 +89,59 @@ def build_phase_pipelines(cfg: HandlerConfig) -> tuple[list, list]:
     return pre_lossy, post_lossy
 
 
+def _run_preflight(state: PipelineState, cfg: HandlerConfig, yaml_dir: Path = None) -> PipelineState:
+    "Run all declarative, non-lossy transformations and Gate 2 in memory."
+    pre_lossy, _ = build_phase_pipelines(cfg)
+    chain = [
+        *_build_normalize_cbs(cfg),
+        *[_load_plugin(s, yaml_dir=yaml_dir) for s in cfg.pre_cbs],
+        *pre_lossy,
+    ]
+    run_pipeline(state, chain)
+    gap_check(cfg, state.dfs)
+    return state
+
+
+def _run_finalize(state: PipelineState, cfg: HandlerConfig, yaml_dir: Path = None) -> PipelineState:
+    "Run the lossy/output-facing phase after preflight has passed."
+    _, post_lossy = build_phase_pipelines(cfg)
+    chain = [
+        *post_lossy,
+        *[_load_plugin(s, yaml_dir=yaml_dir) for s in cfg.post_cbs],
+    ]
+    run_pipeline(state, chain)
+    return state
+
+
+def _verify_success_message(cfg: HandlerConfig, state: PipelineState) -> str:
+    lines = [
+        f"Congratulations - Gate 1 and Gate 2 both passed for {cfg.title or cfg.module_name!r}.",
+        "The declarative pipeline is physically consistent through the pre-lossy checkpoint.",
+    ]
+    for grp, df in state.dfs.items():
+        lines.append(f"- {grp}: {len(df):,} rows x {df.shape[1]} cols after declarative canonicalization")
+    return "\n".join(lines)
+
+
 def build_core_pipeline(cfg: HandlerConfig) -> list:
     "Auto-assemble the standard core CB chain with topology guards."
     pre_lossy, post_lossy = build_phase_pipelines(cfg)
     return [*pre_lossy, *post_lossy]
 
 
+def verify(yaml_path: str | Path, fname_out: str = None) -> PipelineState:
+    "Dry-run a YAML-configured dataset through Gate 1, declarative transforms, and deep Gate 2 without writing NetCDF."
+    cfg, yaml_dir = _load_cfg(yaml_path, fname_out=fname_out)
+    state = _init_state(cfg, yaml_dir=yaml_dir)
+    _run_preflight(state, cfg, yaml_dir=yaml_dir)
+    print(_verify_success_message(cfg, state))
+    return state
+
+
 def encode(yaml_path: str | Path, fname_out: str = None) -> None:
     "Encode any YAML-configured dataset to MARIS NetCDF4 in a pure, phase-aware pipeline."
-    from marisco.callbacks import LowerStripNameCB
-    yaml_path = Path(yaml_path)
-    yaml_dir = yaml_path.parent
-    cfg = HandlerConfig.from_yaml(yaml_path)
-    gap_check(cfg)
-    if fname_out:
-        cfg = cfg.model_copy(update={"fname_out": fname_out})
-
-    dfs = _call_loader(cfg, yaml_dir=yaml_dir)
-    state = PipelineState(dfs=dfs)
-    normalize_cbs = [LowerStripNameCB(col_src=s, col_dst=d) for s, d in cfg.normalize_case.items()]
-    pre_lossy, post_lossy = build_phase_pipelines(cfg)
-
-    pre_chain = [
-        *normalize_cbs,
-        *[_load_plugin(s, yaml_dir=yaml_dir) for s in cfg.pre_cbs],
-        *pre_lossy,
-    ]
-    run_pipeline(state, pre_chain)
-    gap_check(cfg, state.dfs)
-
-    post_chain = [
-        *post_lossy,
-        *[_load_plugin(s, yaml_dir=yaml_dir) for s in cfg.post_cbs],
-    ]
-    run_pipeline(state, post_chain)
+    cfg, yaml_dir = _load_cfg(yaml_path, fname_out=fname_out)
+    state = _init_state(cfg, yaml_dir=yaml_dir)
+    _run_preflight(state, cfg, yaml_dir=yaml_dir)
+    _run_finalize(state, cfg, yaml_dir=yaml_dir)
     write_netcdf(state, cfg)
