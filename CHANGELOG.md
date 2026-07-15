@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.6.1] - 2026-07-15
+
+### Fixed
+- `AddSampleIDCB`: whole-number float provider IDs (e.g. `289.0`) are cast to `Int64` before stringification, so `SMP_ID_PROVIDER` reads `"289"` instead of `"289.0"`
+
 ## [1.6.0] - 2026-07-02
 
   ### Changed

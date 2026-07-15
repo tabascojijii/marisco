@@ -244,7 +244,10 @@ class AddSampleIDCB(PerGroupCB):
         tfm.dfs[grp] = df.reset_index(drop=True)
         tfm.dfs[grp]['SMP_ID'] = tfm.dfs[grp].index + 1
         if self.col_provider and self.col_provider in tfm.dfs[grp].columns:
-            tfm.dfs[grp][self.col_provider] = tfm.dfs[grp][self.col_provider].astype(str).astype(object)
+            col = tfm.dfs[grp][self.col_provider]
+            if pd.api.types.is_float_dtype(col) and col.dropna().mod(1).eq(0).all():
+                col = col.astype('Int64')  # whole-number floats (e.g. 289.0) -> int first, so str is "289" not "289.0"
+            tfm.dfs[grp][self.col_provider] = col.astype(str).astype(object)
 
 # %% ../nbs/api/callbacks.ipynb #8cf07327
 class CompareDfsAndTfmCB(Callback):
