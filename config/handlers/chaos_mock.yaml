@@ -13,10 +13,6 @@ loader:
 
 columns: {}
 normalize_case: {}
-pre_cbs:
-  - file: "../../tests/data/chaos_patch.py"
-    class: "UltimateChaosPatchCB"
-post_cbs: []
 
 nomenclatures:
   nuclide_lut:

@@ -51,6 +51,3 @@ output:
     title: "Synoptic Arctic Survey 2021 Supplementary Table"
     summary: "Purely declarative marisco 3.0 trial against the SAS2021 supplementary CSV from Zenodo."
     metadata_link: "https://zenodo.org/records/15056897"
-
-pre_cbs: []
-post_cbs: []

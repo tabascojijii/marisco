@@ -4,7 +4,7 @@
 # 設計思想: 「ドメイン国境が美しく直立した名詞のシート」
 #   ① 標準コアパイプライン（11本レイル）はインフラが自動結合 → YAML に CB 名を書かない
 #   ② ケース正規化は normalize_case で宣言 → インフラが encode() 冒頭で自動配備
-#   ③ HELCOM 固有の 2 大カオス CB + ドメインロジック群のみが pre_cbs に正当配置（隔離）
+#   ③ HELCOM 固有の処理は将来的に loader と共通エンジンへ再配置されるべき対象
 #   ④ ハリボテ Helcom*RemapCB は全廃 → SoftAssetRemapCB + pre-resolved CSV で代替
 
 handler:
@@ -18,7 +18,7 @@ data_source:
   url: "https://raw.githubusercontent.com/franckalbinet/maris-crawlers/refs/heads/main/data/processed/HELCOM%20MORS"
   fname_out: "_data/output/100-HELCOM-MORS-2024-general.nc"
 
-# ── ケース正規化：インフラが pre_cbs より先に自動配備 ──────────────────────────
+# ── ケース正規化：インフラが標準コアレイルの前に自動配備 ──────────────────────────
 normalize_case:
   nuclide: NUCLIDE
 
@@ -28,15 +28,6 @@ loader:
   args: {}
 
 # ── Plugin pre-chain: HELCOM 固有パイプライン ─────────────────────────────────
-pre_cbs:
-  # ── Nuclide remapping (pre-resolved LUT, no fuzzy matching at runtime) ─────
-  - path: "marisco.callbacks.SoftAssetRemapCB"
-    args:
-      asset_path: helcom_nuclide.csv
-      key_col: name
-      val_col: nuclide_id
-      col_src: NUCLIDE
-      col_remap: NUCLIDE
 
   # ── CHAOS CB 1: ZeroMonthDayClampCB ──────────────────────────────────────
   - path: "marisco.handlers.helcom.ZeroMonthDayClampCB"
@@ -138,6 +129,3 @@ pre_cbs:
     args: {}
 
 # ── Plugin post-chain ─────────────────────────────────────────────────────────
-post_cbs:
-  - path: "marisco.handlers.helcom.AddStationCB"
-    args: {}

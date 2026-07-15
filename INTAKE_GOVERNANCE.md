@@ -169,9 +169,8 @@ Its job is to describe:
 | Wide-to-long structure | `melt (meta_cols & spec)` |
 | Controlled remapping | `unit_conversions / nomenclatures (nuclide_lut, unit_lut, lab_lut)` |
 | Output metadata | `output (global_attrs, keywords)` |
-| Extension points | `optional loader paths, pre_cbs, and post_cbs` |
 
-The YAML is the structural bridge between raw cleansed provider columns and the MARIS canonical model. This is where a column such as `Latitude_degN` becomes `LAT`.
+The YAML is the structural bridge between raw cleansed provider columns and the MARIS canonical model. This is where a column such as `Latitude_degN` becomes `LAT`. It does not host executable callback hooks.
 
 ### 3. The Stateless Core Engine [THE REGULATOR]
 

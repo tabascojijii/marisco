@@ -49,6 +49,3 @@ output:
     title: "SI radionuclides and metadata"
     summary: "Boundary-loader-backed ingestion of the Zenodo 16914587 supplementary Excel workbook."
     metadata_link: "https://zenodo-rdm.web.cern.ch/records/16914587"
-
-pre_cbs: []
-post_cbs: []

@@ -48,6 +48,3 @@ output:
     title: "BGOS-JOIS 2021"
     summary: "Boundary-loader-backed ingestion of the BGOS-JOIS-2021 Zenodo ZIP archive."
     metadata_link: "https://zenodo.org/records/18880401"
-
-pre_cbs: []
-post_cbs: []

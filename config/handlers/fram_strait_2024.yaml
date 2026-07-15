@@ -62,6 +62,3 @@ output:
     summary: "Boundary-cleaned seawater radionuclide data from supplementary Table SI-S03 in Zenodo record 18607759."
     references: "10.1029/2024JC021211"
     metadata_link: "https://zenodo-rdm.web.cern.ch/records/18607759"
-
-pre_cbs: []
-post_cbs: []
