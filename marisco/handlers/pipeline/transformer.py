@@ -4,29 +4,12 @@
 
 # %% ../../../nbs/handlers/pipeline/transformer.ipynb #06e8ddbd
 from __future__ import annotations
-from marisco.callbacks import (
-    RenameColsCB, SoftParseDateTimeCB, SoftMeltWideNuclidesCB,
-    SoftConvertUnitCB, SoftRemapCB, SanitizeLonLatCB, EncodeTimeCB, AddSampleIDCB,
-)
-from .loader import HandlerConfig
+from .assembly import build_chain
+
 
 # %% auto #0
-__all__ = ['build_chain']
+__all__ = []
 
 # %% ../../../nbs/handlers/pipeline/transformer.ipynb #3778f7a7
-def build_chain(cfg: HandlerConfig) -> list:
-    "Assemble a data-driven Callback chain; empty YAML fields produce Null-Object no-op CBs."
-    col_provider = next((v for v in cfg.rename.values() if v.endswith('_PROVIDER')), None)
-    return [
-        RenameColsCB(mapping=cfg.rename, string_cast=cfg.string_cast),
-        SoftParseDateTimeCB(col_date=cfg.col_date, col_time=cfg.col_time, fmt=cfg.dt_format),
-        SoftMeltWideNuclidesCB(spec=[s.model_dump() for s in cfg.melt_spec]),
-        *[SoftConvertUnitCB(rule=r.model_dump()) for r in cfg.unit_conversions],
-        SoftRemapCB(col_src='NUCLIDE', col_remap='NUCLIDE', lut=cfg.nuclide_lut),
-        SoftRemapCB(col_src='UNIT',    col_remap='UNIT',    lut=cfg.unit_lut),
-        SoftRemapCB(col_src='LAB',     col_remap='LAB',     lut=cfg.lab_lut),
-        SoftRemapCB(col_src='NUCLIDE', col_remap='AREA',    lut={}, default_val=cfg.area_default),
-        SanitizeLonLatCB(),
-        EncodeTimeCB(),
-        AddSampleIDCB(col_provider=col_provider),
-    ]
+from .assembly import build_chain
+

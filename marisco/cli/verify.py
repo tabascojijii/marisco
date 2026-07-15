@@ -3,15 +3,21 @@
 # %% auto #0
 __all__ = ['main']
 
-# %% ../../nbs/cli/verify.ipynb #imports
+# %% ../../nbs/cli/verify.ipynb #b80ccf18
 from fastcore.script import *
 from pathlib import Path
-from marisco.handlers.general import verify
+from ..handlers.general import verify
 
-# %% ../../nbs/cli/verify.ipynb #main
+
+# %% ../../nbs/cli/verify.ipynb #906305f6
 @call_parse
 def main(
     yaml_path: str,  # Path to the YAML handler contract to verify
 ) -> None:
     "Dry-run a marisco 3.0 YAML contract through declarative transforms and deep Gate 2 without writing NetCDF."
-    verify(Path(yaml_path))
+    try:
+        verify(Path(yaml_path))
+    except ValueError:
+        raise SystemExit(1)
+
+

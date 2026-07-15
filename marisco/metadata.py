@@ -24,7 +24,8 @@ import subprocess
 import json
 from typing import Dict, List, Callable
 from .geo import get_bbox 
-from .configs import get_time_units, ZOTERO_LIB_ID, NC_GLOBAL_ATTRS
+from .configs import get_time_units, ZOTERO_LIB_ID
+from .handlers.pipeline.contracts import ensure_known_global_attrs
 from .callbacks import run_cbs, Callback
 
 # %% ../nbs/api/metadata.ipynb #6db2b6ee
@@ -45,11 +46,7 @@ class GlobAttrsFeeder:
         
     def __call__(self):
         self.callback()
-        unknown = set(self.attrs.keys()) - NC_GLOBAL_ATTRS
-        if unknown: raise KeyError(
-            f"Unknown NetCDF global attribute(s): {', '.join(sorted(unknown))}. "
-            f"Add to NC_GLOBAL_ATTRS in configs if intentional.")
-        return self.attrs
+        return ensure_known_global_attrs(self.attrs)
 
 
 # %% ../nbs/api/metadata.ipynb #e29022dc
