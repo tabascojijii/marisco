@@ -17,10 +17,6 @@ from .contracts import HandlerConfig, _RawHandlerContract, _MARIS_REQUIRED
 __all__ = ['load_handler_config', 'gap_check']
 
 # %% ../../../nbs/handlers/pipeline/gates.ipynb #5e2d4f03
-_RECIPE_HINTS = {
-    frozenset({"LAT", "LON"}): "config/recipes/recipe_split_lat_lon.yaml",
-    frozenset({"VALUE", "UNC"}): "config/recipes/recipe_extract_value_unit.yaml",
-}
 _DEEP_CRITICAL = frozenset({"LAT", "LON", "TIME"})
 _DEFAULT_LOADER_PATHS = frozenset({
     "marisco.handlers.pipeline.loader.load_data",
@@ -52,41 +48,18 @@ def _unknown_global_attrs_message(keys: set[str]) -> str:
 
 class _GapDiagnostics(BaseModel):
     title: str = ""
-    plugin_managed: bool = False
     missing_columns: frozenset[str] = frozenset()
-    recipe_paths: tuple[str, ...] = ()
 
     @property
     def is_clear(self) -> bool:
-        return self.plugin_managed or not self.missing_columns
-
-    @property
-    def skeleton(self) -> str:
-        return "\n\n".join(
-            f"class Fill{g}CB(PerGroupCB):\n"
-            f"    \"TODO: provide {g} — add to columns/rename_cols or as a standalone CB.\"\n"
-            f"    grps = ['SEAWATER']\n"
-            f"    def each_grp(self, grp, df, state: PipelineState): df['{g}'] = None  # FIXME"
-            for g in sorted(self.missing_columns)
-        )
-
-    @property
-    def medium_path(self) -> str:
-        prefix = (
-            "Medium Path (Apply standard recipes): If dealing with combined coordinates or value-unit formats, "
-            "copy-paste standard recipes from config/recipes/. Available recipes: "
-        )
-        recipe_list = ", ".join(self.recipe_paths)
-        return {False: "", True: prefix + recipe_list}[bool(self.recipe_paths)]
+        return not self.missing_columns
 
     @property
     def message(self) -> str:
         sections = [
             f"⚠  GAP in {self.title!r} — missing MARIS columns: {sorted(self.missing_columns)}",
-            "Easy Path (Check columns mapping): First, verify if simply adding raw CSV column mappings to 'columns:' resolves this missing column.",
-            self.medium_path,
-            "Hard Path (Custom Skeleton): If your dataset has highly specific anomalies (for example, conditional sign inversion), implement a local custom callback using the skeleton below.",
-            self.skeleton,
+            "Easy Path (Check columns mapping): First, verify if simply adding raw provider column mappings to 'columns:' resolves this missing column.",
+            "Hard Path (Boundary Loader): If the missing field is trapped inside workbook physics, mixed cells, combined coordinates, or value-unit strings, fix it in config/handlers/{dataset}_loader.py before the pipeline runs.",
         ]
         return "\n\n".join(part for part in sections if part)
 
@@ -97,16 +70,10 @@ class _GapDiagnostics(BaseModel):
         raise ValueError(f"YAML spec missing mappings for: {sorted(self.missing_columns)}")
 
 
-def _recipe_paths(cfg: HandlerConfig) -> tuple[str, ...]:
-    return tuple(path for keys, path in _RECIPE_HINTS.items() if cfg.missing_required_columns & keys)
-
-
 def _gap_diagnostics(cfg: HandlerConfig) -> _GapDiagnostics:
     return _GapDiagnostics(
         title=cfg.title,
-        plugin_managed=bool(cfg.pre_cbs or cfg.loader),
         missing_columns=cfg.missing_required_columns,
-        recipe_paths=_recipe_paths(cfg),
     )
 
 
@@ -146,23 +113,11 @@ def load_handler_config(cfg_cls, path: str | Path) -> HandlerConfig:
             keywords=contract.output.keywords,
             global_attrs=contract.output.global_attrs,
             loader=contract.loader,
-            pre_cbs=contract.pre_cbs,
-            post_cbs=contract.post_cbs,
         )
     except ValidationError as err:
         msg = _yaml_step1_message(err)
         print(msg)
         raise ValueError(msg) from err
-
-
-def _gate2_skeleton(columns: set[str]) -> str:
-    return "\n\n".join(
-        f"class Fill{col}CB(PerGroupCB):\n"
-        f"    \"TODO: derive {col} before Gate 2.\"\n"
-        f"    grps = ['SEAWATER']\n"
-        f"    def each_grp(self, grp, df, state: PipelineState): df['{col}'] = None  # FIXME"
-        for col in sorted(columns)
-    )
 
 
 def _stdout_supports(text: str) -> bool:
@@ -244,15 +199,9 @@ def _deep_gap_message(cfg: HandlerConfig, findings: list[dict[str, Any]]) -> str
             skeleton_cols.update(finding['empty_cols'])
         sections.append("\n".join(lines))
     sections.append("Encoding would be unsafe here because downstream time/coordinate rails can discard rows and mask the upstream defect.")
-    boundary_cols = skeleton_cols & _DEEP_CRITICAL
-    if boundary_cols:
-        sections.append(_custom_loader_skeleton(cfg, findings))
-    if skeleton_cols and (not boundary_cols or not _uses_default_loader(cfg)):
-        sections.extend([
-            "Fix the boundary loader or add a pre-canonical callback that materializes these fields before Gate 2.",
-            "CB skeleton:",
-            _gate2_skeleton(skeleton_cols),
-        ])
+    sections.append(_custom_loader_skeleton(cfg, findings))
+    if skeleton_cols and not _uses_default_loader(cfg):
+        sections.append("Fix the configured boundary loader so the DataFrame is physically clean before declarative mapping begins.")
     return "\n\n".join(part for part in sections if part)
 
 
@@ -288,3 +237,4 @@ def gap_check(cfg: HandlerConfig, dfs: Optional[dict[str, pd.DataFrame]] = None)
     msg = _deep_gap_message(cfg, findings)
     print(f"\n{msg}\n")
     raise ValueError(msg)
+

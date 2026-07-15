@@ -7,11 +7,6 @@ from __future__ import annotations
 from pathlib import Path
 from ..callbacks.core import PipelineState
 from marisco.handlers.pipeline.assembly import (
-    build_core_pipeline,
-    build_phase_pipelines,
-    build_normalize_cbs as _build_normalize_cbs,
-    load_plugin as _load_plugin,
-    resolve_callback,
     run_finalize as _run_finalize,
     run_preflight as _run_preflight,
 )
@@ -24,7 +19,7 @@ from .pipeline.writer  import write_netcdf
 # %% auto #0
 __all__ = ['verify', 'encode']
 
-# %% ../../nbs/handlers/general.ipynb #717fbb3a
+# %% ../../nbs/handlers/general.ipynb #5557052d
 def _load_plugin_fn(spec: PluginSpec, yaml_dir: Path = None):
     "Fail-Fast dynamic import of a plain function (not instantiated); for custom loaders."
     return resolve_loader_fn(spec, yaml_dir)

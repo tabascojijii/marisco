@@ -78,8 +78,6 @@ class _RawHandlerContract(BaseModel):
     nomenclatures: _NomenclaturesSection = Field(default_factory=_NomenclaturesSection)
     output: _OutputSection = Field(default_factory=_OutputSection)
     loader: Optional[dict[str, Any]] = None
-    pre_cbs: list[dict[str, Any]] = Field(default_factory=list)
-    post_cbs: list[dict[str, Any]] = Field(default_factory=list)
 
 
 class BasePluginSpec(BaseModel):
@@ -211,8 +209,6 @@ class HandlerConfig(BaseModel):
     keywords: list[str] = Field(default_factory=list)
     global_attrs: dict[str, str] = Field(default_factory=dict)
     loader: Optional[PluginSpecModel] = None
-    pre_cbs: list[PluginSpecModel] = Field(default_factory=list)
-    post_cbs: list[PluginSpecModel] = Field(default_factory=list)
 
     @computed_field
     @property
