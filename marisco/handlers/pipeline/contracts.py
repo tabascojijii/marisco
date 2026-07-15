@@ -9,6 +9,7 @@ import importlib.util
 from pathlib import Path
 from typing import Annotated, Any, Optional, Union
 from pydantic import BaseModel, Field, ConfigDict, TypeAdapter, computed_field
+from ...configs import NC_GLOBAL_ATTRS
 
 # %% auto #0
 __all__ = ['PluginSpecModel', 'BasePluginSpec', 'LegacyPathPluginSpec', 'NamePluginSpec', 'FilePluginSpec', 'PluginSpec',

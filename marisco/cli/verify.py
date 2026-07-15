@@ -3,13 +3,13 @@
 # %% auto #0
 __all__ = ['main']
 
-# %% ../../nbs/cli/verify.ipynb #b80ccf18
+# %% ../../nbs/cli/verify.ipynb #e03c1f81
 from fastcore.script import *
 from pathlib import Path
 from ..handlers.general import verify
 
 
-# %% ../../nbs/cli/verify.ipynb #906305f6
+# %% ../../nbs/cli/verify.ipynb #10b2ce2b
 @call_parse
 def main(
     yaml_path: str,  # Path to the YAML handler contract to verify
