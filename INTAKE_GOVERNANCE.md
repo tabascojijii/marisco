@@ -1,6 +1,6 @@
 # Intake Boundary Governance
 
-> 💡 This document is normative for all YAML-driven handler work in `marisco 3.0`.
+> 💡 This document is normative for all YAML-driven handler work in the `marisco Declarative Intake Architecture`.
 >
 > Its purpose is to preserve the architectural boundary introduced in the modular pipeline under `marisco/handlers/pipeline/` and to prevent structural drift, provider-specific bloat, and silent schema corruption.
 
@@ -17,7 +17,7 @@ These rules apply to every new dataset integrated through:
 
 ## The Architectural Triad
 
-marisco 3.0 is built on a strict 3-tier boundary. Each tier has one job only.
+The `marisco Declarative Intake Architecture` is built on a strict 3-tier boundary. Each tier has one job only.
 
 ```text
 Raw Provider Artifact
@@ -275,4 +275,4 @@ Decision: If YES, REJECT the pull request.
 
 ## Final Principle
 
-> 🚨 The success of marisco 3.0 depends on disciplined asymmetry: loaders are allowed to be disposable, YAML contracts are required to be declarative, and the core engine is required to remain stateless and provider-blind. Any contribution that collapses these roles is a regression.
+> 🚨 The success of the `marisco Declarative Intake Architecture` depends on disciplined asymmetry: loaders are allowed to be disposable, YAML contracts are required to be declarative, and the core engine is required to remain stateless and provider-blind. Any contribution that collapses these roles is a regression.

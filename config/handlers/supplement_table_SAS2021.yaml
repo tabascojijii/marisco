@@ -2,7 +2,7 @@ handler:
   module_name: handlers.supplement_table_SAS2021
   title: "Synoptic Arctic Survey 2021 Supplementary Table"
   description: >
-    Declarative trial of the marisco 3.0 general pipeline against the SAS2021
+    Declarative trial of the marisco Declarative Intake Architecture against the SAS2021
     supplementary CSV distributed via Zenodo.
 
 data_source:
@@ -49,5 +49,5 @@ output:
   keywords: [Synoptic Arctic Survey, SAS2021, Arctic Ocean, seawater, radionuclides]
   global_attrs:
     title: "Synoptic Arctic Survey 2021 Supplementary Table"
-    summary: "Purely declarative marisco 3.0 trial against the SAS2021 supplementary CSV from Zenodo."
+    summary: "Purely declarative trial of the marisco Declarative Intake Architecture against the SAS2021 supplementary CSV from Zenodo."
     metadata_link: "https://zenodo.org/records/15056897"
