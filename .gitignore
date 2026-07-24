@@ -169,5 +169,10 @@ tools/*
 # Local design mementos & refactoring notes (never export to remote)
 nbs/reference/titanica-meltpattern-refactoring.md
 nbs/reference/cb-design-rules.md
+nbs/reference/remapcb-failfast-refactoring.md
+audit_report_frank.md
 
 TODO_local.md
+
+# Handler encode() run output (regenerable build artifacts)
+output/
