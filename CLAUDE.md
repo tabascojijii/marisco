@@ -26,11 +26,26 @@ inline `#` comment beside the type annotation, never in the docstring body.
 jupytext --sync **/*.ipynb                                       # resync all pairs (session start / branch switch)
 jupytext --sync <file.pct.py>                                     # resync one pair (after editing)
 nbdev_export                                                      # .ipynb -> marisco/*.py (still required, see CONTRIBUTING.md)
+ruff check .                                                      # lint + import order
+mypy .                                                            # type check
+vulture .                                                         # dead-code scan (verify before deleting — see CONTRIBUTING.md)
 python tools/compile_notebook_context.py                         # before every notebook commit
 python tools/test_harness.py --handler mock                      # smoke-test (no network)
 python tools/test_harness.py --handler helcom                    # dry-run (no Zotero key)
 python tools/test_harness.py --handler helcom --encode --audit   # full encode + structural audit
 ```
+
+---
+
+## Code quality
+
+Every `.pct.py` change should pass `ruff check .` and `mypy .` clean. Run `vulture .`
+before deleting anything it flags — this codebase's Callback dispatch pattern (`each_grp`,
+`__call__` invoked by the framework, not by direct reference) triggers Vulture false
+positives routinely; never delete on Vulture's word alone. After editing, re-sync
+`.pct.py` ⇄ `.ipynb` ⇄ `marisco/*.py` (`jupytext --sync` then `nbdev_export`) before
+committing. Tool intent, config rationale, and the Vulture false-positive checklist:
+[`CONTRIBUTING.md`](CONTRIBUTING.md).
 
 ---
 

@@ -69,6 +69,111 @@ mypy .
 `tools/compile_notebook_context.py` still reads notebooks as of this writing — retargeting
 it to the `.pct.py` percent files is a follow-up, not yet done.
 
+## Code quality tools
+
+All three are configured in `pyproject.toml` and run against `.pct.py` files (or `.` —
+Ruff and mypy skip `.ipynb`/`.pct.py` isn't special-cased, but since `.pct.py` *is* plain
+Python they lint it directly; running against `.` is equivalent to running against every
+`.pct.py`, `marisco/*.py`, and `tools/*.py` file).
+
+```console
+pip install -e ".[dev]"   # ruff, mypy, vulture are declared in [project.optional-dependencies]
+```
+
+### Ruff — lint + import order
+
+```toml
+[tool.ruff]
+target-version = "py311"
+line-length = 88
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM", "ARG", "ERA"]
+ignore = [
+    "E501",   # line-too-long
+    "ERA001", # commented-out-code
+    "ARG002", # unused-method-argument
+    "ARG001", # unused-function-argument
+    "F403",   # undefined-local-with-import-star
+    "F405",   # undefined-local-with-import-star-usage
+    "E701",   # multiple-statements-on-one-line-colon
+    "E402",   # module-import-not-at-top-of-file
+]
+```
+
+The ignore list isn't arbitrary — each entry protects an existing project convention:
+
+- `F403`/`F405` (star-import warnings): the codebase relies on `from fastcore.all import *`
+  throughout; banning star-imports would mean rewriting every notebook's import cell.
+- `E701` (multiple statements per line): the fastai/nbdev house style writes one-line
+  bodies like `def each_grp(self, grp, df, tfm): tfm.dfs[grp] = df.rename(...)` — see
+  [`docs/developer/code_style_guards.md`](docs/developer/code_style_guards.md) §1. Flagging
+  this would put Ruff at war with the project's own style guide.
+- `E402` (import not at top of file): notebook cells legitimately import after a markdown
+  cell or a `#| default_exp` directive; this is normal in `.pct.py` percent format, not
+  a style violation.
+- `E501` (line too long): not enforced — readability call left to the author.
+- `ERA001` (commented-out code): notebooks intentionally keep commented-out demo/debug
+  lines in `#|eval: false` cells; this isn't dead code, it's inert-by-design.
+- `ARG001`/`ARG002` (unused arguments): Callback methods must match a fixed signature
+  (`each_grp(self, grp, df, tfm)`) even when a given CB doesn't use every parameter —
+  this is an interface contract, not an oversight.
+
+Run: `ruff check .` (add `--fix` to auto-apply safe fixes; review the diff before
+committing, same as any other change to a `.pct.py` file).
+
+### mypy — type check
+
+```toml
+[tool.mypy]
+python_version = "3.11"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = false
+ignore_missing_imports = true
+```
+
+Deliberately permissive: `disallow_untyped_defs = false` because most CBs are untyped by
+convention (parameter docs use `fastcore.docments` inline comments, not type annotations
+— see `CLAUDE.md`), and `ignore_missing_imports = true` because several scientific
+dependencies (`cftime`, `pyzotero`, etc.) ship no stubs. mypy here catches real type
+mismatches, not missing-annotation nagging.
+
+### Vulture — dead-code scan
+
+```toml
+[tool.vulture]
+min_confidence = 80
+paths = ["."]
+exclude = [".venv", "build"]
+```
+
+**⚠️ Vulture false positives are the norm in this codebase, not the exception — verify
+every finding before deleting anything.** Vulture does static reference counting; it
+cannot see:
+
+- **Callback dispatch.** `each_grp` and `__call__` are invoked by `PerGroupCB.__call__` /
+  `run_cbs` through the framework, never called by name in the notebook itself. Vulture
+  will flag nearly every `each_grp` method as unused — it is not.
+- **Pydantic model fields.** Fields on a `Schema(BaseModel)` are populated via
+  construction/serialization (`Schema(**kwargs)`, `.model_dump()`), not direct attribute
+  access in the visible code. Vulture cannot trace that.
+- **`store_attr()`-populated attributes** (fastcore). `store_attr()` assigns `self.x` from
+  `__init__`'s arguments dynamically; Vulture sees no assignment and no read, and flags
+  the parameter as unused even when `self.x` is used throughout `each_grp`.
+- **Smoke-test-only helpers and `#|eval: false` demo cells** — legitimately reachable only
+  when the notebook is run interactively, not through any import Vulture can trace.
+
+**Before deleting anything Vulture flags:** `grep` the symbol name across the notebook's
+`.pct.py` (not just the current cell) and across `marisco/callbacks.py` for CB base-class
+dispatch. If it's a CB method name (`each_grp`, `__call__`), a Pydantic `Schema` field, or
+inside a `store_attr()`-backed `__init__`, treat the Vulture finding as a false positive
+by default — this matches the project's Fail-Fast/Immutability discipline (`CLAUDE.md`
+Order 6–7): silently deleting code because a heuristic flagged it is exactly the kind of
+unverified, silent action those orders exist to prevent.
+
+Run: `vulture .` — read the output, don't script an auto-delete around it.
+
 ## Migration notes
 
 **2026-07-23, initial migration:** the first repo-wide `jupytext --sync **/*.ipynb` run
