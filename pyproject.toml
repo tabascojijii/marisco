@@ -12,7 +12,7 @@ license = {text = "Apache-2.0"}
 authors = [{name = "Franck Albinet, Niall Murphy", email = "franckalbinet@gmail.com"}]
 keywords = ['nbdev', 'jupyter', 'notebook', 'python', 'netcdf', 'marine', 'radioactivity', 'data']
 classifiers = ["Natural Language :: English", "Intended Audience :: Developers", "Development Status :: 3 - Alpha", "Programming Language :: Python :: 3", "Programming Language :: Python :: 3 :: Only"]
-dependencies = ['pandas', 'openpyxl', 'fastcore', 'rich', 'tqdm', 'netcdf4', 'tomli', 'tomli-w', 'shapely', 'pyzotero', 'jellyfish', 'requests', 'pyarrow', 'gevent>=22.10.2']
+dependencies = ['pandas', 'openpyxl', 'fastcore', 'rich', 'tqdm', 'netcdf4', 'tomli', 'tomli-w', 'shapely', 'pyzotero', 'jellyfish', 'requests', 'pyarrow', 'gevent>=22.10.2', 'pydantic']
 
 [project.urls]
 Repository = "https://github.com/franckalbinet/marisco"
@@ -22,7 +22,7 @@ Documentation = "https://franckalbinet.github.io/marisco"
 marisco = "marisco._modidx:d"
 
 [project.optional-dependencies]
-dev = ['nbdev', 'ipykernel', 'twine', 'toolslm']
+dev = ['nbdev', 'ipykernel', 'twine', 'toolslm', 'python-pptx']
 
 
 [project.scripts]
@@ -41,3 +41,38 @@ marisco = ["files/lut/*.xlsx", "files/nc/*.nc"]
 
 [tool.nbdev]
 custom_sidebar = true
+
+[tool.jupytext]
+formats = "ipynb,.pct.py:percent"
+
+[tool.ruff]
+target-version = "py311"
+line-length = 88
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM", "ARG", "ERA"]
+ignore = [
+    "E501",   # line-too-long 
+    "ERA001", # commented-out-code 
+    "ARG002", # unused-method-argument 
+    "ARG001", # unused-function-argument
+    "F403",   # undefined-local-with-import-star 
+    "F405",   # undefined-local-with-import-star-usage
+    "E701",   # multiple-statements-on-one-line-colon
+    "E402",   # module-import-not-at-top-of-file
+]
+
+[tool.ruff.lint.isort]
+combine-as-imports = true
+
+[tool.mypy]
+python_version = "3.11"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = false  
+ignore_missing_imports = true 
+
+[tool.vulture]
+min_confidence = 80       
+paths = ["."]               
+exclude = [".venv", "build"] 
