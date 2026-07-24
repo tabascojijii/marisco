@@ -160,7 +160,11 @@ CRAFT.context.md
 CLAUDE.md
 AGENTS.md
 docs/
-tools/
+tools/*
+# Official, Makefile-referenced tools are tracked exceptions to the tools/* rule above.
+# (A directory-level "tools/" pattern would block child-path negation entirely.)
+!tools/profile_source.py
+!tools/diff_golden.py
 
 # Local design mementos & refactoring notes (never export to remote)
 nbs/reference/titanica-meltpattern-refactoring.md

@@ -116,6 +116,14 @@ zotero_key = 'XXXXXXXX'  # 8 character Zotero record key
 # ## Step 2: Write the data loader
 #
 # The loader function reads raw provider files and returns a dictionary of DataFrames keyed by sample type group. A handler supports any subset of the four groups: SEAWATER, BIOTA, SEDIMENT, SUSPENDED_MATTER.
+#
+# Before writing any callback, profile the raw file(s) to see what you're actually
+# dealing with — `make profile SRC=path/to/file.csv` prints per-column dtype/null-rate/
+# cardinality, and `make profile SRC=... LUT="nuclide=NUCLIDE"` additionally fuzzy-matches
+# a column against a MARIS reference LUT and prints the borderline-match table, automating
+# the "derive unique values, fuzzy-match, inspect" steps used throughout Step 3. Run it
+# once per sample-type group — column names and completeness are not guaranteed to match
+# across a single provider's own groups (see Early Normalization below).
 
 # %%
 #| exports
@@ -140,6 +148,56 @@ def load_data(
 # The consequence: every provider column that should appear in the output must eventually be renamed or remapped to its MARIS uppercase key. Columns that never reach an uppercase key are dropped at encoding time. This is intentional, not an error.
 #
 # For the full list of MARIS columns, their NetCDF variable names, and their CSV column names, see the [field definitions reference](../reference/field-definition.ipynb).
+
+# %% [markdown]
+# ## Early Normalization: unify the schema before any transform logic
+#
+# Provider datasets are rarely uniform across their own sample-type groups. HELCOM's
+# coordinate columns are named `latitude dddddd` in BIOTA but `latitude (dddddd)` (with
+# parentheses) in SEAWATER and SEDIMENT — the *same* provider, inconsistent naming across
+# its *own* groups. Likewise, `sdepth`/`tdepth` structurally exist for some groups and not
+# others (SEDIMENT has no `sdepth`, BIOTA has no `tdepth`).
+#
+# The tempting fix is a scattered `if 'col' in df.columns:` guard inside every downstream
+# callback that touches that column. Resist this. Scattered guards spread the same piece
+# of knowledge ("this column may be named differently, or absent, per group") across many
+# callbacks, each rediscovering it independently — and each guard is indistinguishable at
+# a glance from the Fail-Fast-violating silent-skip pattern Order 6 prohibits.
+#
+# **Early Normalization pattern**: put one dedicated, named callback *first* in the
+# pipeline whose only job is to make the schema uniform — add missing columns as `NaN`
+# (never drop them) and/or rename provider-side column-name variants onto one canonical
+# name per group. Every callback after it can then assume the column exists and is named
+# consistently, and can be written with zero defensive branching.
+#
+# ```python
+# #| export
+# class NormalizeDepthColumnsCB(PerGroupCB):
+#     "Ensure SMP_DEPTH/TOT_DEPTH source columns exist in every group (NaN where structurally absent)."
+#     def each_grp(self, grp, df, tfm):
+#         for col in ('sdepth', 'tdepth'):
+#             if col not in df.columns: df[col] = np.nan
+#
+# # Downstream, AddDepthCB no longer needs `if 'sdepth' in df.columns:` —
+# # the column is guaranteed to exist (all-NaN where the group never had it):
+# class AddDepthCB(PerGroupCB):
+#     "Rename provider sdepth/tdepth to MARIS-standard SMP_DEPTH/TOT_DEPTH."
+#     def each_grp(self, grp, df, tfm):
+#         df['SMP_DEPTH'] = df['sdepth'].astype(float)
+#         df['TOT_DEPTH'] = df['tdepth'].astype(float)
+# ```
+#
+# The same pattern applies to column-name unification: a single `NormalizeCoordinateColumnsCB`
+# renames whichever of `latitude dddddd` / `latitude (dddddd)` is present in a given group
+# onto one canonical working name, so the coordinate-parsing callback that runs later never
+# needs to scan for name variants itself.
+#
+# **The rule of thumb**: exactly one `if`-bearing callback per structurally-variable piece
+# of schema knowledge, run once at the front of the pipeline, with a docstring that says
+# what it's normalizing and why. Every other callback stays unconditional. This is the same
+# "1 CB = 1 concern" discipline the brake protocol already requires (`CLAUDE.md` Order 1) —
+# Early Normalization is what that discipline looks like applied specifically to
+# schema-completeness checks instead of scattering them.
 
 # %% [markdown]
 # ## Step 3: Reconcile nomenclatures
@@ -167,6 +225,67 @@ nuclide_lut = make_lut('NUCLIDE', fixes=fixes_nuclide_names)
 
 # %% [markdown]
 # For small, stable enumerations with only two or three entries (for example a filtered or unfiltered flag), skip the fuzzy matching and write a plain dict directly.
+
+# %% [markdown]
+# ### Clean-before-Map: the standard architecture for provider codes with invalid values
+#
+# `RemapCB` maps a source column through a LUT, and on any value the LUT doesn't
+# recognise, it silently substitutes `default_val` (0) rather than raising. This is
+# correct and necessary behaviour for *genuinely unmapped nomenclature* — the fuzzy-match
+# workflow above should have driven that count to zero — but it is the wrong tool for
+# **structurally invalid codes** the provider's own lookup table doesn't contain at all
+# (e.g. HELCOM `SEDI` codes `56`/`73`/`NaN`, absent from `SEDIMENT_TYPE.csv`). Feeding
+# those straight into `RemapCB` means they silently become `default_val` indistinguishably
+# from a real reconciliation gap — the two failure modes get conflated into the same 0.
+#
+# The architecture that keeps them separate: a dedicated, named `CleanXxxCB` runs
+# *before* `RemapCB`, converting known-invalid codes to an explicit sentinel (`-99`) —
+# and nothing else. `RemapCB` then only ever sees values that are either resolvable or the
+# sentinel, so its `default_val` fallback is meaningfully reserved for what it's actually
+# for: real reconciliation gaps caught by the fuzzy-match step, not data-entry noise.
+#
+# ```python
+# #| export
+# class CleanSedimentCodesCB(PerGroupCB):
+#     "Replace invalid HELCOM SEDI codes with -99 sentinel before nomenclature lookup."
+#     grps = ['SEDIMENT']
+#     def __init__(self, replace_lut): store_attr()  # invalid_code -> -99
+#     def each_grp(self, grp, df, tfm):
+#         df['sedi'] = df['sedi'].replace(self.replace_lut).fillna(-99)
+#
+# # RemapCB now only ever sees clean values + the -99 sentinel:
+# # CleanSedimentCodesCB(replace_lut={56: -99, 73: -99}),
+# # RemapCB(lut=sediment_lut, col_remap='SED_TYPE', col_src='sedi'),
+# ```
+#
+# Two things make this the correct pattern rather than a `RemapCB` variant or an inline
+# `if`:
+#
+# 1. **Auditability**: the docstring names exactly which codes are invalid and why. When
+#    the provider fixes their data, the fix is "delete this one callback" — not "hunt
+#    through a generic remap for a special case."
+# 2. **Never repurpose a CB outside its declared job** (`CLAUDE.md` Order 7): folding
+#    cleaning logic into `RemapCB` itself, or bending a generic callback to do double duty,
+#    is exactly the anti-pattern Order 7 prohibits. `CleanXxxCB` → `RemapCB` is what
+#    keeping them as two single-concern callbacks looks like in practice.
+#
+# **Default for every new `RemapCB`**: unless the silent `default_val` fallback is a
+# deliberate, documented choice for that field, pair it with an explicit validation step.
+# A minimal version raises before mapping runs:
+#
+# ```python
+# class ValidateKnownCB(PerGroupCB):
+#     "Fail fast if col_src has a value absent from lut — run immediately before RemapCB."
+#     def __init__(self, col_src, lut, grps=None): store_attr()
+#     def each_grp(self, grp, df, tfm):
+#         if unknown := set(df[self.col_src].dropna()) - set(self.lut):
+#             raise ValueError(f"{grp}.{self.col_src}: unmapped value(s) {sorted(unknown)}")
+# ```
+#
+# See the `fram_strait2025` handler's `MultiGateCB` for a version that validates several
+# `col_src`/LUT pairs in one callback. If the same validation shape gets used in a third
+# handler, it is a promotion candidate for `marisco/callbacks.py` under the
+# 3-Instance Rule (`docs/developer/architecture_principles.md` §4).
 
 # %% [markdown]
 # ## Step 4: Write callbacks
@@ -288,6 +407,13 @@ encode(fname_out, verbose=False)
 # - **Mock-data unit tests**: For every callback, define a small `dfs_mock` dictionary with representative inputs, apply the callback via `Transformer`, and assert the expected outputs. This verifies the transformation logic in isolation, independent of the full dataset.
 #
 # - **End-to-end smoke test**: After assembling the full pipeline, include a code cell (marked `#| eval: false`) that calls `encode()` on the real data. Run this during development to confirm every step works together. The output is a NetCDF file that can be inspected or decoded back to CSV for manual review.
+#
+# - **Regression snapshot**: once the handler produces correct output, run
+#   `make diff-golden-save HANDLER=<name>` to record a golden snapshot (per-group row
+#   count, key nomenclature value sets, lat/lon bounding box). Any later refactor —
+#   yours or an agent's — should be checked with `make diff-golden HANDLER=<name>` before
+#   being trusted; a silent difference here is exactly the kind of unintended behavioural
+#   drift manual review tends to miss.
 
 # %% [markdown]
 # ## Curation rules summary
@@ -302,8 +428,13 @@ encode(fname_out, verbose=False)
 # | Time | Parse to pd.Timestamp first. Encode to integer seconds since 1970-01-01 UTC via EncodeTimeCB. Drop rows with unparseable dates |
 # | Depth | SMP_DEPTH in metres. Use -1 as sentinel for not available |
 # | Unknown IDs | Set to 0 not NaN for unresolved enumerated fields. Never silently drop a row because a name could not be remapped |
+# | Schema completeness | Normalize once, at the front of the pipeline (see Early Normalization above) — never scatter `if 'col' in df.columns:` guards through downstream callbacks |
+# | Invalid provider codes | Clean to a sentinel in a dedicated `CleanXxxCB` *before* `RemapCB`, never inline in the remap step (see Clean-before-Map above) |
 
 # %% [markdown]
 # ## Further reading
 #
 # - [nomenclature reconciliation how-to](reconcile-nomenclature.ipynb): nomenclature reconciliation step by step
+# - `tools/profile_source.py` (`make profile`): automated column profiling + fuzzy-match against MARIS LUTs
+# - `tools/diff_golden.py` (`make diff-golden`): regression snapshot for `encode()` output
+# - [`CONTRIBUTING.md`](../../CONTRIBUTING.md): how ruff/mypy/vulture catch dead code and shared-callback signature drift before either becomes a runtime surprise

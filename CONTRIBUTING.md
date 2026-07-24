@@ -139,6 +139,14 @@ convention (parameter docs use `fastcore.docments` inline comments, not type ann
 dependencies (`cftime`, `pyzotero`, etc.) ship no stubs. mypy here catches real type
 mismatches, not missing-annotation nagging.
 
+**This is also the mechanism that catches shared-callback signature drift** — no custom
+linter needed. mypy checks call-site argument *names*, not just types, even against an
+untyped `__init__`: a real bug found in `geotraces.pct.py` was `RemapCB(fn_lut=..., ...)`
+called against a `RemapCB.__init__` whose parameter is `lut`, not `fn_lut` — a `TypeError`
+at runtime that `mypy .` reports statically as "Unexpected keyword argument". Run `mypy .`
+before trusting a call site copied from another handler; don't hand-verify signatures by
+reading the source of both files.
+
 ### Vulture — dead-code scan
 
 ```toml
@@ -173,6 +181,16 @@ Order 6–7): silently deleting code because a heuristic flagged it is exactly t
 unverified, silent action those orders exist to prevent.
 
 Run: `vulture .` — read the output, don't script an auto-delete around it.
+
+**Vulture also catches truly-unreferenced legacy code** (e.g. an old handler
+implementation left in a notebook as `#| eval: false` cells after a rewrite) — but only
+when nothing in the scanned code still calls it. A dead pipeline that still calls *itself*
+internally (an old `encode`-equivalent invoking its own old callbacks, none of which are
+reachable from the notebook's real `encode()`) has no unreferenced symbol for Vulture to
+flag; it's self-contained and "used" by its own dead code. Don't build a reachability
+checker for this — it's a one-line manual habit instead: before treating any existing
+callback as a pattern to imitate, confirm its name appears inside the callback list
+passed to that handler's actual `encode()` function, not just somewhere in the file.
 
 ### Bandit — security scan
 
