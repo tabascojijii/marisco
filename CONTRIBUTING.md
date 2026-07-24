@@ -174,6 +174,66 @@ unverified, silent action those orders exist to prevent.
 
 Run: `vulture .` — read the output, don't script an auto-delete around it.
 
+### Bandit — security scan
+
+Run: `make security` (`bandit -r marisco/ -ll`).
+
+**Purpose:** static scan of the exported `marisco/` package for known-risky patterns
+(hardcoded credentials, `eval`/`exec`, unsafe deserialization, weak hashing, etc.).
+
+**Risk:** false positives against idioms that are safe in this codebase's context —
+notebook-derived data-loading code (`requests.get(url, timeout=...)` in handler
+`load_data()` functions), test/demo fixtures, or intentional dynamic dispatch in the
+Callback framework. Bandit has no notion of "this is a data pipeline reading from a
+pinned Zenodo/HELCOM URL," it just pattern-matches.
+
+**Rule:** do not silently rewrite code to make Bandit stop complaining. When a finding is
+confirmed to be a false positive for this context, suppress it explicitly and locally —
+`# nosec <rule-id>` on the exact line, with a one-line reason — never a blanket
+`--skip` in the Makefile for a whole rule class without recording why. If the finding is
+real, fix the underlying issue; don't just silence it.
+
+### pytest-cov — line coverage
+
+Run: `make test` (`pytest --cov=marisco --cov-report=term-missing tests/`).
+
+**Purpose:** identify which lines in `marisco/` are never executed by any test, so gaps
+in the safety net are visible rather than assumed away.
+
+**Risk:** optimizing for the coverage percentage itself produces tests that assert
+nothing meaningful — instantiate a class, touch every branch once, assert `True` — just
+to paint a line green. That's negative-value test debt: it inflates the coverage number
+while providing zero regression protection.
+
+**Rule:** don't chase 100%. Use `--cov-report=term-missing` to find which lines are
+*not* covered, then ask whether that gap is a boundary condition or error path worth
+testing (e.g., "what happens when `MultiGateCB` receives an empty LUT?", "does
+`RemapCB` really fall back to `default_val` on every unmapped key?") — see the Fail-Fast
+patterns in `docs/developer/code_style_guards.md` for the kind of edge case this project
+cares about. A coverage gap on a `raise ValueError(...)` line is exactly the kind of
+thing worth a test; a coverage gap inside a `print()` debug statement usually isn't.
+
+### Radon — cyclomatic complexity
+
+Run: `make complexity` (`radon cc . -n C -e ".venv/*,build/*,__pycache__/*"`).
+
+**Purpose:** flag functions/methods whose branching complexity makes them hard to reason
+about or test in isolation — a quantitative companion to the project's own "ZERO ast.If"
+discipline (`docs/developer/code_style_guards.md` §2).
+
+**Risk:** chasing a lower complexity number for its own sake produces the opposite of
+readable code — functions sliced apart purely to move branches out of sight, indirection
+that makes the control flow harder to follow, not easier. A complexity score is a
+symptom indicator, not a code-quality target in itself.
+
+**Rule:** the `-n C` flag already limits output to rank C and worse (cyclomatic
+complexity > 10) — don't act on anything below that threshold. For a flagged function,
+first ask whether it violates brake-protocol Order 1 (≥ 3 `if` branches → should already
+have been sliced into named CBs — see `CLAUDE.md`). If so, the fix is the same one the
+brake protocol already prescribes: slice into named, single-concern pieces. If the
+complexity is inherent to the problem (e.g., a genuine multi-way dispatch with no natural
+CB boundary), leave it and note why in a comment rather than forcing an artificial split.
+
 ## Migration notes
 
 **2026-07-23, initial migration:** the first repo-wide `jupytext --sync **/*.ipynb` run

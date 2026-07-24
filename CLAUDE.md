@@ -47,6 +47,10 @@ positives routinely; never delete on Vulture's word alone. After editing, re-syn
 committing. Tool intent, config rationale, and the Vulture false-positive checklist:
 [`CONTRIBUTING.md`](CONTRIBUTING.md).
 
+`make check` / `make sync` / `make test` / `make security` / `make complexity` wrap the
+commands above — see [`Makefile`](Makefile) and `CONTRIBUTING.md` for what each runs and
+how to interpret bandit/pytest-cov/radon findings.
+
 ---
 
 ## AI brake protocol — 7 standing orders *(self-apply; no human prompt required)*
