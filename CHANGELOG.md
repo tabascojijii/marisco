@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.7.0] - 2026-07-27
+
+### Added
+- `fram_strait2025` handler: ingests the FS2025 I-129 seawater record from Zenodo into MARIS-standard NetCDF4
+
 ## [1.6.1] - 2026-07-15
 
 ### Fixed
