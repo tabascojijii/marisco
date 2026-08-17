@@ -7,6 +7,7 @@ __all__ = ['SOURCE_GROUPS', 'REQUIRED_COLUMNS', 'load_data']
 
 # %% ../../nbs/handlers/ospar.ipynb #2b1c9a66
 from pathlib import Path
+from urllib.parse import quote
 
 import pandas as pd
 
@@ -23,6 +24,13 @@ REQUIRED_COLUMNS = {
 }
 
 
+def _source_path(src_dir: str, fname: str) -> str:
+    "Build a path to `fname` under `src_dir`, handling local paths and URLs distinctly."
+    if src_dir.startswith(("http://", "https://")):
+        return f"{src_dir}/{quote(fname)}"
+    return str(Path(src_dir) / fname)
+
+
 def load_data(
     src_dir,
     smp_types=SOURCE_GROUPS,  # Sample types to load
@@ -34,9 +42,8 @@ def load_data(
     data = {}
 
     for prefix, smp_type in smp_types.items():
-        # GitHub raw URLs need spaces percent-encoded; harmless for local paths too.
-        fname = f"{prefix} data.csv".replace(" ", "%20")
-        df = pd.read_csv(f"{src_dir}/{fname}").rename(str.lower, axis="columns")
+        fname = f"{prefix} data.csv"
+        df = pd.read_csv(_source_path(src_dir, fname)).rename(str.lower, axis="columns")
 
         missing = REQUIRED_COLUMNS[smp_type] - set(df.columns)
         if missing:
