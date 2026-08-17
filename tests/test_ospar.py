@@ -3,7 +3,7 @@
 import pandas as pd
 import pytest
 
-from marisco.handlers.ospar import load_data
+from marisco.handlers.ospar import _source_path, load_data
 
 
 def write_source_csvs(directory, biota_columns=None, seawater_columns=None):
@@ -19,8 +19,8 @@ def write_source_csvs(directory, biota_columns=None, seawater_columns=None):
         "Sampling depth": [3.0],
         "Provider extension": ["kept"],
     }
-    pd.DataFrame(biota_columns).to_csv(directory / "Biota%20data.csv", index=False)
-    pd.DataFrame(seawater_columns).to_csv(directory / "Seawater%20data.csv", index=False)
+    pd.DataFrame(biota_columns).to_csv(directory / "Biota data.csv", index=False)
+    pd.DataFrame(seawater_columns).to_csv(directory / "Seawater data.csv", index=False)
 
 
 def test_load_data_reads_biota_and_keeps_extra_provider_columns(tmp_path):
@@ -53,7 +53,7 @@ def test_load_data_reads_seawater(tmp_path):
 
 def test_load_data_fails_for_missing_source_file(tmp_path):
     pd.DataFrame({"ID": [1], "Species": ["Ostrea edulis"]}).to_csv(
-        tmp_path / "Biota%20data.csv", index=False
+        tmp_path / "Biota data.csv", index=False
     )
 
     with pytest.raises(FileNotFoundError):
@@ -65,3 +65,18 @@ def test_load_data_fails_for_missing_required_column(tmp_path):
 
     with pytest.raises(ValueError, match=r"BIOTA missing required columns.*species"):
         load_data(str(tmp_path))
+
+
+def test_source_path_local_dir_uses_plain_filename(tmp_path):
+    path = _source_path(str(tmp_path), "Biota data.csv")
+
+    assert path == str(tmp_path / "Biota data.csv")
+    assert "%20" not in path
+
+
+def test_source_path_url_percent_encodes_spaces():
+    path = _source_path(
+        "https://raw.githubusercontent.com/org/repo/main/data", "Biota data.csv"
+    )
+
+    assert path == "https://raw.githubusercontent.com/org/repo/main/data/Biota%20data.csv"
