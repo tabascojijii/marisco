@@ -34,7 +34,7 @@ REQUIRED_COLUMNS = {
 def _source_path(src_dir: str, fname: str) -> str:
     "Build a path to `fname` under `src_dir`, handling local paths and URLs distinctly."
     if src_dir.startswith(("http://", "https://")):
-        return f"{src_dir}/{quote(fname)}"
+        return f"{src_dir.rstrip('/')}/{quote(fname)}"
     return str(Path(src_dir) / fname)
 
 
