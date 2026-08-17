@@ -80,3 +80,11 @@ def test_source_path_url_percent_encodes_spaces():
     )
 
     assert path == "https://raw.githubusercontent.com/org/repo/main/data/Biota%20data.csv"
+
+
+def test_source_path_url_trailing_slash_does_not_double_up():
+    path = _source_path(
+        "https://raw.githubusercontent.com/org/repo/main/data/", "Biota data.csv"
+    )
+
+    assert path == "https://raw.githubusercontent.com/org/repo/main/data/Biota%20data.csv"
