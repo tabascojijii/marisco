@@ -34,7 +34,7 @@ def _source_path(src_dir: str, fname: str) -> str:
 def load_data(
     src_dir,
     smp_types=SOURCE_GROUPS,  # Sample types to load
-    use_cache: bool = False,  # Use cache
+    use_cache: bool = False,  # If True, read from the cache directory instead of `src_dir`
     save_to_cache: bool = False,  # Save to cache
 ) -> dict:
     "Load OSPAR source CSVs by sample type."
