@@ -1,9 +1,10 @@
-"""Offline tests for the OSPAR handler's source-loading boundary (`load_data`)."""
+"""Offline tests for the OSPAR handler's source-loading boundary (`load_data`) and
+source-cardinality snapshot (`capture_source_cardinality`)."""
 
 import pandas as pd
 import pytest
 
-from marisco.handlers.ospar import _source_path, load_data
+from marisco.handlers.ospar import _source_path, capture_source_cardinality, load_data
 
 
 def write_source_csvs(directory, biota_columns=None, seawater_columns=None):
@@ -88,3 +89,53 @@ def test_source_path_url_trailing_slash_does_not_double_up():
     )
 
     assert path == "https://raw.githubusercontent.com/org/repo/main/data/Biota%20data.csv"
+
+
+def test_capture_source_cardinality_counts_both_groups():
+    dfs = {"BIOTA": pd.DataFrame({"id": [1, 2, 3]}), "SEAWATER": pd.DataFrame({"id": [1]})}
+
+    assert capture_source_cardinality(dfs) == {"BIOTA": 3, "SEAWATER": 1}
+
+
+def test_capture_source_cardinality_snapshot_detached_from_later_mutation():
+    biota = pd.DataFrame({"id": [1, 2, 3]})
+    dfs = {"BIOTA": biota, "SEAWATER": pd.DataFrame({"id": [1]})}
+
+    counts = capture_source_cardinality(dfs)
+    dfs["BIOTA"] = biota.iloc[:1]  # simulate a later callback dropping rows
+
+    assert counts["BIOTA"] == 3
+
+
+def test_capture_source_cardinality_does_not_mutate_input_frames():
+    biota = pd.DataFrame({"id": [1, 2]})
+    dfs = {"BIOTA": biota, "SEAWATER": pd.DataFrame({"id": [1]})}
+    before = biota.copy(deep=True)
+
+    capture_source_cardinality(dfs)
+
+    pd.testing.assert_frame_equal(dfs["BIOTA"], before)
+
+
+def test_capture_source_cardinality_fails_on_missing_group():
+    dfs = {"BIOTA": pd.DataFrame({"id": [1]})}
+
+    with pytest.raises(ValueError, match=r"missing.*SEAWATER"):
+        capture_source_cardinality(dfs)
+
+
+def test_capture_source_cardinality_fails_on_unexpected_group():
+    dfs = {
+        "BIOTA": pd.DataFrame({"id": [1]}),
+        "SEAWATER": pd.DataFrame({"id": [1]}),
+        "EXTRA": pd.DataFrame(),
+    }
+
+    with pytest.raises(ValueError, match=r"unexpected.*EXTRA"):
+        capture_source_cardinality(dfs)
+
+
+def test_capture_source_cardinality_allows_empty_required_group():
+    dfs = {"BIOTA": pd.DataFrame({"id": []}), "SEAWATER": pd.DataFrame({"id": [1]})}
+
+    assert capture_source_cardinality(dfs)["BIOTA"] == 0
