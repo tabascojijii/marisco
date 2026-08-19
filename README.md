@@ -116,6 +116,7 @@ Practical walkthroughs for common tasks:
 - [Nomenclature reconciliation](how-to/reconcile-nomenclature.ipynb):
   repeatable procedure for mapping provider names (nuclides, species,
   units, …) to MARIS standard identifiers
+- [Explore a MARIS NetCDF file](how-to/visualize-nc): step-by-step guide to inspecting and visualising the contents of a MARIS NetCDF file
 
 ### Reference
 

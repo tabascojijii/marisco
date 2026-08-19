@@ -7,6 +7,7 @@ website:
         contents:
           - how-to/writing-a-handler.ipynb
           - how-to/reconcile-nomenclature.ipynb
+          - how-to/visualize-nc.ipynb
       - section: "Data Reference"
         contents:
           - reference/guide.ipynb
