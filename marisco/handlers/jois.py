@@ -3,7 +3,8 @@
 # %% auto #0
 __all__ = ['RECORDS', 'fname_out', 'src_dir', 'lut_cols', 'META_COLS', 'VAL_COLS', 'U238_PPB_TO_AT_KG', 'NUCLIDE_LUT', 'UNIT_LUT',
            'JOIS_KEYWORDS', 'norm_cols', 'extract_scales', 'apply_scales', 'load_data', 'RenameNucColsCB',
-           'RenameColsCB', 'ParseDateTimeCB', 'MeltJOISCB', 'ConvertU238CB', 'AddLabCB', 'get_attrs', 'encode']
+           'RenameColsCB', 'ParseDateTimeCB', 'MeltJOISCB', 'ConvertU238CB', 'AddLabCB', 'AddDetectionLimitCB',
+           'get_attrs', 'encode']
 
 # %% ../../nbs/handlers/jois.ipynb #d541866d
 from fastcore.all import *
@@ -14,7 +15,7 @@ import requests
 import zipfile
 import io
 
-from ..callbacks import PerGroupCB, Callback, Transformer, EncodeTimeCB, SanitizeLonLatCB, RemapCB, AddSampleIDCB
+from ..callbacks import PerGroupCB, Callback, Transformer, EncodeTimeCB, SanitizeLonLatCB, RemapCB, AddSampleIDCB, get_lut
 from ..metadata import GlobAttrsFeeder, ZoteroCB, BboxCB, DepthRangeCB, TimeRangeCB, KeyValuePairCB
 from ..encoders import NetCDFEncoder
 from ..nc2csv import to_csv
@@ -145,8 +146,8 @@ class MeltJOISCB(PerGroupCB):
         tfm.dfs[grp] = out
 
 # %% ../../nbs/handlers/jois.ipynb #5e5ebb16
-# Convert U-238 from ppb to atoms/kg: ppb * 1e-9 * (1/238.05) * 6.02214076e23
-U238_PPB_TO_AT_KG = 2.529_697e12
+# Convert U-238 from ppb to atoms/kg: ppb * 1e-9 * 1000 * (1/238.05) * 6.02214076e23
+U238_PPB_TO_AT_KG = 2.529_780e15
 
 # %% ../../nbs/handlers/jois.ipynb #ecc0c5dd
 class ConvertU238CB(PerGroupCB):
@@ -171,6 +172,13 @@ class AddLabCB(PerGroupCB):
     "Assing new `LAB` column to ETH's MARIS laboratory id: 345"
     grps = ["SEAWATER"]
     def each_grp(self, grp, df, tfm): df['LAB'] = 345
+
+# %% ../../nbs/handlers/jois.ipynb #787af899
+class AddDetectionLimitCB(PerGroupCB):
+    "Assign missing Detection Limit column to MARIS 'Detected value: 1' category."
+    grps = ["SEAWATER"]
+    def each_grp(self, grp, df, tfm): 
+        tfm.dfs[grp] = df.assign(DL=1)
 
 # %% ../../nbs/handlers/jois.ipynb #5fed230e
 # NetCDF global attributes
@@ -200,6 +208,7 @@ def encode(fname_out=None  # Output NetCDF file path; defaults to fname_out
         RemapCB(lut=NUCLIDE_LUT, col_remap='NUCLIDE', col_src='NUCLIDE'),
         RemapCB(lut=UNIT_LUT, col_remap='UNIT', col_src='UNIT'),
         AddLabCB(),
+        AddDetectionLimitCB(),
         SanitizeLonLatCB(),
         EncodeTimeCB(),
         AddSampleIDCB(col_provider='SMP_ID_PROVIDER'),

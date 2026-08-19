@@ -13,14 +13,8 @@ import requests
 import io
 import gsw
 
-from marisco.callbacks import (
-    PerGroupCB, Transformer, EncodeTimeCB,
-    SanitizeLonLatCB, RemapCB, AddSampleIDCB
-)
-from marisco.metadata import (
-    GlobAttrsFeeder, BboxCB, DepthRangeCB,
-    TimeRangeCB, KeyValuePairCB
-)
+from ..callbacks import PerGroupCB, Transformer, EncodeTimeCB, SanitizeLonLatCB, RemapCB, AddSampleIDCB
+from ..metadata import GlobAttrsFeeder, BboxCB, DepthRangeCB, TimeRangeCB, KeyValuePairCB
 from ..encoders import NetCDFEncoder
 from ..nc2csv import to_csv
 from ..callbacks import get_lut
