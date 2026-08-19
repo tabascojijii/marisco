@@ -2,8 +2,8 @@
 
 # %% auto #0
 __all__ = ['RECORDS', 'fname_out', 'src_dir', 'FS2025_KEYWORDS', 'load_data', 'RenameColsCB', 'ParseDateTimeCB', 'AddDepthCB',
-           'AddNuclideCB', 'AddValueCB', 'AddUnitCB', 'AddUncertCB', 'AddLabCB', 'FormatStationCB', 'get_attrs',
-           'encode']
+           'AddNuclideCB', 'AddValueCB', 'AddUnitCB', 'AddUncertCB', 'AddDetectionLimitCB', 'AddLabCB',
+           'FormatStationCB', 'get_attrs', 'encode']
 
 # %% ../../nbs/handlers/fram_strait2025.ipynb #d541866d
 from fastcore.all import *
@@ -116,6 +116,13 @@ class AddUncertCB(PerGroupCB):
     def each_grp(self, grp, df, tfm):
         tfm.dfs[grp] = df.assign(UNC=df['unc_I129_at_l'])
 
+# %% ../../nbs/handlers/fram_strait2025.ipynb #6fc1506c
+class AddDetectionLimitCB(PerGroupCB):
+    "Assign missing Detection Limit column to MARIS 'Detected value: 1' category."
+    grps = ["SEAWATER"]
+    def each_grp(self, grp, df, tfm): 
+        tfm.dfs[grp] = df.assign(DL=1)
+
 # %% ../../nbs/handlers/fram_strait2025.ipynb #54443923
 class AddLabCB(PerGroupCB):
     "Assign LAB MARIS ID for LIP, ETH Zürich."
@@ -160,6 +167,7 @@ def encode(fname_out=None  # Output NetCDF file path; defaults to fname_out
         AddValueCB(),
         AddUnitCB(),
         AddUncertCB(),
+        AddDetectionLimitCB(),
         AddLabCB(),
         SanitizeLonLatCB(),
         EncodeTimeCB(),
