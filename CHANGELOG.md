@@ -1,5 +1,21 @@
 # Changelog
 
+<!-- do not remove -->
+
+## 1.8.0
+
+### New Features
+
+- `fram_strait2025` handler: add detection limit (MDC) to the ingestion pipeline
+- Add `data/` folder with example MARIS inputs (NetCDF + CSV) pending a proper INIS file-sharing mechanism
+- Add how-to guide for opening and reading marisco-generated NetCDF4 files
+- Show first rows of the MARIS CSV ready for MARIS DB import; clarify callout boxes to data provider and make LAB id assignment more explicit
+
+### Bugs Squashed
+
+- Fix U-238 conversion (ppb → atoms/kg) in the `jois` handler
+- Revert HELCOM handler to running with all data instead of sub-sampled
+
 ## [1.7.0] - 2026-07-27
 
 ### Added
