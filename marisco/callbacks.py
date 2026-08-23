@@ -23,13 +23,13 @@ __all__ = ['Callback', 'PerGroupCB', 'run_cbs', 'Transformer', 'SanitizeLonLatCB
 
 # %% ../nbs/api/callbacks.ipynb #4e58c73c
 class Callback(): 
-    "Base class for callbacks."
+    "Base class for callbacks"
     order = 0
     def __init__(self): pass
 
 # %% ../nbs/api/callbacks.ipynb #0414ac1d
 class PerGroupCB(Callback):
-    "Calls `each_grp` for each group in `tfm.dfs`; set `grps` to restrict to specific groups."
+    "Calls `each_grp` for each group in `tfm.dfs`; set `grps` to restrict to specific groups"
     grps: list = None
 
     def __init__(self,
@@ -48,7 +48,7 @@ def each_grp(self:PerGroupCB,
              df: pd.DataFrame,  # DataFrame for this group
              tfm,               # Parent `Transformer`
              ):
-    "Override to implement per-group transformation logic."
+    "Override to implement per-group transformation logic"
     raise NotImplementedError
 
 # %% ../nbs/api/callbacks.ipynb #61702d17
@@ -56,14 +56,14 @@ def run_cbs(
     cbs: List[Callback], # List of callbacks to run
     obj: Any # Object to pass to the callbacks
     ):
-    "Run the callbacks in the order they are specified."
+    "Run the callbacks in the order they are specified"
     for cb in sorted(cbs, key=attrgetter('order')):
         if cb.__doc__: obj.logs.append(cb.__doc__)
         cb(obj)
 
 # %% ../nbs/api/callbacks.ipynb #82a6611d
 class Transformer():
-    "Transform the dataframe(s) according to the specified callbacks."
+    "Transform the dataframe(s) according to the specified callbacks"
     def __init__(self, 
                  data: Union[Dict[str, pd.DataFrame], pd.DataFrame], # Data to be transformed
                  cbs: Optional[List[Callback]]=None, # List of callbacks to run
@@ -98,7 +98,7 @@ class Transformer():
 
 # %% ../nbs/api/callbacks.ipynb #097d66b6
 class SanitizeLonLatCB(PerGroupCB):
-    "Drop rows with invalid longitude & latitude values. Convert `,` separator to `.` separator."
+    "Drop rows with invalid longitude & latitude values. Convert `,` separator to `.` separator"
     def __init__(self, 
                  lon_col: str='LON', # Longitude column name
                  lat_col: str='LAT', # Latitude column name
@@ -119,7 +119,7 @@ class SanitizeLonLatCB(PerGroupCB):
 
 # %% ../nbs/api/callbacks.ipynb #8c905654
 class RemapCB(PerGroupCB):
-    "Remap source values to MARIS standard identifiers using a lookup table."
+    "Remap source values to MARIS standard identifiers using a lookup table"
     def __init__(self,
                  lut: dict|Callable,  # Lookup: dict, or callable(dfs)->dict
                  col_remap: str,            # Destination column to create
@@ -149,7 +149,7 @@ class RemapCB(PerGroupCB):
 
 # %% ../nbs/api/callbacks.ipynb #bd1917a0
 class LowerStripNameCB(PerGroupCB):
-    "Convert values to lowercase and strip any trailing spaces."
+    "Convert values to lowercase and strip any trailing spaces"
     def __init__(self, 
                  col_src: str, # Source column name e.g. 'Nuclide'
                  col_dst: str=None, # Destination column name
@@ -160,14 +160,14 @@ class LowerStripNameCB(PerGroupCB):
         if not col_dst: self.col_dst = col_src
         
     def _safe_transform(self, value):
-        "Ensure value is not NA and apply transformation function."
+        "Ensure value is not NA and apply transformation function"
         return value if pd.isna(value) else self.fn_transform(str(value))
 
     def each_grp(self, grp, df, tfm): df[self.col_dst] = df[self.col_src].apply(self._safe_transform)
 
 # %% ../nbs/api/callbacks.ipynb #949d6471
 class AddSampleTypeIdColumnCB(PerGroupCB):
-    "Add a column with the sample type as defined in the CDL."
+    "Add a column with the sample type as defined in the CDL"
     def __init__(self, 
                  lut: dict=SMP_TYPE_LUT, # Lookup table for sample type
                  col_name: str='SAMPLE_TYPE' # Column name to store the sample type id
@@ -178,7 +178,7 @@ class AddSampleTypeIdColumnCB(PerGroupCB):
 
 # %% ../nbs/api/callbacks.ipynb #9da3e703
 class RenameColumnsCB(PerGroupCB):
-    "Rename variables to MARIS standard names, keeping only renamed columns."
+    "Rename variables to MARIS standard names, keeping only renamed columns"
     def __init__(self,
                  renaming_rules: dict # Renaming rules {old_name: new_name}
                  ): 
@@ -189,7 +189,7 @@ class RenameColumnsCB(PerGroupCB):
 
 # %% ../nbs/api/callbacks.ipynb #1ea2cc64
 class RemoveAllNAValuesCB(Callback):
-    "Remove rows with all NA values in specified columns."
+    "Remove rows with all NA values in specified columns"
     def __init__(self, 
                  cols_to_check: Union[Dict[str, list], list],  # Dict or list of columns to check
                  how: str='all'  # How to handle NA values 'all' or 'any'
@@ -210,7 +210,7 @@ class RemoveAllNAValuesCB(Callback):
 
 # %% ../nbs/api/callbacks.ipynb #d7982397
 class MeltWideNuclidesCB(Callback):
-    "Reshape wide nuclide columns to long format using a named-dict spec."
+    "Reshape wide nuclide columns to long format using a named-dict spec"
     def __init__(self,
                  spec: list,           # List of dicts with keys: val, unc, nuclide, unit, lab
                  grp:  str='SEAWATER', # Group in tfm.dfs to reshape
@@ -234,7 +234,7 @@ class MeltWideNuclidesCB(Callback):
 
 # %% ../nbs/api/callbacks.ipynb #7bb09e18
 class AddSampleIDCB(PerGroupCB):
-    "Assign 1-based sequential SMP_ID; optionally cast a provider ID column to str for NetCDF VLEN compatibility."
+    "Assign 1-based sequential SMP_ID; optionally cast a provider ID column to str for NetCDF VLEN compatibility"
     def __init__(self,
                  col_provider: str=None,  # Provider ID column to cast to str; None = skip
                  ):
@@ -251,7 +251,7 @@ class AddSampleIDCB(PerGroupCB):
 
 # %% ../nbs/api/callbacks.ipynb #8cf07327
 class CompareDfsAndTfmCB(Callback):
-    "Create a dataframe of removed data and track changes in row counts due to transformations."  # TODO: refactor - too long
+    "Create a dataframe of removed data and track changes in row counts due to transformations"  # TODO: refactor - too long
     def __init__(self, 
                  dfs: Dict[str, pd.DataFrame]  # Original dataframes
                  ): 
@@ -291,7 +291,7 @@ class CompareDfsAndTfmCB(Callback):
 
 # %% ../nbs/api/callbacks.ipynb #3653a68d
 class UniqueIndexCB(PerGroupCB):
-    "Set unique index for each group."
+    "Set unique index for each group"
     def __init__(self, index_name='ID'): store_attr()
         
     def each_grp(self, grp, df, tfm):
@@ -299,14 +299,14 @@ class UniqueIndexCB(PerGroupCB):
 
 # %% ../nbs/api/callbacks.ipynb #c787de45
 class ParseTimeCB(PerGroupCB):
-    "Parse time column from ISO8601 string to datetime."
+    "Parse time column from ISO8601 string to datetime"
     def __init__(self, time_col_name: str='TIME'): store_attr()
     def each_grp(self, grp, df, tfm):
         df[self.time_col_name] = pd.to_datetime(df[self.time_col_name], format='ISO8601')
 
 # %% ../nbs/api/callbacks.ipynb #7f03e81c
 class EncodeTimeCB(PerGroupCB):
-    "Encode time as seconds since epoch."    
+    "Encode time as seconds since epoch"    
     def __init__(self, 
                    col_time: str='TIME',  # Time column name
                    verbose: bool=False,  # Print warning about missing time values
@@ -323,7 +323,7 @@ class EncodeTimeCB(PerGroupCB):
 
 # %% ../nbs/api/callbacks.ipynb #41dcef31
 class DecodeTimeCB(PerGroupCB):
-    "Decode time from seconds since epoch to datetime format."    
+    "Decode time from seconds since epoch to datetime format"    
     def __init__(self, 
                  col_time: str='TIME',
                  fn_units: Callable=get_time_units # Function returning the time units

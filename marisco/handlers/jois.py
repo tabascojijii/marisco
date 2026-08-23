@@ -33,13 +33,13 @@ src_dir   = None  # remote-only, no local files
 # %% ../../nbs/handlers/jois.ipynb #ac122ce2
 def norm_cols(cols  # Column names to normalise
     ) -> list:
-    "Normalise column names: strip scale-factor suffixes like ( x 10^7) or (x 10^6)."
+    "Normalise column names: strip scale-factor suffixes like ( x 10^7) or (x 10^6)"
     return [re.sub(r'\s*\([^)]*\)\s*', '', c).strip() for c in cols]
 
 # %% ../../nbs/handlers/jois.ipynb #4c1477ef
 def extract_scales(cols  # Column names to scan for scale-factor suffixes
     ) -> dict:
-    "Return {col: factor} for columns with `( x 10^N)` suffix in original names, excluding empty-string results."
+    "Return {col: factor} for columns with `( x 10^N)` suffix in original names, excluding empty-string results"
     return {k: 10**int(m.group(1)) for c in cols 
             if (m := re.search(r'\s*\(\s*x\s*10\^(\d+)\)', c)) 
             and (k := re.sub(r'\s*\([^)]*\)\s*', '', c).strip())}
@@ -49,7 +49,7 @@ def apply_scales(
     df,     # DataFrame to modify in place
     scales, # {col: factor} of scale factors to apply
     ) -> pd.DataFrame:
-    "Multiply columns in df by their scale factor."
+    "Multiply columns in df by their scale factor"
     for col, factor in scales.items():
         if col in df.columns: df[col] *= factor
         
@@ -63,7 +63,7 @@ def apply_scales(
 def load_data(
     recs=None, # Optional dict of year->record; defaults to all RECORDS
     ) -> dict:
-    "Fetch all JOIS records from Zenodo, align column names, apply scale factors, and return a single `SEAWATER` DataFrame."
+    "Fetch all JOIS records from Zenodo, align column names, apply scale factors, and return a single `SEAWATER` DataFrame"
     recs = recs or RECORDS
     parts = []
     for r in recs.values():
@@ -82,8 +82,7 @@ def load_data(
 
 # %% ../../nbs/handlers/jois.ipynb #85a2787d
 class RenameNucColsCB(PerGroupCB):
-    "Rename U238_ppb and U236_U238 to the {Nuc}_at_{Unit} convention used by other datasets."
-    grps = ['SEAWATER']
+    "Rename U238_ppb and U236_U238 to the {Nuc}_at_{Unit} convention used by other datasets"
     def each_grp(self, grp, df, tfm):
         df.rename(columns={
             'U238_ppb': 'U238_at_ppb', 'U236_U238': 'U236_U238_at_ratio',
@@ -99,15 +98,13 @@ lut_cols = {
 
 # %% ../../nbs/handlers/jois.ipynb #4a497743
 class RenameColsCB(PerGroupCB):
-    "Map JOIS provider CTD and sample columns to MARIS standard names."
-    grps = ["SEAWATER"]
+    "Map JOIS provider CTD and sample columns to MARIS standard names"
     def __init__(self, lut): store_attr()
     def each_grp(self, grp, df, tfm): df.rename(columns=self.lut, inplace=True)
 
 # %% ../../nbs/handlers/jois.ipynb #e5342c85
 class ParseDateTimeCB(PerGroupCB):
-    "Combine JOIS Date and Time columns into a single TIME column."
-    grps = ["SEAWATER"]
+    "Combine JOIS Date and Time columns into a single TIME column"
     def __init__(self, col_date="Date",  # Source date column name
                  col_time="Time"):       # Source time column name
         store_attr()
@@ -126,8 +123,7 @@ VAL_COLS = ['I129_at_kg', 'I129_at_l', 'U236_at_kg', 'U236_at_l',
 
 # %% ../../nbs/handlers/jois.ipynb #32428840
 class MeltJOISCB(PerGroupCB):
-    "Reshape JOIS wide nuclide columns to long format with NUCLIDE, UNIT, VALUE, UNC columns."
-    grps = ['SEAWATER']
+    "Reshape JOIS wide nuclide columns to long format with NUCLIDE, UNIT, VALUE, UNC columns"
     def __init__(self,
                  meta_cols,  # Columns to keep as identifiers
                  val_cols,   # Value columns to melt
@@ -151,8 +147,7 @@ U238_PPB_TO_AT_KG = 2.529_780e15
 
 # %% ../../nbs/handlers/jois.ipynb #ecc0c5dd
 class ConvertU238CB(PerGroupCB):
-    "Convert U-238 VALUE from ppb to atoms/kg."
-    grps = ['SEAWATER']
+    "Convert U-238 VALUE from ppb to atoms/kg"
     def each_grp(self, grp, df, tfm):
         m = df['NUCLIDE'] == 'U238'
         df.loc[m, 'VALUE'] *= U238_PPB_TO_AT_KG
@@ -170,13 +165,11 @@ UNIT_LUT = {'at_kg': 9, 'at_l': 12, 'at_ratio': 6}
 # %% ../../nbs/handlers/jois.ipynb #1054a5ee
 class AddLabCB(PerGroupCB):
     "Assing new `LAB` column to ETH's MARIS laboratory id: 345"
-    grps = ["SEAWATER"]
     def each_grp(self, grp, df, tfm): df['LAB'] = 345
 
 # %% ../../nbs/handlers/jois.ipynb #787af899
 class AddDetectionLimitCB(PerGroupCB):
-    "Assign missing Detection Limit column to MARIS 'Detected value: 1' category."
-    grps = ["SEAWATER"]
+    "Assign missing Detection Limit column to MARIS 'Detected value: 1' category"
     def each_grp(self, grp, df, tfm): 
         tfm.dfs[grp] = df.assign(DL=1)
 
@@ -185,7 +178,7 @@ class AddDetectionLimitCB(PerGroupCB):
 JOIS_KEYWORDS = ['Beaufort Sea', 'JOIS', 'I-129', 'U-236', 'U-238', 'radionuclides', 'seawater', 'Arctic']
 
 def get_attrs(tfm):
-    "Retrieve global attributes for the JOIS handler."
+    "Retrieve global attributes for the JOIS handler"
     return GlobAttrsFeeder(tfm.dfs, cbs=[
         BboxCB(),
         DepthRangeCB(),
@@ -198,7 +191,7 @@ def get_attrs(tfm):
 # %% ../../nbs/handlers/jois.ipynb #1784dfc3
 def encode(fname_out=None  # Output NetCDF file path; defaults to fname_out
             ):
-    "Encode JOIS data to NetCDF4."
+    "Encode JOIS data to NetCDF4"
     fname_out = fname_out or globals().get('fname_out', 'JOIS_Beaufort_Sea.nc')
     dfs = load_data()
     tfm = Transformer(dfs, cbs=[

@@ -33,7 +33,7 @@ src_dir = None
 def load_data(
     recs=None,  # Optional record mapping; defaults to all RECORDS
 ) -> dict:
-    "Fetch Fram Strait CSV records and return one combined SEAWATER DataFrame."
+    "Fetch Fram Strait CSV records and return one combined SEAWATER DataFrame"
     recs = recs or RECORDS
     parts = []
 
@@ -51,9 +51,7 @@ def load_data(
 
 # %% ../../nbs/handlers/fram_strait2025.ipynb #4a497743
 class RenameColsCB(PerGroupCB):
-    "Map FS2025 provider columns to MARIS standard names."
-    grps = ["SEAWATER"]
-
+    "Map FS2025 provider columns to MARIS standard names"
     def each_grp(self, grp, df, tfm):
         tfm.dfs[grp] = df.rename(columns={
             "Station": "STATION",
@@ -66,9 +64,7 @@ class RenameColsCB(PerGroupCB):
 
 # %% ../../nbs/handlers/fram_strait2025.ipynb #e5342c85
 class ParseDateTimeCB(PerGroupCB):
-    "Parse FS2025 collection date into a UTC TIME value."
-    grps = ["SEAWATER"]
-
+    "Parse FS2025 collection date into a UTC TIME value"
     def each_grp(self, grp, df, tfm):
         tfm.dfs[grp] = df.assign(
             TIME=pd.to_datetime(df["Date"], format="%Y-%m-%d", utc=True)
@@ -77,58 +73,48 @@ class ParseDateTimeCB(PerGroupCB):
 # %% ../../nbs/handlers/fram_strait2025.ipynb #72bb4f06
 class AddDepthCB(PerGroupCB):
     "Compute sampling depth using Thermodynamic Equation of SeaWater 2010 (TEOS-10)"
-    grps = ["SEAWATER"]
-
-    def each_grp(self, grp, df, tfm):
+    def each_grp(self, grp, df, tfm): 
         df["SMP_DEPTH"] = np.round(-gsw.z_from_p(df['Pressure_dbar'], df['LAT']), 1)
 
 # %% ../../nbs/handlers/fram_strait2025.ipynb #74a889cf
 class AddNuclideCB(PerGroupCB):
-    "Assign NUCLIDE MARIS ID for I-129."
-    grps = ["SEAWATER"]
-    def each_grp(self, grp, df, tfm):
+    "Assign NUCLIDE MARIS ID for I-129"
+    def each_grp(self, grp, df, tfm): 
         tfm.dfs[grp] = df.assign(NUCLIDE=28)
 
 # %% ../../nbs/handlers/fram_strait2025.ipynb #84b4ad2a
 class AddValueCB(PerGroupCB):
-    "Assign VALUE column from the I-129 atoms per litre measurement."
-    grps = ["SEAWATER"]
+    "Assign VALUE column from the I-129 atoms per litre measurement"
     def each_grp(self, grp, df, tfm):
         tfm.dfs[grp] = df.assign(VALUE=df['I129_at_l'])
 
 # %% ../../nbs/handlers/fram_strait2025.ipynb #b0de014c
 class AddUnitCB(PerGroupCB):
-    "Assign UNIT MARIS ID for atoms per litre."
-    grps = ["SEAWATER"]
-    def each_grp(self, grp, df, tfm):
+    "Assign UNIT MARIS ID for atoms per litre"
+    def each_grp(self, grp, df, tfm): 
         tfm.dfs[grp] = df.assign(UNIT=12)
 
 # %% ../../nbs/handlers/fram_strait2025.ipynb #16bc5525
 class AddUncertCB(PerGroupCB):
-    "Assign UNC column from the I-129 provider uncertainty."
-    grps = ["SEAWATER"]
+    "Assign UNC column from the I-129 provider uncertainty"
     def each_grp(self, grp, df, tfm):
         tfm.dfs[grp] = df.assign(UNC=df['unc_I129_at_l'])
 
 # %% ../../nbs/handlers/fram_strait2025.ipynb #6fc1506c
 class AddDetectionLimitCB(PerGroupCB):
-    "Assign missing Detection Limit column to MARIS 'Detected value: 1' category."
-    grps = ["SEAWATER"]
+    "Assign missing Detection Limit column to MARIS 'Detected value: 1' category"
     def each_grp(self, grp, df, tfm): 
         tfm.dfs[grp] = df.assign(DL=1)
 
 # %% ../../nbs/handlers/fram_strait2025.ipynb #54443923
 class AddLabCB(PerGroupCB):
-    "Assign LAB MARIS ID for LIP, ETH Zürich."
-    grps = ["SEAWATER"]
+    "Assign LAB MARIS ID for LIP, ETH Zürich"
     def each_grp(self, grp, df, tfm):
         tfm.dfs[grp] = df.assign(LAB=345)
 
 # %% ../../nbs/handlers/fram_strait2025.ipynb #e00396ee
 class FormatStationCB(PerGroupCB):
-    "Cast STATION to str for the NetCDF4 string-typed station variable."
-    grps = ["SEAWATER"]
-
+    "Cast STATION to str for the NetCDF4 string-typed station variable"
     def each_grp(self, grp, df, tfm):
         df["STATION"] = df["STATION"].astype(str)
 
@@ -138,7 +124,7 @@ FS2025_KEYWORDS = [
 ]
 
 def get_attrs(tfm):
-    "Retrieve global attributes for Fram Strait 2025."
+    "Retrieve global attributes for Fram Strait 2025"
     return GlobAttrsFeeder(tfm.dfs, cbs=[
         BboxCB(),
         DepthRangeCB(),
@@ -150,7 +136,7 @@ def get_attrs(tfm):
 # %% ../../nbs/handlers/fram_strait2025.ipynb #1784dfc3
 def encode(fname_out=None  # Output NetCDF file path; defaults to fname_out
             ):
-    "Encode Fram Strait 2025 data to NetCDF4."
+    "Encode Fram Strait 2025 data to NetCDF4"
     fname_out = fname_out or globals().get("fname_out", "Fram_Strait_2025.nc")
     dfs = load_data()
     tfm = Transformer(dfs, cbs=[
