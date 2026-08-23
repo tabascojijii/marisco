@@ -2,6 +2,17 @@
 
 <!-- do not remove -->
 
+## 1.8.1
+
+### New Features
+
+- Remove redundant `grps` declarations on single-group PerGroupCB handlers, and document that it's optional ([#50](https://github.com/franckalbinet/marisco/issues/50))
+
+### Bugs Squashed
+
+- Testing multiple labels ([#49](https://github.com/franckalbinet/marisco/issues/49))
+
+
 ## 1.8.0
 
 ### New Features
