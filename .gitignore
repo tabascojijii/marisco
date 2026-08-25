@@ -3,6 +3,9 @@ _data/
 _proc/
 dump/
 
+# Solveit dialog, not part of the package
+_day-to-day.ipynb
+
 *.bak
 .gitattributes
 .last_checked

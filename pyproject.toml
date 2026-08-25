@@ -24,11 +24,9 @@ marisco = "marisco._modidx:d"
 [project.optional-dependencies]
 dev = ['nbdev', 'ipykernel', 'twine', 'toolslm']
 
-
 [project.scripts]
-maris_to_nc = "marisco.cli.to_nc:main"
-maris_db_to_nc = "marisco.cli.db_to_nc:main"
-maris_nc_to_csv = "marisco.cli.nc_to_csv:main"
+marisco-ingest = "marisco.cli.ingest:main"
+maris-export = "marisco.cli.export:main"
 
 [tool.setuptools.dynamic]
 version = {attr = "marisco.__version__"}
