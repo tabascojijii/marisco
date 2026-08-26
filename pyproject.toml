@@ -12,7 +12,7 @@ license = {text = "Apache-2.0"}
 authors = [{name = "Franck Albinet, Niall Murphy", email = "franckalbinet@gmail.com"}]
 keywords = ['nbdev', 'jupyter', 'notebook', 'python', 'netcdf', 'marine', 'radioactivity', 'data']
 classifiers = ["Natural Language :: English", "Intended Audience :: Developers", "Development Status :: 3 - Alpha", "Programming Language :: Python :: 3", "Programming Language :: Python :: 3 :: Only"]
-dependencies = ['pandas', 'openpyxl', 'fastcore', 'rich', 'tqdm', 'netcdf4', 'tomli', 'tomli-w', 'shapely', 'pyzotero', 'jellyfish', 'requests', 'pyarrow', 'gevent>=22.10.2', 'gsw']
+dependencies = ['pandas', 'openpyxl', 'fastcore>=2.1.16', 'rich', 'tqdm', 'netcdf4', 'tomli', 'tomli-w', 'shapely', 'pyzotero', 'jellyfish', 'requests', 'pyarrow', 'gevent>=22.10.2', 'gsw']
 
 [project.urls]
 Repository = "https://github.com/franckalbinet/marisco"
@@ -26,7 +26,7 @@ dev = ['nbdev', 'ipykernel', 'twine', 'toolslm']
 
 [project.scripts]
 marisco-ingest = "marisco.cli.ingest:main"
-maris-export = "marisco.cli.export:main"
+marisco-export = "marisco.cli.export:main"
 
 [tool.setuptools.dynamic]
 version = {attr = "marisco.__version__"}

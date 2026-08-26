@@ -5,6 +5,7 @@ __all__ = ['main']
 
 # %% ../../nbs/cli/export.ipynb #5ac66ee5
 from fastcore.script import *
+from fastcore.style import S
 from pathlib import Path
 from ..nc2csv import to_csv
 
@@ -14,6 +15,8 @@ def main(
     src: str,  # Path to the MARIS NetCDF4 file to convert
     dest: str = None,  # Output path stem for the CSV files (defaults to src stem)
 ) -> None:
-    "Convert a MARIS NetCDF4 file to import-ready CSV files (one per sample type)."
+    "Convert a MARIS NetCDF4 file to import-ready CSV files (one per sample type)"
     print(f'Decoding: {Path(src).name} ...')
-    to_csv(fname_in=src, dest_out=dest)
+    paths = to_csv(fname_in=src, dest_out=dest)
+    print(S.green(f'Done: {len(paths)} CSV file(s) written from {Path(src).name}'))
+

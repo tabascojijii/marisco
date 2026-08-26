@@ -11,6 +11,7 @@ import sys
 import importlib
 from importlib import import_module
 from pkgutil import iter_modules
+import marisco.handlers
 
 # %% ../../nbs/cli/ingest.ipynb #8164c759
 def import_handler(handler_name:str,  # Name of the handler module
@@ -31,10 +32,10 @@ def handlers() -> dict:
 # %% ../../nbs/cli/ingest.ipynb #d618aa0d
 @call_parse
 def main(
-    ds: str,  # Name of the dataset to encode as NetCDF4; see `handlers()` for available names
+    ds: str,  # Name of the dataset to encode as NetCDF4 (e.g. helcom, geotraces, maris_legacy)
     dest: str, # Output path: file path for handlers that write one file, or folder path for handlers that write several (e.g. maris_legacy)
     src: Optional[str] = None,  # Optional path to local input data; only needed by handlers that don't fetch data online
-    **kwargs,  # Additional arguments passed through to the handler's `encode` (e.g. ref_ids for maris_legacy)
+    ref_ids: Optional[str] = None,  # Comma-separated MARIS reference IDs, e.g. "16,30"; only used by handlers that support them
 ) -> None:
     "Convert a marine radioactivity dataset to MARIS NetCDF4 format."
     hs = handlers()
@@ -45,5 +46,6 @@ def main(
         print(S.yellow(f"Warning: {ds} is {hs[ds]}"))
         sys.exit(1)
     encode = import_handler(f'marisco.handlers.{ds}')
-    encode(dest=dest, src=src, **kwargs)
-
+    print(f'Encoding: {ds} ...')
+    encode(dest=dest, src=src, **({'ref_ids': ref_ids} if ref_ids else {}))
+    print(S.green(f'Done: {ds} encoded to {dest}'))
