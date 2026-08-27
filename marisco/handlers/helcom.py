@@ -402,7 +402,7 @@ def encode(
     src: str = None, # Path to raw HELCOM data; defaults to `src_dir`
     **kwargs # Additional arguments
     ) -> None:
-    "Baltic Sea marine environment monitoring data, encoded to MARIS NetCDF4 format"
+    "Baltic Sea marine environment monitoring data"
     dfs = load_data(src or src_dir)
     dfs = {k: v.sample(10, random_state=42) for k, v in dfs.items()}
     tfm = Transformer(dfs, cbs=[

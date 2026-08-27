@@ -191,7 +191,7 @@ def encode(
         src=None,    # Unused; JOIS fetches its data from RECORDS
         **kwargs     # Additional arguments
         ):
-    "BGOS-JOIS Beaufort Sea seawater radionuclide data, encoded to MARIS NetCDF4 format"
+    "BGOS-JOIS Beaufort Sea seawater radionuclide data"
     dfs = load_data()
     tfm = Transformer(dfs, cbs=[
         RenameNucColsCB(), RenameColsCB(lut_cols), ParseDateTimeCB(),

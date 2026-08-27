@@ -5,21 +5,22 @@ website:
       - index.ipynb
       - section: "How-to"
         contents:
+          - how-to/contributing-data.ipynb    
           - how-to/writing-a-handler.ipynb
           - how-to/reconcile-nomenclature.ipynb
-          - how-to/visualize-nc.ipynb
+          - how-to/explore-nc.ipynb
       - section: "Data Reference"
         contents:
-          - reference/guide.ipynb
+          - reference/reporting-template.ipynb
           - reference/field-definition.ipynb
-          - reference/sample-id-coverage.ipynb
+          - reference/maris-db-schema.ipynb
       - section: "Handlers"
         contents:
           - handlers/geotraces.ipynb
           - handlers/helcom.ipynb
           - handlers/maris_legacy.ipynb
           - handlers/jois.ipynb
-          - handlers/fram_strait2025.ipynb
+          - handlers/fram_strait_2025.ipynb
           - handlers/ospar.ipynb          
           - handlers/tepco.ipynb
       - section: API

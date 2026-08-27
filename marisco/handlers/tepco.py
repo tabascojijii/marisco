@@ -22,5 +22,5 @@ def encode(
     src: str = None, # Path to raw <PROVIDER> data
     **kwargs # Additional arguments
     ) -> None:
-    "TEPCO data, encoded to MARIS NetCDF4 format. Under refactoring, not yet available."
+    "TEPCO data"
     assert False, "TEPCO is under refactoring; encode() is not yet implemented"

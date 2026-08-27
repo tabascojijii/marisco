@@ -167,7 +167,7 @@ def encode(
     src: str = None, # Path to the MARIS dump data in CSV format
     **kwargs # Additional keyword arguments
     ):
-    "MARIS legacy database dump, encoded to MARIS NetCDF4 format (one file per reference id)"
+    "MARIS legacy database dump"
     assert src, "maris_legacy requires `src`, the path to the MARIS dump CSV"
     dataloader = DataLoader(src)
     ref_ids = parse_ref_ids(kwargs.get('ref_ids'), valid=dataloader.df.ref_id.unique())

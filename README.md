@@ -7,25 +7,33 @@ The [IAEA **M**arine **R**adioactivity **I**nformation **S**ystem (MARIS)](https
 
 `marisco` is being developed as the data processing foundation of MARIS: a Python package that converts provider datasets into standardised [NetCDF4](https://www.unidata.ucar.edu/software/netcdf/) and CSV formats for ingestion into the MARIS database.
 
-## Transparency by design
+## How marisco works
 
-Each dataset is processed by a dedicated *handler*, a Jupyter notebook that documents every curation decision alongside the code that implements it. Unit conversions, nuclide nomenclature mapping, coordinate standardisation, outlier flags: every choice is visible, traceable, and auditable.
+MARIS does not impose a data schema on providers. It accepts data in whatever form it arrives, and it makes the cost of that acceptance visible.
 
-Handlers are shared with data providers as a working document. If a conversion looks wrong, a mapping is missing, or terminology differs from your internal standards, the notebook is where we discuss and resolve it; not buried in email threads or internal comments.
+Each dataset is processed by a dedicated *handler*, a Jupyter notebook that documents every curation decision alongside the code that implements it. Unit conversions, nuclide nomenclature mapping, coordinate standardisation, outlier flags: every choice is visible, traceable, and auditable. Some formats need less work than others, and the handler makes that difference plain. If you are a data provider, see [contributing data](how-to/contributing-data.ipynb) for what this means for your dataset.
+
+This is deliberate. The friction a dataset creates is a signal, and surfacing it is the point. It tells the MARIS team how much work a provider’s format really requires, it gives the provider a concrete, itemised record of what to improve, and it makes the next release of the dataset cheaper to ingest. Over time, the easiest path for everyone is for providers to align with the MARIS way of organising data, not because it is imposed, but because the cost of not doing so is visible.
+
+The payoff is a harmonised world reference: measurements of marine radioactivity from providers worldwide, stored in the [MARIS database](https://maris.iaea.org/home) in one comparable form. That comparability is the real value, for data providers, for the scientific community, and beyond. It rests on visible curation: the process that made the data comparable is documented and auditable, so the harmonisation can be checked, questioned, and trusted.
+
+Handlers are shared with data providers as a working document. If a conversion looks wrong, a mapping is missing, or terminology differs from your internal standards, the notebook is where we discuss and resolve it, not buried in email threads or internal comments.
 
 For a concrete example, see the [GEOTRACES handler](https://fr.anckalbi.net/marisco/handlers/geotraces.html).
 
+The harmonised data reaches users through three channels: the [explore portal](https://maris.iaea.org/explore) for interactive visualisation, the [datasets page](https://maris.iaea.org/datasets) for downloading individual NetCDF files (joined soon by [INIS](https://www.iaea.org/resources/databases/inis)), and the [MARIS API](https://observablehq.com/@maris-iaea/api) for programmatic access.
+
 ## Available handlers
 
-| Handler | Description | Data source | Status |
-|----|----|----|----|
-| [HELCOM](https://fr.anckalbi.net/marisco/handlers/helcom.html) | Baltic Sea marine environment monitoring | [HELCOM](https://helcom.fi/about-us) | ✅ Active |
-| [GEOTRACES](https://fr.anckalbi.net/marisco/handlers/geotraces.html) | BODC GEOTRACES oceanographic radionuclide data | [GEOTRACES IDP2021](https://www.geotraces.org/geotraces-intermediate-data-product-2021/) | ✅ Active |
-| [MARIS Legacy](https://fr.anckalbi.net/marisco/handlers/maris_legacy.html) | Historical MARIS datasets from the master database | — | ✅ Active |
-| [OSPAR](https://fr.anckalbi.net/marisco/handlers/ospar.html) | NE Atlantic marine environment datasets | [ODIMS OSPAR](https://odims.ospar.org/en/) | ⚠️ Migrating |
-| [TEPCO](https://fr.anckalbi.net/marisco/handlers/tepco.html) | TEPCO Fukushima Daiichi monitoring data | [TEPCO Monitoring](https://radioactivity.nsr.go.jp/ja/list/349/list-1.html) | ⚠️ Migrating |
-
-*Migrating: handler is functional but being updated to the current matching API.*
+| Handler | Description | Status |
+|----|----|----|
+| [FRAM STRAIT 2025](handlers/fram_strait_2025.html) | Fram Strait 2025 iodine-129 seawater radionuclide data | Active |
+| [GEOTRACES](handlers/geotraces.html) | BODC GEOTRACES oceanographic radionuclide data | Active |
+| [HELCOM](handlers/helcom.html) | Baltic Sea marine environment monitoring data | Active |
+| [JOIS](handlers/jois.html) | BGOS-JOIS Beaufort Sea seawater radionuclide data | Active |
+| [MARIS LEGACY](handlers/maris_legacy.html) | MARIS legacy database dump | Active |
+| [OSPAR](handlers/ospar.html) | OSPAR data | Under refactoring |
+| [TEPCO](handlers/tepco.html) | TEPCO data | Under refactoring |
 
 ## Install
 
@@ -52,57 +60,68 @@ All commands accept `-h` for full documentation.
 **Convert a provider dataset to MARIS NetCDF4:**
 
 ``` console
-maris_to_nc ospar 191-OSPAR-2024.nc
+marisco-ingest helcom output/100-HELCOM-MORS-2024.nc
 ```
+
+The handler is selected by name, and each handler decides whether it fetches data online or reads a local source. Run `marisco-ingest` with an invalid handler name to list the available handlers.
 
 **Convert the MARIS legacy database dump to NetCDF4:**
 
 ``` console
-maris_db_to_nc "~/data/maris/dump.txt" ~/output
-# or a subset:
-maris_db_to_nc "~/data/maris/dump.txt" ~/output --ref_ids="16,30"
+marisco-ingest maris_legacy ~/output --src ~/data/maris/dump.txt
 ```
+
+To encode only a subset of references:
+
+``` console
+marisco-ingest maris_legacy ~/output --src ~/data/maris/dump.txt --ref_ids "16,30"
+```
+
+Handlers that produce several files write them into the destination folder, which is created if missing.
 
 **Convert a NetCDF4 file to MARIS-format CSV (for database import):**
 
 ``` console
-maris_nc_to_csv ~/output/191-OSPAR-2024.nc ~/output/191-OSPAR-2024
+marisco-export ~/output/191-OSPAR-2024.nc
 ```
 
-The CSV utility appends the sample type automatically (e.g. `191-OSPAR-2024_BIOTA.csv`), and may generate multiple files — one per sample type present in the source dataset.
+The CSV utility appends the sample type automatically (e.g. `191-OSPAR-2024_BIOTA.csv`), and may generate multiple files, one per sample type present in the source dataset. Use `--dest` to choose an output stem other than the source file name.
 
 ## Documentation
 
-Documentation is organised into two groups:
+Documentation is organised into two groups.
 
 ### How-to guides
 
 Practical walkthroughs for common tasks:
 
+- [Contributing data to MARIS](how-to/contributing-data.ipynb): how a data provider delivers a dataset to the repository
 - [Writing a new handler](how-to/writing-a-handler.ipynb): step-by-step guide to adding a new data provider to the marisco pipeline
 - [Nomenclature reconciliation](how-to/reconcile-nomenclature.ipynb): repeatable procedure for mapping provider names (nuclides, species, units, …) to MARIS standard identifiers
-- [Explore a MARIS NetCDF file](how-to/visualize-nc): step-by-step guide to inspecting and visualising the contents of a MARIS NetCDF file
+- [Explore a MARIS NetCDF file](how-to/explore-nc.ipynb): step-by-step guide to reading a MARIS NetCDF file: global metadata, group structure, lookup tables and nomenclatures, and each sample-type dataset as a [pandas](https://pandas.pydata.org) DataFrame
 
 ### Reference
 
 Detailed specifications and reference material:
 
-- [MARIS Data Guide](reference/guide.ipynb): overview of sample types, measurement fields, nomenclature, curation pipeline, and available datasets; aimed at data providers and data users
+- [Reporting template](reference/reporting-template.ipynb): the MARIS data reporting template as documentation, with the general instructions, per-sample-type column tables, and lookup lists
 - [Field Definitions](reference/field-definition.ipynb): complete field-by-field reference with MARISCO column names, NetCDF variable names, CSV variable names, types, and lookup tables
-- [Data Curation Rules](reference/data-curation-rules.ipynb): rules applied during data curation across all handlers
-- [Enum Rules](reference/enum_rules.ipynb): enumeration value handling rules
-- [Sample ID Coverage](reference/sample-id-coverage.ipynb): coverage analysis of sample identifiers
-- [Sample Uniqueness](reference/sample-uniqueness.ipynb): sample uniqueness constraints and validation
+- [MARIS database schema](reference/maris-db-schema.ipynb): the master database `sample` and `measure` tables, their mandatory columns, and their constraints
 
 ## Development
 
-The MARIS NetCDF template is generated from `nbs/files/cdl/maris.cdl`. To regenerate it locally, install [NetCDF-C](https://pjbartlein.github.io/REarthSysSci/install_netCDF.html) and run:
+`marisco` follows the nbdev workflow: all code lives in notebooks under `nbs/`, and the `marisco/` package is generated from them.
+
+- Edit the notebooks in `nbs/`, then run `nbdev-export` to regenerate the modules and `nbdev-readme` to regenerate this README.
+- After changing `pyproject.toml` (entry points, dependencies), reinstall the package with `pip install -e .`.
+- The MARIS NetCDF template is generated from `nbs/files/cdl/maris.cdl`. To regenerate it locally, install [NetCDF-C](https://pjbartlein.github.io/REarthSysSci/install_netCDF.html) and run:
 
 ``` console
 ncgen -4 -o nbs/files/nc/maris-template.nc nbs/files/cdl/maris.cdl
 ```
 
-Contributor guidance — architecture, coding conventions, handler documentation style — is in the `CRAFTs/` notebooks at the repository root.
+- Contributor guidance on architecture, coding conventions, and handler documentation style lives in the `CRAFTs/` notebooks at the repository root.
+- [Writing a new handler](how-to/writing-a-handler.ipynb) walks through adding a new data provider to the pipeline.
 
 ## Acknowledgements
 

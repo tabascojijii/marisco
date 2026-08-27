@@ -309,7 +309,7 @@ def encode(
         src:str=None,    # Path to the raw Geotraces input CSV (the IDP2021 discrete sample data)
         **kwargs         # Pass verbose=True for detailed NetCDFEncoder output
         ):
-    "BODC GEOTRACES oceanographic radionuclide data, encoded to MARIS NetCDF4 format"
+    "BODC GEOTRACES oceanographic radionuclide data"
     assert src, "geotraces requires `src`, the path to the raw IDP2021 discrete sample CSV"
     df = pd.read_csv(src)
     tfm = Transformer(df, cbs=[

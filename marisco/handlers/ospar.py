@@ -18,5 +18,5 @@ def encode(
     src: str = None, # Path to raw <PROVIDER> data
     **kwargs # Additional arguments
     ) -> None:
-    "OSPAR data, encoded to MARIS NetCDF4 format. Under refactoring, not yet available."
+    "OSPAR data"
     assert False, "OSPAR is under refactoring; encode() is not yet implemented"
