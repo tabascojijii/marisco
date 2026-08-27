@@ -2,6 +2,18 @@
 
 <!-- do not remove -->
 
+## 1.9.0
+
+### Breaking Changes
+
+- Rebuild CLI tools on the unified handler interface ([#52](https://github.com/franckalbinet/marisco/issues/52))
+- Unify handler interface (encode signature, status, docstring) ([#51](https://github.com/franckalbinet/marisco/issues/51))
+
+### New Features
+
+- Update README Quick start and Documentation sections ([#53](https://github.com/franckalbinet/marisco/issues/53))
+
+
 ## 1.8.1
 
 ### New Features
